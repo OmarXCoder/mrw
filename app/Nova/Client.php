@@ -2,7 +2,9 @@
 namespace App\Nova;
 
 use Illuminate\Http\Request;
+use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
+use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
@@ -31,6 +33,20 @@ class Client extends Resource
         'id', 'name',
     ];
 
+    // public static $showColumnBorders = true;
+
+    /**
+     * Build an "index" query for the given resource.
+     *
+     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public static function indexQuery(NovaRequest $request, $query)
+    {
+        return $query->withCount(['shows', 'apps', 'users']);
+    }
+
     /**
      * Get the fields displayed by the resource.
      *
@@ -43,6 +59,16 @@ class Client extends Resource
             ID::make()->sortable(),
 
             Text::make('Name')->sortable(),
+
+            Number::make('Team Members', 'users_count')->onlyOnIndex()->sortable(),
+
+            Number::make('Shows', 'shows_count')->onlyOnIndex()->sortable(),
+
+            Number::make('Applications', 'apps_count')->onlyOnIndex()->sortable(),
+
+            HasMany::make('Shows'),
+
+            HasMany::make('Apps'),
         ];
     }
 
