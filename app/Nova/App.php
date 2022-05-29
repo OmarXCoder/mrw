@@ -1,25 +1,22 @@
 <?php
 namespace App\Nova;
 
-use App\Models\Show as ShowModel;
-use App\Nova\Filters\ShowStatus;
 use Illuminate\Http\Request;
-use Laravel\Nova\Fields\Badge;
-use Laravel\Nova\Fields\DateTime;
+use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
-class Show extends Resource
+class App extends Resource
 {
     /**
      * The model the resource corresponds to.
      *
      * @var string
      */
-    public static $model = \App\Models\Show::class;
+    public static $model = \App\Models\App::class;
 
     /**
      * The single value that should be used to represent the resource when being displayed.
@@ -46,7 +43,7 @@ class Show extends Resource
      */
     public static function indexQuery(NovaRequest $request, $query)
     {
-        return $query->withCount(['apps', 'attendees']);
+        return $query->withCount(['attendees', 'events']);
     }
 
     /**
@@ -60,27 +57,17 @@ class Show extends Resource
         return [
             ID::make()->sortable(),
 
-            Text::make('Show Name', 'name')->showOnPreview()->sortable(),
+            Text::make('Name')->sortable(),
 
-            Text::make('Organizer')->showOnPreview(),
-
-            DateTime::make('Start Date')->hideFromIndex()->showOnPreview()->sortable(),
-
-            DateTime::make('End Date')->hideFromIndex()->showOnPreview()->sortable(),
-
-            Number::make('Applications', 'apps_count')->onlyOnIndex()->sortable(),
+            BelongsTo::make('Show')->sortable(),
 
             Number::make('Attendees', 'attendees_count')->onlyOnIndex()->sortable(),
 
-            Badge::make('Status')->map([
-                ShowModel::STATUS_UPCOMMING => 'warning',
-                ShowModel::STATUS_ACTIVE => 'success',
-                ShowModel::STATUS_ENDED => 'danger',
-            ])->showOnPreview()->sortable(),
-
-            HasMany::make('Apps'),
+            Number::make('Events', 'events_count')->onlyOnIndex()->sortable(),
 
             HasMany::make('Attendees'),
+
+            HasMany::make('Events'),
         ];
     }
 
@@ -103,9 +90,7 @@ class Show extends Resource
      */
     public function filters(NovaRequest $request)
     {
-        return [
-            new ShowStatus,
-        ];
+        return [];
     }
 
     /**

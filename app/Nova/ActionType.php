@@ -1,25 +1,20 @@
 <?php
 namespace App\Nova;
 
-use App\Models\Show as ShowModel;
-use App\Nova\Filters\ShowStatus;
 use Illuminate\Http\Request;
-use Laravel\Nova\Fields\Badge;
-use Laravel\Nova\Fields\DateTime;
-use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
-use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Fields\Textarea;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
-class Show extends Resource
+class ActionType extends Resource
 {
     /**
      * The model the resource corresponds to.
      *
      * @var string
      */
-    public static $model = \App\Models\Show::class;
+    public static $model = \App\Models\ActionType::class;
 
     /**
      * The single value that should be used to represent the resource when being displayed.
@@ -34,20 +29,8 @@ class Show extends Resource
      * @var array
      */
     public static $search = [
-        'id', 'name',
+        'id', 'name', 'code',
     ];
-
-    /**
-     * Build an "index" query for the given resource.
-     *
-     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    public static function indexQuery(NovaRequest $request, $query)
-    {
-        return $query->withCount(['apps', 'attendees']);
-    }
 
     /**
      * Get the fields displayed by the resource.
@@ -60,27 +43,11 @@ class Show extends Resource
         return [
             ID::make()->sortable(),
 
-            Text::make('Show Name', 'name')->showOnPreview()->sortable(),
+            Text::make('Code'),
 
-            Text::make('Organizer')->showOnPreview(),
+            Text::make('Name'),
 
-            DateTime::make('Start Date')->hideFromIndex()->showOnPreview()->sortable(),
-
-            DateTime::make('End Date')->hideFromIndex()->showOnPreview()->sortable(),
-
-            Number::make('Applications', 'apps_count')->onlyOnIndex()->sortable(),
-
-            Number::make('Attendees', 'attendees_count')->onlyOnIndex()->sortable(),
-
-            Badge::make('Status')->map([
-                ShowModel::STATUS_UPCOMMING => 'warning',
-                ShowModel::STATUS_ACTIVE => 'success',
-                ShowModel::STATUS_ENDED => 'danger',
-            ])->showOnPreview()->sortable(),
-
-            HasMany::make('Apps'),
-
-            HasMany::make('Attendees'),
+            Textarea::make('Description')->hideFromIndex(),
         ];
     }
 
@@ -103,9 +70,7 @@ class Show extends Resource
      */
     public function filters(NovaRequest $request)
     {
-        return [
-            new ShowStatus,
-        ];
+        return [];
     }
 
     /**

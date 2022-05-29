@@ -11,6 +11,15 @@ class Event extends Model
 
     protected $guarded = [];
 
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'data' => 'json',
+    ];
+
     public function show(): BelongsTo
     {
         return $this->belongsTo(Show::class);
@@ -24,5 +33,15 @@ class Event extends Model
     public function attendee(): BelongsTo
     {
         return $this->belongsTo(Attendee::class);
+    }
+
+    public function actionType()
+    {
+        return $this->belongsTo(ActionType::class, 'action_code');
+    }
+
+    public function eventType()
+    {
+        return $this->belongsTo(EventType::class, 'event_code');
     }
 }

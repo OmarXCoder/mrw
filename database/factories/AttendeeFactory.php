@@ -29,7 +29,7 @@ class AttendeeFactory extends Factory
             'city' => $this->faker->city(),
             'state' => $this->faker->city(),
             'postal_code' => $this->faker->postcode(),
-            'meta' => json_encode([]),
+            'meta' => [],
             'notes' => $this->faker->paragraph(),
             'show_id' => Show::factory(),
         ];
