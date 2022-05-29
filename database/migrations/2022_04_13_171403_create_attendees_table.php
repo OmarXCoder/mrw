@@ -20,14 +20,13 @@ return new class extends Migration {
             $table->string('job_title');
             $table->string('email');
             $table->string('phone')->nullable();
-            $table->string('address_1')->nullable();
-            $table->string('address_2')->nullable();
+            $table->string('address_line_1')->nullable();
+            $table->string('address_line_2')->nullable();
             $table->string('country')->nullable();
             $table->string('city')->nullable();
             $table->string('state')->nullable();
-            $table->string('zip_code')->nullable();
-            $table->boolean('has_permission')->nullable();
-            $table->longText('meta')->nullable();
+            $table->string('postal_code')->nullable();
+            $table->json('meta')->nullable();
             $table->longText('notes')->nullable();
             $table->foreignId('show_id')->constrained('shows')->cascadeOnDelete();
             $table->timestamps();

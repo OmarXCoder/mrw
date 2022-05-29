@@ -115,13 +115,12 @@
         "job_title": "Excavating Machine Operator",
         "email": "darron.crona@shields.com",
         "phone": "1-445-450-6973",
-        "address_1": "3427 Jana Island",
-        "address_2": "57296 Beau Drive",
+        "address_line_1": "3427 Jana Island",
+        "address_line_2": "57296 Beau Drive",
         "country": "Libyan Arab Jamahiriya",
         "city": "Hartmannbury",
         "state": "Jeffberg",
-        "zip_code": "07913-6443",
-        "has_permission": true,
+        "postal_code": "07913-6443",
         "meta": "[]",
         "notes": "Dicta doloribus totam laborum quod voluptas. Unde ducimus dolor nulla distinctio. Qui ut tempora itaque nulla sunt autem."
     }
