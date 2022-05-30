@@ -2,28 +2,27 @@
 namespace App\Nova;
 
 use Illuminate\Http\Request;
-use Laravel\Nova\Fields\BelongsTo;
-use Laravel\Nova\Fields\HasMany;
+use Laravel\Nova\Fields\Boolean;
 use Laravel\Nova\Fields\ID;
-use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use Spatie\Permission\Models\Role;
 
-class App extends Resource
+class Permission extends Resource
 {
     /**
      * The model the resource corresponds to.
      *
      * @var string
      */
-    public static $model = \App\Models\App::class;
+    public static $model = \Spatie\Permission\Models\Permission::class;
 
     /**
      * The single value that should be used to represent the resource when being displayed.
      *
      * @var string
      */
-    public static $title = 'name';
+    public static $title = 'label';
 
     /**
      * The columns that should be searched.
@@ -31,20 +30,8 @@ class App extends Resource
      * @var array
      */
     public static $search = [
-        'id', 'name',
+        'id', 'name', 'label',
     ];
-
-    /**
-     * Build an "index" query for the given resource.
-     *
-     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    public static function indexQuery(NovaRequest $request, $query)
-    {
-        return $query->withCount(['attendees', 'events']);
-    }
 
     /**
      * Get the fields displayed by the resource.
@@ -59,19 +46,9 @@ class App extends Resource
 
             Text::make('Name')->sortable(),
 
-            BelongsTo::make('Client')
-                ->canSee(fn ($request) => $request->user()->client_id !== $this->client_id)
-                ->showOnPreview(),
+            Text::make('Label')->sortable(),
 
-            BelongsTo::make('Show')->sortable(),
-
-            Number::make('Attendees', 'attendees_count')->onlyOnIndex()->sortable(),
-
-            Number::make('Events', 'events_count')->onlyOnIndex()->sortable(),
-
-            HasMany::make('Attendees'),
-
-            HasMany::make('Events'),
+            Boolean::make('Available to clients'),
         ];
     }
 
@@ -117,5 +94,23 @@ class App extends Resource
     public function actions(NovaRequest $request)
     {
         return [];
+    }
+
+    /**
+     * Build a "relatable" query for the given resource.
+     *
+     * This query determines which instances of the model may be attached to other resources.
+     *
+     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public static function relatableQuery(NovaRequest $request, $query)
+    {
+        $resourceId = $request->route('resourceId');
+
+        $role = Role::findById($resourceId);
+
+        return $query->where('available_to_clients', $role->is_client_role);
     }
 }

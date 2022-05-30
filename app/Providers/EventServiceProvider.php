@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Providers;
 
 use Illuminate\Auth\Events\Registered;
@@ -17,6 +16,9 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         Registered::class => [
             SendEmailVerificationNotification::class,
+        ],
+        \Illuminate\Auth\Events\Login::class => [
+            \App\Listeners\SetClientIdInSession::class,
         ],
     ];
 

@@ -29,6 +29,7 @@ return new class extends Migration {
             $table->json('meta')->nullable();
             $table->longText('notes')->nullable();
             $table->foreignId('show_id')->constrained('shows')->cascadeOnDelete();
+            $table->foreignId('client_id')->constrained('clients')->cascadeOnDelete();
             $table->timestamps();
         });
     }

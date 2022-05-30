@@ -17,8 +17,9 @@ class AttendeesTableSeeder extends Seeder
         $shows = Show::all();
 
         $shows->each(
-            fn ($show) => Attendee::factory(random_int(10, 50))->create([
+            fn ($show) => Attendee::factory(random_int(10, 35))->create([
                 'show_id' => $show->id,
+                'client_id' => $show->client_id,
             ])
         );
     }
