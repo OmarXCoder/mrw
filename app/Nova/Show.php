@@ -5,6 +5,7 @@ use App\Models\Show as ShowModel;
 use App\Nova\Filters\ShowStatus;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Badge;
+use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
@@ -63,6 +64,10 @@ class Show extends Resource
             Text::make('Show Name', 'name')->showOnPreview()->sortable(),
 
             Text::make('Organizer')->showOnPreview(),
+
+            BelongsTo::make('Client')
+                ->canSee(fn ($request) => $request->user()->client_id !== $this->client_id)
+                ->showOnPreview(),
 
             DateTime::make('Start Date')->hideFromIndex()->showOnPreview()->sortable(),
 

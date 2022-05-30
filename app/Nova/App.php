@@ -59,6 +59,10 @@ class App extends Resource
 
             Text::make('Name')->sortable(),
 
+            BelongsTo::make('Client')
+                ->canSee(fn ($request) => $request->user()->client_id !== $this->client_id)
+                ->showOnPreview(),
+
             BelongsTo::make('Show')->sortable(),
 
             Number::make('Attendees', 'attendees_count')->onlyOnIndex()->sortable(),

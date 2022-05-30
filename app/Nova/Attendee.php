@@ -8,6 +8,7 @@ use Laravel\Nova\Fields\Email;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\KeyValue;
+use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Textarea;
 use Laravel\Nova\Http\Requests\NovaRequest;
@@ -49,6 +50,18 @@ class Attendee extends Resource
     }
 
     /**
+     * Build an "index" query for the given resource.
+     *
+     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public static function indexQuery(NovaRequest $request, $query)
+    {
+        return $query->withCount(['events']);
+    }
+
+    /**
      * Get the fields displayed by the resource.
      *
      * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
@@ -83,6 +96,8 @@ class Attendee extends Resource
             new Panel('Address Information', $this->addressFields()),
 
             BelongsTo::make('Show')->showOnPreview()->readonly()->sortable(),
+
+            Number::make('Events', 'events_count')->onlyOnIndex()->sortable(),
 
             HasMany::make('Events'),
         ];

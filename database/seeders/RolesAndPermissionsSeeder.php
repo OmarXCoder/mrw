@@ -16,48 +16,48 @@ class RolesAndPermissionsSeeder extends Seeder
     {
         $listOfPermissions = [
             // Roles
-            ['roles_create', 'Create roles', false],
-            ['roles_view', 'View roles', false],
-            ['roles_edit', 'Edit roles', false],
-            ['roles_delete', 'Delete roles', false],
+            ['roles.create', 'Create roles', false],
+            ['roles.view', 'View roles', false],
+            ['roles.edit', 'Edit roles', false],
+            ['roles.delete', 'Delete roles', false],
             // Permissions
-            ['permissions_create', 'Create permissions', false],
-            ['permissions_view', 'View permissions', false],
-            ['permissions_edit', 'Edit permissions', false],
-            ['permissions_delete', 'Delete permissions', false],
+            ['permissions.create', 'Create permissions', false],
+            ['permissions.view', 'View permissions', false],
+            ['permissions.edit', 'Edit permissions', false],
+            ['permissions.delete', 'Delete permissions', false],
             // Clients
-            ['clients_create', 'Create clients', false],
-            ['clients_view', 'View clients', false],
-            ['clients_edit', 'Edit clients', false],
-            ['clients_delete', 'Delete clients', false],
+            ['clients.create', 'Create clients', false],
+            ['clients.view', 'View clients', false],
+            ['clients.edit', 'Edit clients', false],
+            ['clients.delete', 'Delete clients', false],
             // Shows
-            ['shows_create', 'Create shows', false],
-            ['shows_view', 'View shows', true],
-            ['shows_edit', 'Edit shows', false],
-            ['shows_delete', 'Delete shows', false],
+            ['shows.create', 'Create shows', false],
+            ['shows.view', 'View shows', true],
+            ['shows.edit', 'Edit shows', false],
+            ['shows.delete', 'Delete shows', false],
             // Apps
-            ['apps_create', 'Create apps', false],
-            ['apps_view', 'View apps', true],
-            ['apps_edit', 'Edit apps', false],
-            ['apps_delete', 'Delete apps', false],
+            ['apps.create', 'Create apps', false],
+            ['apps.view', 'View apps', true],
+            ['apps.edit', 'Edit apps', false],
+            ['apps.delete', 'Delete apps', false],
             // Attendees
-            ['attendees_create', 'Create attendees', false],
-            ['attendees_view', 'View attendees', true],
-            ['attendees_edit', 'Edit attendees', false],
-            ['attendees_delete', 'Delete attendees', false],
+            ['attendees.create', 'Create attendees', false],
+            ['attendees.view', 'View attendees', true],
+            ['attendees.edit', 'Edit attendees', false],
+            ['attendees.delete', 'Delete attendees', false],
             // Events
-            ['events_view', 'View events', true],
-            ['events_delete', 'Delete events', true],
+            ['events.view', 'View events', true],
+            ['events.delete', 'Delete events', true],
             // EventTypes
-            ['event_types_create', 'Create event types', false],
-            ['event_types_view', 'View event types', false],
-            ['event_types_edit', 'Edit event types', false],
-            ['event_types_delete', 'Delete event types', false],
+            ['event_types.create', 'Create event types', false],
+            ['event_types.view', 'View event types', false],
+            ['event_types.edit', 'Edit event types', false],
+            ['event_types.delete', 'Delete event types', false],
             // ActionTypes
-            ['action_types_create', 'Create action types', false],
-            ['action_types_view', 'View action types', false],
-            ['action_types_edit', 'Edit action types', false],
-            ['action_types_delete', 'Delete action types', false],
+            ['action_types.create', 'Create action types', false],
+            ['action_types.view', 'View action types', false],
+            ['action_types.edit', 'Edit action types', false],
+            ['action_types.delete', 'Delete action types', false],
         ];
 
         $permissions = collect($listOfPermissions)->map(
@@ -76,10 +76,10 @@ class RolesAndPermissionsSeeder extends Seeder
 
         Role::create(['name' => 'client_admin', 'label' => 'Admin', 'is_client_role' => true])
             ->givePermissionTo([
-                'shows_view',
-                'apps_view',
-                'attendees_view',
-                'events_view',
+                'shows.view',
+                'apps.view',
+                'attendees.view',
+                'events.view',
             ]);
     }
 }
