@@ -1,7 +1,7 @@
 <?php
 namespace App\Models;
 
-use App\Scopes\ClientScope;
+use App\Traits\BelongsToClient;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -10,7 +10,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles, BelongsToClient;
 
     /**
      * The attributes that are mass assignable.
@@ -43,19 +43,4 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-
-    protected static function booted()
-    {
-        static::addGlobalScope(new ClientScope);
-    }
-
-    // public function role()
-    // {
-    //     return $this->belongsTo(Role::class);
-    // }
-
-    public function client()
-    {
-        return $this->belongsTo(Client::class);
-    }
 }

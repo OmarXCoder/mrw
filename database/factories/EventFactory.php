@@ -3,6 +3,7 @@ namespace Database\Factories;
 
 use App\Models\App;
 use App\Models\Attendee;
+use App\Models\Client;
 use App\Models\Show;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Arr;
@@ -23,6 +24,7 @@ class EventFactory extends Factory
             'app_id' => App::factory(),
             'attendee_id' => Attendee::factory(),
             'show_id' => Show::factory(),
+            'client_id' => Client::factory(),
             'action_code' => Arr::random(range(0, 6)),
             'event_code' => Arr::random(range(0, 13)),
             'timestamp' => \Carbon\Carbon::now()->toDateTimeString(),

@@ -1,6 +1,7 @@
 <?php
 namespace Database\Factories;
 
+use App\Models\Client;
 use App\Models\Show;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -32,6 +33,7 @@ class AttendeeFactory extends Factory
             'meta' => [],
             'notes' => $this->faker->paragraph(),
             'show_id' => Show::factory(),
+            'client_id' => Client::factory(),
         ];
     }
 }

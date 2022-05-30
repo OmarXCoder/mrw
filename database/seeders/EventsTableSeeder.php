@@ -36,6 +36,7 @@ class EventsTableSeeder extends Seeder
             Event::factory(random_int(10, 30))->create([
                 'app_id' => $app->id,
                 'show_id' => $app->show_id,
+                'client_id' => $app->client_id,
                 'attendee_id' => Arr::random($attendees),
                 'action_code' => Arr::random($actionCodes),
                 'event_code' => Arr::random($eventCodes),

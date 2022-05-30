@@ -16,8 +16,9 @@ return new class extends Migration {
             $table->id();
             $table->unsignedInteger('action_code');
             $table->unsignedInteger('event_code');
-            $table->foreignId('show_id')->constrained('shows')->cascadeOnDelete();
             $table->foreignId('app_id')->constrained('apps')->cascadeOnDelete();
+            $table->foreignId('show_id')->constrained('shows')->cascadeOnDelete();
+            $table->foreignId('client_id')->constrained('clients')->cascadeOnDelete();
             $table->unsignedBigInteger('attendee_id')->nullable();
             $table->timestamp('timestamp')->nullable();
             $table->json('data')->nullable();
