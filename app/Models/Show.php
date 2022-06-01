@@ -2,6 +2,7 @@
 namespace App\Models;
 
 use App\Traits\BelongsToClient;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -31,20 +32,22 @@ class Show extends Model
 
     public static function booted()
     {
-        static::creating(fn ($show) => static::determineStatus($show));
+        static::creating(function ($show) {
+            $show->status = static::determineStatus($show->start_date, $show->end_date);
+        });
 
-        static::updating(fn ($show) => static::determineStatus($show));
+        static::updating(function ($show) {
+            $show->status = static::determineStatus($show->start_date, $show->end_date);
+        });
     }
 
-    public static function determineStatus($show)
+    public static function determineStatus(Carbon $start_date, Carbon $end_date)
     {
-        match (true) {
-            $show->start_date->isFuture() => $show->status = self::STATUS_UPCOMMING,
-            $show->end_date->isPast() => $show->status = self::STATUS_ENDED,
-            now()->isBetween($show->start_date, $show->end_date) => $show->status = self::STATUS_ACTIVE
+        return match (true) {
+            $start_date->isFuture() => self::STATUS_UPCOMMING,
+            $end_date->isPast() => self::STATUS_ENDED,
+            default => self::STATUS_ACTIVE
         };
-
-        return $show;
     }
 
     public function apps(): HasMany

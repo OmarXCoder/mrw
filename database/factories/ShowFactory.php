@@ -3,6 +3,7 @@ namespace Database\Factories;
 
 use App\Models\Client;
 use App\Models\Show;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -20,9 +21,9 @@ class ShowFactory extends Factory
         return [
             'name' => $this->faker->sentence(3),
             'organizer' => $this->faker->company(),
-            'start_date' => $this->faker->dateTime(),
-            'end_date' => $this->faker->dateTime(),
-            'status' => $this->faker->randomElement(Show::statuses()),
+            'start_date' => $start_date = Carbon::create($this->faker->dateTimeThisYear('+3 months')),
+            'end_date' => $end_date = Carbon::create($start_date)->addDays(random_int(1, 15)),
+            'status' => Show::determineStatus($start_date, $end_date),
             'client_id' => Client::factory(),
         ];
     }
