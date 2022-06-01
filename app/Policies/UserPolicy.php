@@ -2,10 +2,9 @@
 namespace App\Policies;
 
 use App\Models\User;
-use Spatie\Permission\Models\Role;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class RolePolicy
+class UserPolicy
 {
     use HandlesAuthorization;
 
@@ -17,23 +16,23 @@ class RolePolicy
      */
     public function viewAny(User $user)
     {
-        return true;
+        return $user->can('users.view');
     }
 
     /**
      * Determine whether the user can view the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \Spatie\Permission\Models\Role  $role
+     * @param  \App\Models\User  $model
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, Role $role)
+    public function view(User $user, User $model)
     {
         if ($user->client_id !== null) {
-            return $role->is_client_role;
+            return $user->client_id === $model->client_id;
         }
 
-        return $user->can('roles.view');
+        return $user->can('users.view');
     }
 
     /**
@@ -44,54 +43,54 @@ class RolePolicy
      */
     public function create(User $user)
     {
-        return $user->can('roles.create');
+        return $user->can('users.create');
     }
 
     /**
      * Determine whether the user can update the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \Spatie\Permission\Models\Role  $role
+     * @param  \App\Models\User  $model
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, Role $role)
+    public function update(User $user, User $model)
     {
-        return $user->can('roles.edit');
+        return $user->can('users.edit');
     }
 
     /**
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \Spatie\Permission\Models\Role  $role
+     * @param  \App\Models\User  $model
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, Role $role)
+    public function delete(User $user, User $model)
     {
-        return $user->can('roles.delete');
+        return $user->can('users.delete');
     }
 
     /**
      * Determine whether the user can restore the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \Spatie\Permission\Models\Role  $role
+     * @param  \App\Models\User  $model
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(User $user, Role $role)
+    public function restore(User $user, User $model)
     {
-        return $user->can('roles.delete');
+        return $user->can('users.delete');
     }
 
     /**
      * Determine whether the user can permanently delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \Spatie\Permission\Models\Role  $role
+     * @param  \App\Models\User  $model
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDelete(User $user, Role $role)
+    public function forceDelete(User $user, User $model)
     {
-        return $user->can('roles.delete');
+        return $user->can('users.delete');
     }
 }

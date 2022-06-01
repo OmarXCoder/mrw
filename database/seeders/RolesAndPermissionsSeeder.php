@@ -15,6 +15,11 @@ class RolesAndPermissionsSeeder extends Seeder
     public function run()
     {
         $listOfPermissions = [
+            // Users
+            ['users.create', 'Create users', true],
+            ['users.view', 'View users', true],
+            ['users.edit', 'Edit users', true],
+            ['users.delete', 'Delete users', true],
             // Roles
             ['roles.create', 'Create roles', false],
             ['roles.view', 'View roles', false],
@@ -76,6 +81,10 @@ class RolesAndPermissionsSeeder extends Seeder
 
         Role::create(['name' => 'client_admin', 'label' => 'Admin', 'is_client_role' => true])
             ->givePermissionTo([
+                'users.create',
+                'users.view',
+                'users.edit',
+                'users.delete',
                 'shows.view',
                 'apps.view',
                 'attendees.view',
