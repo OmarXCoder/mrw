@@ -14,8 +14,8 @@ return new class extends Migration {
     {
         Schema::create('events', function (Blueprint $table) {
             $table->id();
-            $table->unsignedInteger('action_code');
-            $table->unsignedInteger('event_code');
+            $table->foreignId('action_code')->constrained('action_types', 'code')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('event_code')->constrained('event_types', 'code')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('app_id')->constrained('apps')->cascadeOnDelete();
             $table->foreignId('show_id')->constrained('shows')->cascadeOnDelete();
             $table->foreignId('client_id')->constrained('clients')->cascadeOnDelete();

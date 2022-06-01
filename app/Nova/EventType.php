@@ -2,7 +2,8 @@
 namespace App\Nova;
 
 use Illuminate\Http\Request;
-use Laravel\Nova\Fields\ID;
+use Illuminate\Validation\Rule;
+use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Textarea;
 use Laravel\Nova\Http\Requests\NovaRequest;
@@ -29,7 +30,7 @@ class EventType extends Resource
      * @var array
      */
     public static $search = [
-        'id', 'name', 'code',
+        'code', 'name',
     ];
 
     /**
@@ -41,11 +42,15 @@ class EventType extends Resource
     public function fields(NovaRequest $request)
     {
         return [
-            ID::make()->sortable(),
+            Number::make('Code')
+                ->sortable()
+                ->rules('required', 'numeric')
+                ->creationRules('unique:event_types,code')
+                ->updateRules([Rule::unique('event_types', 'code')->ignore($this->code, 'code')])
+                ->textAlign('left'),
 
-            Text::make('Code'),
-
-            Text::make('Name'),
+            Text::make('Name')
+                ->rules('required'),
 
             Textarea::make('Description')->hideFromIndex(),
         ];

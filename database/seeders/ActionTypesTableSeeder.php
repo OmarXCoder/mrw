@@ -13,6 +13,8 @@ class ActionTypesTableSeeder extends Seeder
      */
     public function run()
     {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0');
+
         DB::table('action_types')->truncate();
 
         DB::table('action_types')->insert([
@@ -52,5 +54,7 @@ class ActionTypesTableSeeder extends Seeder
                 'description' => 'Mostly used for timeouts',
             ],
         ]);
+
+        DB::statement('SET FOREIGN_KEY_CHECKS=1');
     }
 }

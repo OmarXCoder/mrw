@@ -13,11 +13,9 @@ return new class extends Migration {
     public function up()
     {
         Schema::create('event_types', function (Blueprint $table) {
-            $table->id();
+            $table->unsignedBigInteger('code')->primary();
             $table->string('name');
-            $table->char('code')->index('event_type_code');
             $table->text('description')->nullable();
-            $table->timestamps();
         });
     }
 
