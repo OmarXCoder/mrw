@@ -69,6 +69,8 @@ class Client extends Resource
             HasMany::make('Shows'),
 
             HasMany::make('Apps'),
+
+            HasMany::make('Team Members', 'users', User::class),
         ];
     }
 

@@ -1,6 +1,7 @@
 <?php
 namespace App\Nova;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\Boolean;
@@ -35,6 +36,17 @@ class Role extends Resource
     ];
 
     /**
+     * Determine if this resource is available for navigation.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return bool
+     */
+    public static function availableForNavigation(Request $request)
+    {
+        return !$request->user()->isClientTeamMember();
+    }
+
+    /**
      * Build an "index" query for the given resource.
      *
      * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
@@ -43,7 +55,9 @@ class Role extends Resource
      */
     public static function indexQuery(NovaRequest $request, $query)
     {
-        return $query->withCount('permissions');
+        return $query->when($request->user()->isClientTeamMember(), function ($query) {
+            $query->where('is_client_role', true);
+        })->withCount('permissions');
     }
 
     /**
@@ -111,5 +125,17 @@ class Role extends Resource
     public function actions(NovaRequest $request)
     {
         return [];
+    }
+
+    /**
+     * Register a callback to be called after the resource is updated.
+     *
+     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
+     * @param  \Illuminate\Database\Eloquent\Model  $model
+     * @return void
+     */
+    public static function afterUpdate(NovaRequest $request, Model $model)
+    {
+        app()->make(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
     }
 }
