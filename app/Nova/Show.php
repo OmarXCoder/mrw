@@ -61,17 +61,30 @@ class Show extends Resource
         return [
             ID::make()->sortable(),
 
-            Text::make('Show Name', 'name')->showOnPreview()->sortable(),
-
-            Text::make('Organizer')->showOnPreview(),
-
-            BelongsTo::make('Client')
-                ->canSee(fn ($request) => $request->user()->client_id !== $this->client_id)
+            Text::make('Show Name', 'name')
+                ->sortable()
+                ->rules('required')
                 ->showOnPreview(),
 
-            DateTime::make('Start Date')->hideFromIndex()->showOnPreview()->sortable(),
+            Text::make('Organizer')
+                ->rules('required')
+                ->showOnPreview(),
 
-            DateTime::make('End Date')->hideFromIndex()->showOnPreview()->sortable(),
+            BelongsTo::make('Client')
+                ->canSee(fn ($request) => !$request->user()->isClientTeamMember())
+                ->rules('required', 'exists:clients,id')
+                ->showOnPreview(),
+
+            DateTime::make('Start Date')
+                ->creationRules('required', 'after_or_equal:today')
+                ->updateRules('required')
+                ->showOnPreview()
+                ->hideFromIndex(),
+
+            DateTime::make('End Date')
+                ->rules('required', 'after_or_equal:start_date')
+                ->showOnPreview()
+                ->hideFromIndex(),
 
             Number::make('Applications', 'apps_count')->onlyOnIndex()->sortable(),
 

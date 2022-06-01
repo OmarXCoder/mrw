@@ -29,6 +29,24 @@ class Show extends Model
         ];
     }
 
+    public static function booted()
+    {
+        static::creating(fn ($show) => static::determineStatus($show));
+
+        static::updating(fn ($show) => static::determineStatus($show));
+    }
+
+    public static function determineStatus($show)
+    {
+        match (true) {
+            $show->start_date->isFuture() => $show->status = self::STATUS_UPCOMMING,
+            $show->end_date->isPast() => $show->status = self::STATUS_ENDED,
+            now()->isBetween($show->start_date, $show->end_date) => $show->status = self::STATUS_ACTIVE
+        };
+
+        return $show;
+    }
+
     public function apps(): HasMany
     {
         return $this->hasMany(App::class);
