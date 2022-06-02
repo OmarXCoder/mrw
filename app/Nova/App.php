@@ -43,7 +43,7 @@ class App extends Resource
      */
     public static function indexQuery(NovaRequest $request, $query)
     {
-        return $query->withCount(['attendees', 'events']);
+        return $query->withCount(['attendees']);
     }
 
     /**
@@ -65,9 +65,24 @@ class App extends Resource
 
             BelongsTo::make('Show')->sortable(),
 
-            Number::make('Attendees', 'attendees_count')->onlyOnIndex()->sortable(),
+            Number::make('# Attendees', 'attendees_count')
+                ->sortable()
+                ->onlyOnIndex(),
 
-            Number::make('Events', 'events_count')->onlyOnIndex()->sortable(),
+            Text::make('Last Action - Event', function () {
+                $lastEvent = $this->lastEvent;
+                if (!$lastEvent) {
+                    return '—';
+                }
+
+                $text = sprintf(
+                    '%s - %s',
+                    $lastEvent?->actionType->name,
+                    $lastEvent?->eventType->name
+                );
+
+                return "<div class='inline-flex items-center whitespace-nowrap h-6 px-2 rounded-full uppercase text-xs font-bold bg-green-100 text-green-600 dark:bg-green-500 dark:text-green-900'>{$text}</div>";
+            })->asHtml(),
 
             HasMany::make('Attendees'),
 

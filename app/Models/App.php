@@ -28,4 +28,9 @@ class App extends Model
     {
         return $this->hasMany(Event::class);
     }
+
+    public function lastEvent()
+    {
+        return $this->hasOne(Event::class)->latestOfMany();
+    }
 }
