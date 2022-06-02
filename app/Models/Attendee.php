@@ -37,4 +37,14 @@ class Attendee extends Model
     {
         return $this->hasMany(Event::class);
     }
+
+    public function lastEvent()
+    {
+        return $this->hasOne(Event::class)->latestOfMany();
+    }
+
+    public function lastAppUsed()
+    {
+        return $this->apps()->latest()->first();
+    }
 }

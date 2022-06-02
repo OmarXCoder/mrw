@@ -89,6 +89,16 @@ class Attendee extends Resource
 
             Email::make('Email')->showOnPreview()->sortable(),
 
+            Text::make('Last Session On', function () {
+                $lastAppUsed = $this->lastAppUsed();
+
+                if (!$lastAppUsed) {
+                    return '—';
+                }
+
+                return "<div class='inline-flex items-center whitespace-nowrap h-6 px-2 rounded-full uppercase text-xs font-bold bg-green-100 text-green-600 dark:bg-green-500 dark:text-green-900'>{$lastAppUsed?->name}</div>";
+            })->asHtml(),
+
             Textarea::make('notes')->hideFromIndex(),
 
             KeyValue::make('Meta'),
