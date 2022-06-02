@@ -1,11 +1,11 @@
 <?php
 namespace App\Nova\Filters;
 
-use App\Models\ActionType as ActionTypeModel;
+use App\Models\EventType;
 use Laravel\Nova\Filters\Filter;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
-class ActionType extends Filter
+class EventTypeFilter extends Filter
 {
     /**
      * The filter's component.
@@ -24,7 +24,7 @@ class ActionType extends Filter
      */
     public function apply(NovaRequest $request, $query, $value)
     {
-        return $query->where('action_code', $value);
+        return $query->where('event_code', $value);
     }
 
     /**
@@ -35,6 +35,6 @@ class ActionType extends Filter
      */
     public function options(NovaRequest $request)
     {
-        return ActionTypeModel::all()->pluck('code', 'name')->toArray();
+        return EventType::all()->pluck('code', 'name')->toArray();
     }
 }

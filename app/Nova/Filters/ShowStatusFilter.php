@@ -1,11 +1,11 @@
 <?php
 namespace App\Nova\Filters;
 
-use App\Models\EventType as EventTypeModel;
+use App\Models\Show;
 use Laravel\Nova\Filters\Filter;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
-class EventType extends Filter
+class ShowStatusFilter extends Filter
 {
     /**
      * The filter's component.
@@ -24,7 +24,7 @@ class EventType extends Filter
      */
     public function apply(NovaRequest $request, $query, $value)
     {
-        return $query->where('event_code', $value);
+        return $query->where('status', $value);
     }
 
     /**
@@ -35,6 +35,10 @@ class EventType extends Filter
      */
     public function options(NovaRequest $request)
     {
-        return EventTypeModel::all()->pluck('code', 'name')->toArray();
+        return [
+            'Upcomming' => Show::STATUS_UPCOMMING,
+            'Active' => Show::STATUS_ACTIVE,
+            'Ended' => Show::STATUS_ENDED,
+        ];
     }
 }

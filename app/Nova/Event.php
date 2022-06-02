@@ -1,8 +1,8 @@
 <?php
 namespace App\Nova;
 
-use App\Nova\Filters\ActionType;
-use App\Nova\Filters\EventType;
+use App\Nova\Filters\ActionTypeFilter;
+use App\Nova\Filters\EventTypeFilter;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\ID;
@@ -79,8 +79,8 @@ class Event extends Resource
     public function filters(NovaRequest $request)
     {
         return [
-            new ActionType,
-            new EventType,
+            new ActionTypeFilter,
+            new EventTypeFilter,
         ];
     }
 

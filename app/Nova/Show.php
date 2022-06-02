@@ -2,7 +2,7 @@
 namespace App\Nova;
 
 use App\Models\Show as ShowModel;
-use App\Nova\Filters\ShowStatus;
+use App\Nova\Filters\ShowStatusFilter;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Badge;
 use Laravel\Nova\Fields\BelongsTo;
@@ -122,7 +122,7 @@ class Show extends Resource
     public function filters(NovaRequest $request)
     {
         return [
-            new ShowStatus,
+            new ShowStatusFilter,
         ];
     }
 

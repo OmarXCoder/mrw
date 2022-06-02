@@ -1,11 +1,11 @@
 <?php
 namespace App\Nova\Filters;
 
-use App\Models\Show;
+use App\Models\ActionType;
 use Laravel\Nova\Filters\Filter;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
-class ShowStatus extends Filter
+class ActionTypeFilter extends Filter
 {
     /**
      * The filter's component.
@@ -24,7 +24,7 @@ class ShowStatus extends Filter
      */
     public function apply(NovaRequest $request, $query, $value)
     {
-        return $query->where('status', $value);
+        return $query->where('action_code', $value);
     }
 
     /**
@@ -35,10 +35,6 @@ class ShowStatus extends Filter
      */
     public function options(NovaRequest $request)
     {
-        return [
-            'Upcomming' => Show::STATUS_UPCOMMING,
-            'Active' => Show::STATUS_ACTIVE,
-            'Ended' => Show::STATUS_ENDED,
-        ];
+        return ActionType::all()->pluck('code', 'name')->toArray();
     }
 }
