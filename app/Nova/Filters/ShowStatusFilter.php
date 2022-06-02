@@ -5,7 +5,7 @@ use App\Models\Show;
 use Laravel\Nova\Filters\Filter;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
-class ShowStatus extends Filter
+class ShowStatusFilter extends Filter
 {
     /**
      * The filter's component.
