@@ -3,6 +3,7 @@ namespace App\Nova;
 
 use App\Models\Show as ShowModel;
 use App\Nova\Filters\ShowStatusFilter;
+use App\Nova\Filters\TimestampFilter;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Badge;
 use Laravel\Nova\Fields\BelongsTo;
@@ -123,6 +124,8 @@ class Show extends Resource
     {
         return [
             new ShowStatusFilter,
+            new TimestampFilter('start_date'),
+            new TimestampFilter('end_date'),
         ];
     }
 
