@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\Api\ActionTypeController;
-use App\Http\Controllers\Api\AppController;
 use App\Http\Controllers\Api\AttendeeController;
 use App\Http\Controllers\Api\ClientShowsController;
 use App\Http\Controllers\Api\EventController;
@@ -20,8 +19,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::group(['as' => 'api.', 'middleware' => 'auth:sanctum'], function () {
-    Route::post('/apps', [AppController::class, 'store'])->name('apps.store');
-
     // ACTION TYPES
     Route::get('/action-types', [ActionTypeController::class, 'index'])->name('action-types.index');
 

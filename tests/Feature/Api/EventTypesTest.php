@@ -27,14 +27,14 @@ class EventTypesTest extends TestCase
                 ->has(
                     'data.0',
                     fn ($json) => $json
-                        ->where('code', '0')
+                        ->where('code', 0)
                         ->where('name', 'Error')
                         ->etc()
                 )
                 ->has(
                     'data.13',
                     fn ($json) => $json
-                        ->where('code', '13')
+                        ->where('code', 13)
                         ->where('name', 'Custom')
                         ->etc()
                 )

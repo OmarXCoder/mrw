@@ -40,6 +40,7 @@ class EventsTest extends TestCase
         $event = Event::factory()->raw([
             'app_id' => null,
             'show_id' => null,
+            'client_id' => null,
             'action_code' => null,
             'event_code' => null,
             'timestamp' => null,
@@ -51,6 +52,7 @@ class EventsTest extends TestCase
             [
                 'app_id',
                 'show_id',
+                'client_id',
                 'action_code',
                 'event_code',
                 'timestamp',

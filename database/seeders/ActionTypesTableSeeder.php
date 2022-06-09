@@ -2,6 +2,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 
 class ActionTypesTableSeeder extends Seeder
@@ -13,10 +14,11 @@ class ActionTypesTableSeeder extends Seeder
      */
     public function run()
     {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0');
+        if (App::environment() != 'testing') {
+            DB::statement('SET FOREIGN_KEY_CHECKS=0');
 
-        DB::table('action_types')->truncate();
-
+            DB::table('action_types')->truncate();
+        }  
         DB::table('action_types')->insert([
             [
                 'name' => 'viewed',
@@ -55,6 +57,8 @@ class ActionTypesTableSeeder extends Seeder
             ],
         ]);
 
-        DB::statement('SET FOREIGN_KEY_CHECKS=1');
+        if (App::environment() != 'testing') {
+            DB::statement('SET FOREIGN_KEY_CHECKS=1');
+        }
     }
 }
