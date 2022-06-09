@@ -57,13 +57,20 @@ class App extends Resource
         return [
             ID::make()->sortable(),
 
-            Text::make('Name')->sortable(),
+            Text::make('Name')
+                ->sortable()
+                ->rules('required'),
 
             BelongsTo::make('Client')
-                ->canSee(fn ($request) => $request->user()->client_id !== $this->client_id)
+                ->canSee(fn ($request) => !$request->user()->isClientTeamMember())
+                ->hideWhenCreating()
+                ->hideWhenUpdating()
                 ->showOnPreview(),
 
-            BelongsTo::make('Show')->sortable(),
+            BelongsTo::make('Show')
+                ->sortable()
+                ->searchable(),
+
 
             Number::make('# Attendees', 'attendees_count')
                 ->sortable()
