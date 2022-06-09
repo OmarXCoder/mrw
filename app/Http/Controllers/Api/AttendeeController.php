@@ -15,6 +15,8 @@ class AttendeeController extends Controller
             'first_name' => ['required'],
             'last_name' => ['required'],
             'email' => ['required', 'email'],
+            'client_id' => ['required', 'exists:clients,id'],
+            'show_id' => ['required', 'exists:shows,id'],
         ]);
 
         if (!$attendee = Attendee::where('badge_id', $request->get('badge_id'))->first()) {
@@ -33,6 +35,7 @@ class AttendeeController extends Controller
                 'postal_code' => $request->get('postal_code'),
                 'meta' => $request->get('meta'),
                 'notes' => $request->get('notes'),
+                'client_id' => $request->get('client_id'),
                 'show_id' => $request->get('show_id'),
             ]);
         }

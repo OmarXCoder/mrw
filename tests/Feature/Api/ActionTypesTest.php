@@ -27,14 +27,14 @@ class ActionTypesTest extends TestCase
                 ->has(
                     'data.0',
                     fn ($json) => $json
-                        ->where('code', '0')
+                        ->where('code', 0)
                         ->where('name', 'viewed')
                         ->etc()
                 )
                 ->has(
                     'data.6',
                     fn ($json) => $json
-                        ->where('code', '6')
+                        ->where('code', 6)
                         ->where('name', 'reset')
                         ->etc()
                 )

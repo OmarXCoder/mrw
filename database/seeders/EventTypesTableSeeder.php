@@ -2,6 +2,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 
 class EventTypesTableSeeder extends Seeder
@@ -13,10 +14,12 @@ class EventTypesTableSeeder extends Seeder
      */
     public function run()
     {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0');
+        if (App::environment() != 'testing') {
+            DB::statement('SET FOREIGN_KEY_CHECKS=0');
 
-        DB::table('event_types')->truncate();
-
+            DB::table('event_types')->truncate();
+        }
+        
         DB::table('event_types')->insert([
             [
                 'name' => 'Error',
@@ -89,7 +92,9 @@ class EventTypesTableSeeder extends Seeder
                 'description' => '',
             ],
         ]);
-
-        DB::statement('SET FOREIGN_KEY_CHECKS=1');
+        
+        if (App::environment() != 'testing') {
+            DB::statement('SET FOREIGN_KEY_CHECKS=1');
+        }
     }
 }

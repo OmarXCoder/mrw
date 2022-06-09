@@ -13,6 +13,7 @@ class EventController extends Controller
         $request->validate([
             'app_id' => ['required', 'exists:apps,id'],
             'show_id' => ['required', 'exists:shows,id'],
+            'client_id' => ['required', 'exists:clients,id'],
             'action_code' => ['required', 'exists:action_types,code'],
             'event_code' => ['required', 'exists:event_types,code'],
             'timestamp' => ['required', 'date'],
@@ -24,6 +25,7 @@ class EventController extends Controller
             'app_id' => $request->get('app_id'),
             'attendee_id' => $request->get('attendee_id'),
             'show_id' => $request->get('show_id'),
+            'client_id' => $request->get('client_id'),
             'timestamp' => $request->get('timestamp'),
             'data' => json_encode($request->get('data')),
         ]);
