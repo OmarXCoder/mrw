@@ -14,8 +14,13 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $superAdmin = User::factory()->create([
-            'name' => 'John Doe',
-            'email' => 'johndoe@gmail.com',
+            'name' => 'Admin',
+            'email' => 'admin@admin.com',
+        ]);
+
+        $clientAdmin = User::factory()->create([
+            'name' => 'User',
+            'email' => 'user@admin.com',
         ]);
 
         $this->call([
@@ -29,5 +34,6 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $superAdmin->assignRole('system_admin');
+        $clientAdmin->assignRole('client_admin');
     }
 }
