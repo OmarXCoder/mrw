@@ -6,7 +6,6 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Log;
 use Laravel\Nova\Actions\Action;
 use Laravel\Nova\Fields\ActionFields;
 use Laravel\Nova\Fields\Text;
@@ -25,11 +24,17 @@ class GenerateApiToken extends Action
      */
     public function handle(ActionFields $fields, Collection $models)
     {
-        foreach($models as $model) {
-            $token = $model->createToken($fields->name);
+        if ($models->count() > 1) {
+            return Action::danger('Please run this on only one user resource.');
         }
 
-        return Action::modal('api-token-modal', ['token' => $token->plainTextToken]);
+        $token = $models->first()->createToken($fields->name);
+        
+        return Action::modal('api-token-modal', [
+            'message' => 'The API token was generated!',
+            'token' => $token->plainTextToken,
+            'show' => false,
+        ]);
     }
 
     /**

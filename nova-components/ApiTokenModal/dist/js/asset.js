@@ -2,56 +2,53 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/ApiTokenModal.vue?vue&type=script&lang=js":
-/*!*******************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/ApiTokenModal.vue?vue&type=script&lang=js ***!
-  \*******************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/ApiTokenModal.vue?vue&type=script&setup=true&lang=js":
+/*!******************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/ApiTokenModal.vue?vue&type=script&setup=true&lang=js ***!
+  \******************************************************************************************************************************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "vue");
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(vue__WEBPACK_IMPORTED_MODULE_0__);
+
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  /**
-   * Mount the component.
-   */
-  mounted: function mounted() {
-    document.querySelectorAll(".modal input")[0].focus();
-    console.log(this.$props.token);
-  },
-  data: function data() {
-    return {
-      show: true
-    };
-  },
+  __name: 'ApiTokenModal',
   props: {
-    token: {
-      type: String
+    data: {
+      type: Object
     }
   },
-  methods: {
-    /**
-     * Stop propogation of input events unless it's for an escape or enter keypress
-     */
-    handleKeydown: function handleKeydown(e) {
-      if (["Escape", "Enter"].indexOf(e.key) !== -1) {
-        return;
-      }
+  emits: ['close'],
+  setup: function setup(__props, _ref) {
+    var expose = _ref.expose;
+    expose();
+    var props = __props;
+    var tokenRef = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)('');
 
-      e.stopPropagation();
-    },
+    var copyToken = function copyToken() {
+      tokenRef.value.select();
+      document.execCommand('copy');
+    };
 
-    /**
-     * Execute the selected action.
-     */
-    handleConfirm: function handleConfirm() {
-      this.$emit("confirm");
-    },
-    copyToken: function copyToken() {
-      this.$refs.token.select();
-      document.execCommand("copy");
-    }
+    (0,vue__WEBPACK_IMPORTED_MODULE_0__.onMounted)(function () {
+      tokenRef.value.focus();
+    });
+    var __returned__ = {
+      props: props,
+      tokenRef: tokenRef,
+      copyToken: copyToken,
+      ref: vue__WEBPACK_IMPORTED_MODULE_0__.ref,
+      onMounted: vue__WEBPACK_IMPORTED_MODULE_0__.onMounted
+    };
+    Object.defineProperty(__returned__, '__isScriptSetup', {
+      enumerable: false,
+      value: true
+    });
+    return __returned__;
   }
 });
 
@@ -73,27 +70,19 @@ __webpack_require__.r(__webpack_exports__);
 var _hoisted_1 = {
   "class": "bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden"
 };
-
-var _hoisted_2 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Token Generated");
-
-var _hoisted_3 = {
+var _hoisted_2 = {
   "class": "action"
 };
-var _hoisted_4 = {
-  "class": "flex flex-col border-b border-40"
+var _hoisted_3 = {
+  "class": "flex items-center mb-4"
 };
+var _hoisted_4 = ["value"];
 var _hoisted_5 = {
-  "class": "flex items-center py-6 px-8"
+  "class": "p-4 rounded bg-yellow-100 text-yellow-600 dark:bg-yellow-300 dark:text-yellow-800"
 };
-
-var _hoisted_6 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
-  "class": "p-4 rounded bg-yellow-50"
-}, " Make sure to copy your new personal access token now. You won't be able to see it again! ", -1
-/* HOISTED */
-);
-
-var _hoisted_7 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Close");
-
+var _hoisted_6 = {
+  "class": "flex items-center ml-auto"
+};
 function render(_ctx, _cache, $props, $setup, $data, $options) {
   var _component_ModalHeader = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("ModalHeader");
 
@@ -109,64 +98,63 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
 
   return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_Modal, {
     role: "dialog",
-    show: true,
-    "data-testid": "show-api-token-modal"
+    show: _ctx.show,
+    "data-testid": $props.data.modal
   }, {
     "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
       return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("form", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_ModalHeader, null, {
         "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
-          return [_hoisted_2];
+          return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)((0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.__('Token Generated')), 1
+          /* TEXT */
+          )];
         }),
         _: 1
         /* STABLE */
 
       }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_ModalContent, null, {
         "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
-          return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_5, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
-            ref: "token",
-            id: "name",
-            "onUpdate:modelValue": _cache[0] || (_cache[0] = function ($event) {
-              return $props.token = $event;
-            }),
+          return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
             type: "text",
-            placeholder: "Name",
-            "class": "w-full form-control form-input form-input-bordered",
-            readonly: ""
-          }, null, 512
-          /* NEED_PATCH */
-          ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $props.token]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_BasicButton, {
+            "class": "w-full form-control form-input form-input-bordered mr-2",
+            value: $props.data.token,
+            ref: "tokenRef"
+          }, null, 8
+          /* PROPS */
+          , _hoisted_4), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_BasicButton, {
             type: "button",
-            onClick: $options.copyToken
+            onClick: $setup.copyToken
           }, {
             "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
-              return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)((0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.__("Copy")), 1
+              return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)((0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.__('Copy')), 1
               /* TEXT */
               )];
             }),
             _: 1
             /* STABLE */
 
-          }, 8
-          /* PROPS */
-          , ["onClick"])])])]), _hoisted_6];
+          })])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_5, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.__("Make sure to copy your new api access token now. You won't be able to see it again!")), 1
+          /* TEXT */
+          )];
         }),
         _: 1
         /* STABLE */
 
       }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_ModalFooter, null, {
         "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
-          return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_DefaultButton, {
-            onClick: _cache[1] || (_cache[1] = function ($event) {
-              return _ctx.show = false;
+          return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_DefaultButton, {
+            onClick: _cache[0] || (_cache[0] = function ($event) {
+              return _ctx.$emit('close');
             })
           }, {
             "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
-              return [_hoisted_7];
+              return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)((0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.__('Close')), 1
+              /* TEXT */
+              )];
             }),
             _: 1
             /* STABLE */
 
-          })];
+          })])];
         }),
         _: 1
         /* STABLE */
@@ -176,7 +164,9 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     _: 1
     /* STABLE */
 
-  });
+  }, 8
+  /* PROPS */
+  , ["show", "data-testid"]);
 }
 
 /***/ }),
@@ -240,14 +230,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _ApiTokenModal_vue_vue_type_template_id_793d1693__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ApiTokenModal.vue?vue&type=template&id=793d1693 */ "./resources/js/components/ApiTokenModal.vue?vue&type=template&id=793d1693");
-/* harmony import */ var _ApiTokenModal_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ApiTokenModal.vue?vue&type=script&lang=js */ "./resources/js/components/ApiTokenModal.vue?vue&type=script&lang=js");
+/* harmony import */ var _ApiTokenModal_vue_vue_type_script_setup_true_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ApiTokenModal.vue?vue&type=script&setup=true&lang=js */ "./resources/js/components/ApiTokenModal.vue?vue&type=script&setup=true&lang=js");
 /* harmony import */ var _home_omar_code_mrw_nova_components_ApiTokenModal_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
 
 
 
 
 ;
-const __exports__ = /*#__PURE__*/(0,_home_omar_code_mrw_nova_components_ApiTokenModal_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_2__["default"])(_ApiTokenModal_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_ApiTokenModal_vue_vue_type_template_id_793d1693__WEBPACK_IMPORTED_MODULE_0__.render],['__file',"resources/js/components/ApiTokenModal.vue"]])
+const __exports__ = /*#__PURE__*/(0,_home_omar_code_mrw_nova_components_ApiTokenModal_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_2__["default"])(_ApiTokenModal_vue_vue_type_script_setup_true_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_ApiTokenModal_vue_vue_type_template_id_793d1693__WEBPACK_IMPORTED_MODULE_0__.render],['__file',"resources/js/components/ApiTokenModal.vue"]])
 /* hot reload */
 if (false) {}
 
@@ -256,17 +246,17 @@ if (false) {}
 
 /***/ }),
 
-/***/ "./resources/js/components/ApiTokenModal.vue?vue&type=script&lang=js":
-/*!***************************************************************************!*\
-  !*** ./resources/js/components/ApiTokenModal.vue?vue&type=script&lang=js ***!
-  \***************************************************************************/
+/***/ "./resources/js/components/ApiTokenModal.vue?vue&type=script&setup=true&lang=js":
+/*!**************************************************************************************!*\
+  !*** ./resources/js/components/ApiTokenModal.vue?vue&type=script&setup=true&lang=js ***!
+  \**************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_ApiTokenModal_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__["default"])
+/* harmony export */   "default": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_ApiTokenModal_vue_vue_type_script_setup_true_lang_js__WEBPACK_IMPORTED_MODULE_0__["default"])
 /* harmony export */ });
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_ApiTokenModal_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./ApiTokenModal.vue?vue&type=script&lang=js */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/ApiTokenModal.vue?vue&type=script&lang=js");
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_ApiTokenModal_vue_vue_type_script_setup_true_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./ApiTokenModal.vue?vue&type=script&setup=true&lang=js */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/ApiTokenModal.vue?vue&type=script&setup=true&lang=js");
  
 
 /***/ }),

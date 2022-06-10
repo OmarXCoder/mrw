@@ -1,79 +1,65 @@
 <template>
-  <Modal role="dialog" :show="true" data-testid="show-api-token-modal">
-    <form class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-      <ModalHeader>Token Generated</ModalHeader>
+    <Modal role="dialog" :show="show" :data-testid="data.modal">
+        <form class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+            <ModalHeader>{{ __('Token Generated') }}</ModalHeader>
 
-      <ModalContent>
-        <div class="action">
-          <div class="flex flex-col border-b border-40">
-            <div class="flex items-center py-6 px-8">
-              <input
-                ref="token"
-                id="name"
-                v-model="token"
-                type="text"
-                placeholder="Name"
-                class="w-full form-control form-input form-input-bordered"
-                readonly
-              />
-              <BasicButton
-                type="button"
-                @click="copyToken"
-              >
-                {{ __("Copy") }}
-              </BasicButton>
-            </div>
-          </div>
-        </div>
-        <div class="p-4 rounded bg-yellow-50">
-          Make sure to copy your new personal access token now. You won't be able to see it again!
-        </div>
-      </ModalContent>
+            <ModalContent>
+                <div class="action">
+                    <div class="flex items-center mb-4">
+                        <input
+                            type="text"
+                            class="w-full form-control form-input form-input-bordered mr-2"
+                            :value="data.token"
+                            ref="tokenRef"
+                        />
+                        <BasicButton type="button" @click="copyToken">
+                            {{ __('Copy') }}
+                        </BasicButton>
+                    </div>
+                </div>
+                <div
+                    class="
+                        p-4
+                        rounded
+                        bg-yellow-100
+                        text-yellow-600
+                        dark:bg-yellow-300 dark:text-yellow-800
+                    "
+                >
+                    {{
+                        __(
+                            "Make sure to copy your new api access token now. You won't be able to see it again!"
+                        )
+                    }}
+                </div>
+            </ModalContent>
 
-      <ModalFooter>
-        <DefaultButton @click="show = false">Close</DefaultButton>
-      </ModalFooter>
-    </form>
-  </Modal>
+            <ModalFooter>
+                <div class="flex items-center ml-auto">
+                    <DefaultButton @click="$emit('close')">{{ __('Close') }}</DefaultButton>
+                </div>
+            </ModalFooter>
+        </form>
+    </Modal>
 </template>
 
-<script>
-export default {
-  /**
-   * Mount the component.
-   */
-  mounted() {
-    document.querySelectorAll(".modal input")[0].focus()
-    console.log(this.$props.token)
-  },
-  data: () => {
-    return {
-      show: true
-    }
-  },
-  props: {
-    token: {type: String}
-  },
-  methods: {
-    /**
-     * Stop propogation of input events unless it's for an escape or enter keypress
-     */
-    handleKeydown(e) {
-      if (["Escape", "Enter"].indexOf(e.key) !== -1) {
-        return
-      }
-      e.stopPropagation()
-    },
-    /**
-     * Execute the selected action.
-     */
-    handleConfirm() {
-      this.$emit("confirm")
-    },
-    copyToken() {
-      this.$refs.token.select()
-      document.execCommand("copy")
-    },
-  },
-}
+<script setup>
+import { ref, onMounted } from 'vue';
+
+const props = defineProps({
+    data: { type: Object },
+});
+
+defineEmits(['close']);
+
+const tokenRef = ref('');
+
+const copyToken = () => {
+    tokenRef.value.select();
+    document.execCommand('copy');
+};
+
+onMounted(() => {
+    tokenRef.value.focus();
+});
 </script>
