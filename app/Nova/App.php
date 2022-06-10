@@ -1,6 +1,7 @@
 <?php
 namespace App\Nova;
 
+use App\Nova\Actions\GenerateApiToken;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\HasMany;
@@ -138,6 +139,8 @@ class App extends Resource
      */
     public function actions(NovaRequest $request)
     {
-        return [];
+        return [
+            (new GenerateApiToken)->exceptOnIndex()
+        ];
     }
 }
