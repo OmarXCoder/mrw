@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
+use Laravel\Nova\Fields\MorphMany;
 use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
@@ -95,6 +96,8 @@ class App extends Resource
             HasMany::make('Attendees'),
 
             HasMany::make('Events'),
+
+            MorphMany::make('Api Token', 'tokens', ApiToken::class),
         ];
     }
 
@@ -140,7 +143,7 @@ class App extends Resource
     public function actions(NovaRequest $request)
     {
         return [
-            (new GenerateApiToken)->exceptOnIndex()
+            (new GenerateApiToken)->exceptOnIndex()->confirmButtonText('Generate Token')
         ];
     }
 }
