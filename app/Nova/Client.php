@@ -1,6 +1,8 @@
 <?php
 namespace App\Nova;
 
+use App\Nova\Metrics\ClientAppsCount;
+use App\Nova\Metrics\ClientShowsCount;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
@@ -82,7 +84,10 @@ class Client extends Resource
      */
     public function cards(NovaRequest $request)
     {
-        return [];
+        return [
+            ClientShowsCount::make()->width('1/2')->onlyOnDetail(),
+            ClientAppsCount::make()->width('1/2')->onlyOnDetail(),
+        ];
     }
 
     /**
