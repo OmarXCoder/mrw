@@ -29,13 +29,12 @@ Route::group(['as' => 'api.', 'middleware' => 'auth:sanctum'], function () {
 
     // SHOWS ROUTES
     Route::get('shows', [ShowController::class, 'index'])->name('shows.index');
-
     Route::get('shows/{show}', [ShowController::class, 'show'])->name('shows.show');
 
     // CLIENT SHOWS ROUTES
-    Route::get('clients/{client}/shows', [ClientShowsController::class, 'index'])->name('client.shows.index');
-
-    Route::get('clients/{client}/shows/{show}', [ClientShowsController::class, 'show'])->name('client.shows.show');
+    Route::get('clients/{client}/shows', [ClientShowsController::class, 'index'])->name('clients.shows.index');
+    Route::post('clients/{client}/shows', [ClientShowsController::class, 'store'])->name('clients.shows.store');
+    Route::get('clients/{client}/shows/{show}', [ClientShowsController::class, 'show'])->name('clients.shows.show');
 
     // ATTENDEE ROUTES
     Route::post('attendees', [AttendeeController::class, 'store'])->name('attendees.store');
