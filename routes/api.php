@@ -43,6 +43,10 @@ Route::group(['as' => 'api.', 'middleware' => 'auth:sanctum'], function () {
     Route::get('apps', [AppController::class, 'index'])->name('apps.index');
     Route::get('apps/{app}', [AppController::class, 'show'])->name('apps.show');
 
+    // SHOW APPS ROUTES
+    Route::get('shows/{show}/apps', [ShowAppsController::class, 'index'])->name('shows.apps.index');
+    Route::post('shows/{show}/apps', [ShowAppsController::class, 'store'])->name('shows.apps.store');
+
     // ATTENDEE ROUTES
     Route::post('attendees', [AttendeeController::class, 'store'])->name('attendees.store');
     Route::get('attendees/{attendee}', [AttendeeController::class, 'show'])->name('attendees.show');
