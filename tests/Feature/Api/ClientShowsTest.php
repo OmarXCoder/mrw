@@ -19,7 +19,7 @@ class ClientShowsTest extends TestCase
 
         Show::factory(3)->create(['client_id' => $client->id]);
 
-        $response = $this->getJson(route('api.client.shows.index', $client));
+        $response = $this->getJson(route('api.clients.shows.index', $client));
 
         $response->assertStatus(200);
 
@@ -37,12 +37,73 @@ class ClientShowsTest extends TestCase
 
         $show = Show::factory()->create(['client_id' => $client->id]);
 
-        $response = $this->getJson(route('api.client.shows.show', [$client, $show]));
+        $response = $this->getJson(route('api.clients.shows.show', [$client, $show]));
 
         $response->assertStatus(200);
 
         $response->assertJsonPath('data.name', $show->name);
 
         $response->assertJsonPath('data.client_id', $client->id);
+    }
+
+    /** @test */
+    public function it_creates_a_show_for_a_specific_client()
+    {
+        $this->login();
+
+        $show = Show::factory()->raw();
+
+        $response = $this->postJson(route('api.clients.shows.store', $show['client_id']), $show);
+
+        $response->assertCreated();
+
+        $this->assertDatabaseCount('shows', 1);
+    }
+
+
+    /** @test */
+    public function it_checks_for_required_fields_to_create_show()
+    {
+        $this->login();
+
+        $show = Show::factory()->raw([
+            'name' => null,
+            'organizer' => null,
+            'start_date' => null,
+            'end_date' => null,
+        ]);
+
+        $response = $this->postJson(route('api.clients.shows.store', $show['client_id']), $show);
+
+        $response->assertJsonValidationErrors(
+            [
+                'name',
+                'organizer',
+                'start_date',
+                'end_date',
+            ],
+            'error.data'
+        );
+    }
+
+    /** @test */
+    public function it_requires_valid_start_and_end_dates()
+    {
+        $this->login();
+
+        $show = Show::factory()->raw([
+            'start_date' => 'not a valid date',
+            'end_date' => 'not a valid date',
+        ]);
+
+        $response = $this->postJson(route('api.clients.shows.store', $show['client_id']), $show);
+
+        $response->assertJsonValidationErrors(
+            [
+                'start_date',
+                'end_date',
+            ],
+            'error.data'
+        );
     }
 }

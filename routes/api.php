@@ -1,11 +1,13 @@
 <?php
 
 use App\Http\Controllers\Api\ActionTypeController;
+use App\Http\Controllers\Api\AppController;
 use App\Http\Controllers\Api\AttendeeController;
 use App\Http\Controllers\Api\ClientShowsController;
 use App\Http\Controllers\Api\EventController;
 use App\Http\Controllers\Api\EventTypeController;
 use App\Http\Controllers\Api\ShowController;
+use App\Http\Controllers\ShowAppsController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -25,17 +27,25 @@ Route::group(['as' => 'api.', 'middleware' => 'auth:sanctum'], function () {
     // EVENT TYPES
     Route::get('/event-types', [EventTypeController::class, 'index'])->name('event-types.index');
 
+    // EVENTS ROUTES
     Route::post('/events', [EventController::class, 'store'])->name('events.store');
 
     // SHOWS ROUTES
     Route::get('shows', [ShowController::class, 'index'])->name('shows.index');
-
     Route::get('shows/{show}', [ShowController::class, 'show'])->name('shows.show');
 
     // CLIENT SHOWS ROUTES
-    Route::get('clients/{client}/shows', [ClientShowsController::class, 'index'])->name('client.shows.index');
+    Route::get('clients/{client}/shows', [ClientShowsController::class, 'index'])->name('clients.shows.index');
+    Route::post('clients/{client}/shows', [ClientShowsController::class, 'store'])->name('clients.shows.store');
+    Route::get('clients/{client}/shows/{show}', [ClientShowsController::class, 'show'])->name('clients.shows.show');
 
-    Route::get('clients/{client}/shows/{show}', [ClientShowsController::class, 'show'])->name('client.shows.show');
+    // APPS ROUTES
+    Route::get('apps', [AppController::class, 'index'])->name('apps.index');
+    Route::get('apps/{app}', [AppController::class, 'show'])->name('apps.show');
+
+    // SHOW APPS ROUTES
+    Route::get('shows/{show}/apps', [ShowAppsController::class, 'index'])->name('shows.apps.index');
+    Route::post('shows/{show}/apps', [ShowAppsController::class, 'store'])->name('shows.apps.store');
 
     // ATTENDEE ROUTES
     Route::post('attendees', [AttendeeController::class, 'store'])->name('attendees.store');
