@@ -19,12 +19,20 @@
             <h3 class="text-base font-normal mt-3">
                 {{ __("This Resource doesn't have any api access tokens") }}
             </h3>
+
+            <div class="flex-shrink-0 mt-6">
+                <OutlineButton @click="$emit('asked-to-generate-token')">
+                    {{ __('Generate New Token') }}
+                </OutlineButton>
+            </div>
         </div>
     </div>
 </template>
 
 <script setup>
 import TokensListItem from './TokensListItem.vue';
+
+defineEmits(['asked-to-generate-token']);
 
 defineProps({
     tokens: { type: Array },

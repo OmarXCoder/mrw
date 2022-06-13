@@ -21,6 +21,7 @@ __webpack_require__.r(__webpack_exports__);
       type: Array
     }
   },
+  emits: ['asked-to-generate-token'],
   setup: function setup(__props, _ref) {
     var expose = _ref.expose;
     expose();
@@ -69,6 +70,12 @@ __webpack_require__.r(__webpack_exports__);
       document.execCommand('copy');
     };
 
+    var regenerateToken = function regenerateToken() {
+      Nova.request().patch("/nova-vendor/api-token-generator/tokens/".concat(props.token.id)).then(function (res) {
+        window.location.reload();
+      });
+    };
+
     var deleteToken = function deleteToken() {
       Nova.request()["delete"]("/nova-vendor/api-token-generator/tokens/".concat(props.token.id)).then(function (res) {
         window.location.reload();
@@ -80,6 +87,7 @@ __webpack_require__.r(__webpack_exports__);
       tokenRef: tokenRef,
       showDeleteConfirmation: showDeleteConfirmation,
       copyToken: copyToken,
+      regenerateToken: regenerateToken,
       deleteToken: deleteToken,
       ref: vue__WEBPACK_IMPORTED_MODULE_0__.ref
     };
@@ -197,7 +205,12 @@ var _hoisted_4 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementV
 var _hoisted_5 = {
   "class": "text-base font-normal mt-3"
 };
+var _hoisted_6 = {
+  "class": "flex-shrink-0 mt-6"
+};
 function render(_ctx, _cache, $props, $setup, $data, $options) {
+  var _component_OutlineButton = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("OutlineButton");
+
   return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [$props.tokens.length > 0 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_2, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($props.tokens, function (token) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)($setup["TokensListItem"], {
       key: token.id,
@@ -209,7 +222,20 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
   /* KEYED_FRAGMENT */
   ))])) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_3, [_hoisted_4, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h3", _hoisted_5, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.__("This Resource doesn't have any api access tokens")), 1
   /* TEXT */
-  )]))]);
+  ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_OutlineButton, {
+    onClick: _cache[0] || (_cache[0] = function ($event) {
+      return _ctx.$emit('asked-to-generate-token');
+    })
+  }, {
+    "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
+      return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)((0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.__('Generate New Token')), 1
+      /* TEXT */
+      )];
+    }),
+    _: 1
+    /* STABLE */
+
+  })])]))]);
 }
 
 /***/ }),
@@ -245,9 +271,13 @@ var _hoisted_7 = {
   "class": "flex items-center"
 };
 function render(_ctx, _cache, $props, $setup, $data, $options) {
+  var _component_Icon = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("Icon");
+
   var _component_BasicButton = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("BasicButton");
 
   var _component_DeleteResourceModal = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("DeleteResourceModal");
+
+  var _directive_tooltip = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveDirective)("tooltip");
 
   return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "api-token-item-".concat($props.token.id),
@@ -263,35 +293,57 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     readonly: ""
   }, null, 8
   /* PROPS */
-  , _hoisted_6)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_7, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_BasicButton, {
+  , _hoisted_6)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_7, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)(((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_BasicButton, {
     type: "button",
-    onClick: $setup.copyToken,
-    "class": "flex-shrink-0"
+    onClick: $setup.copyToken
   }, {
     "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
-      return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)((0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.__('Copy')), 1
-      /* TEXT */
-      )];
+      return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_Icon, {
+        "class": "text-gray-500 dark:text-gray-400",
+        solid: true,
+        type: "clipboard",
+        width: "24",
+        height: "24"
+      })];
     }),
     _: 1
     /* STABLE */
 
-  }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_BasicButton, {
+  })), [[_directive_tooltip, 'Copy Token']]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)(((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_BasicButton, {
+    type: "button",
+    onClick: $setup.regenerateToken
+  }, {
+    "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
+      return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_Icon, {
+        "class": "text-gray-500 dark:text-gray-400",
+        solid: true,
+        type: "refresh",
+        width: "24",
+        height: "24"
+      })];
+    }),
+    _: 1
+    /* STABLE */
+
+  })), [[_directive_tooltip, 'Refresh Token']]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)(((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_BasicButton, {
     type: "button",
     onClick: _cache[0] || (_cache[0] = function ($event) {
       return $setup.showDeleteConfirmation = true;
-    }),
-    "class": "flex-shrink-0 text-red-500 items-center"
+    })
   }, {
     "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
-      return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)((0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.__('Delete')), 1
-      /* TEXT */
-      )];
+      return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_Icon, {
+        "class": "text-red-500 dark:text-red-400",
+        solid: true,
+        type: "trash",
+        width: "24",
+        height: "24"
+      })];
     }),
     _: 1
     /* STABLE */
 
-  })])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_DeleteResourceModal, {
+  })), [[_directive_tooltip, 'Delete Token']])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_DeleteResourceModal, {
     show: $setup.showDeleteConfirmation,
     onConfirm: $setup.deleteToken,
     onClose: _cache[1] || (_cache[1] = function ($event) {
@@ -461,7 +513,10 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
   }, 8
   /* PROPS */
   , ["show"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_TokensList, {
-    tokens: $data.tokens
+    tokens: $data.tokens,
+    onAskedToGenerateToken: _cache[2] || (_cache[2] = function ($event) {
+      return $data.showModal = true;
+    })
   }, null, 8
   /* PROPS */
   , ["tokens"])]);

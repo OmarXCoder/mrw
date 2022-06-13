@@ -1,10 +1,10 @@
 <?php
 
+use App\Models\ApiToken;
 use App\Models\App;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Laravel\Sanctum\PersonalAccessToken;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,7 +25,7 @@ Route::get('/', function (Request $request) {
         'users' => \App\Models\User::class,
     ];
 
-    return PersonalAccessToken::where([
+    return ApiToken::where([
         'tokenable_type' => $tokenableTypes[$q['resourceName']],
         'tokenable_id' => (int) $q['resourceId'],
     ])->latest()->get();
@@ -42,15 +42,21 @@ Route::post('/', function (Request $request) {
 
     $newToken = $model->createToken($request->input('name'));
 
-    $accessToken = PersonalAccessToken::find($newToken->accessToken->id);
+    $apiToken = ApiToken::find($newToken->accessToken->id);
 
-    $accessToken->plain_text = $newToken->plainTextToken;
+    $apiToken->plain_text = $newToken->plainTextToken;
 
-    $accessToken->save();
+    $apiToken->save();
+});
+
+Route::patch('/tokens/{id}', function (Request $request, $id) {
+    $apiToken = ApiToken::find($id);
+
+    return $apiToken->regenerate();
 });
 
 Route::delete('/tokens/{id}', function (Request $request, $id) {
-    $accessToken = PersonalAccessToken::find($id);
+    $apiToken = ApiToken::find($id);
 
-    return $accessToken->delete();
+    return $apiToken->delete();
 });
