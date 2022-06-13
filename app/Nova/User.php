@@ -1,7 +1,6 @@
 <?php
 namespace App\Nova;
 
-use App\Nova\Actions\GenerateApiToken;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules;
 use Laravel\Nova\Fields\Gravatar;
@@ -114,8 +113,6 @@ class User extends Resource
      */
     public function actions(NovaRequest $request)
     {
-        return [
-            (new GenerateApiToken)->exceptOnIndex()->confirmButtonText('Generate Token'),
-        ];
+        return [];
     }
 }
