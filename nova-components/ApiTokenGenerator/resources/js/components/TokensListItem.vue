@@ -19,15 +19,38 @@
                 />
             </div>
             <div class="flex items-center">
-                <BasicButton type="button" @click="copyToken" class="flex-shrink-0">
-                    {{ __('Copy') }}
+                <BasicButton type="button" @click="copyToken" v-tooltip="'Copy Token'">
+                    <Icon
+                        class="text-gray-500 dark:text-gray-400"
+                        :solid="true"
+                        type="clipboard"
+                        width="24"
+                        height="24"
+                    />
                 </BasicButton>
+
+                <BasicButton type="button" @click="regenerateToken" v-tooltip="'Refresh Token'">
+                    <Icon
+                        class="text-gray-500 dark:text-gray-400"
+                        :solid="true"
+                        type="refresh"
+                        width="24"
+                        height="24"
+                    />
+                </BasicButton>
+
                 <BasicButton
                     type="button"
                     @click="showDeleteConfirmation = true"
-                    class="flex-shrink-0 text-red-500 items-center"
+                    v-tooltip="'Delete Token'"
                 >
-                    {{ __('Delete') }}
+                    <Icon
+                        class="text-red-500 dark:text-red-400"
+                        :solid="true"
+                        type="trash"
+                        width="24"
+                        height="24"
+                    />
                 </BasicButton>
             </div>
         </div>
@@ -52,6 +75,14 @@ const showDeleteConfirmation = ref(false);
 const copyToken = () => {
     tokenRef.value.select();
     document.execCommand('copy');
+};
+
+const regenerateToken = () => {
+    Nova.request()
+        .patch(`/nova-vendor/api-token-generator/tokens/${props.token.id}`)
+        .then((res) => {
+            window.location.reload();
+        });
 };
 
 const deleteToken = () => {

@@ -1,8 +1,8 @@
 <?php
-
 namespace App\Nova;
 
 use App\Models\ApiToken as ApiTokenModel;
+use App\Nova\Actions\RegenerateToken;
 use App\Nova\Filters\TokenableType;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\ID;
@@ -37,7 +37,7 @@ class ApiToken extends Resource
         return [
             'id',
             'name',
-            new SearchableMorphToRelation('tokenable', 'name', [App::class, User::class])
+            new SearchableMorphToRelation('tokenable', 'name', [App::class, User::class]),
         ];
     }
 
@@ -62,7 +62,7 @@ class ApiToken extends Resource
                 ])
                 ->showOnPreview(),
 
-            Text::make('Token')
+            Text::make('Token', 'plain_text')
                 ->onlyOnDetail()
                 ->showOnPreview(),
         ];
@@ -88,7 +88,7 @@ class ApiToken extends Resource
     public function filters(NovaRequest $request)
     {
         return [
-            new TokenableType
+            new TokenableType,
         ];
     }
 
@@ -111,6 +111,10 @@ class ApiToken extends Resource
      */
     public function actions(NovaRequest $request)
     {
-        return [];
+        return [
+            RegenerateToken::make()
+                ->confirmText('Are you sure you want to regenerate the token?')
+                ->confirmButtonText('Regenerate'),
+        ];
     }
 }

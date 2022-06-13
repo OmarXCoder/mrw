@@ -48,7 +48,7 @@
             </form>
         </Modal>
 
-        <TokensList :tokens="tokens" />
+        <TokensList :tokens="tokens" @asked-to-generate-token="showModal = true" />
     </div>
 </template>
 
