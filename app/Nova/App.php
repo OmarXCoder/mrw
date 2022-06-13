@@ -96,7 +96,7 @@ class App extends Resource
 
             HasMany::make('Events'),
 
-            ApiTokenGenerator::make(),
+            ApiTokenGenerator::make()->canSee(fn ($request) => $request->user()->hasPermissionTo('api_tokens.create')),
         ];
     }
 

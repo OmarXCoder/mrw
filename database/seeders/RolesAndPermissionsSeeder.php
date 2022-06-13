@@ -30,6 +30,11 @@ class RolesAndPermissionsSeeder extends Seeder
             ['permissions.view', 'View permissions', false],
             ['permissions.edit', 'Edit permissions', false],
             ['permissions.delete', 'Delete permissions', false],
+            // Api Tokens
+            ['api_tokens.create', 'Create api tokens', false],
+            ['api_tokens.view', 'View api tokens', false],
+            ['api_tokens.edit', 'Edit api tokens', false],
+            ['api_tokens.delete', 'Delete api tokens', false],
             // Clients
             ['clients.create', 'Create clients', false],
             ['clients.view', 'View clients', false],

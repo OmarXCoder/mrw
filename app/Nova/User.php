@@ -68,7 +68,7 @@ class User extends Resource
 
             MorphToMany::make('Roles'),
 
-            ApiTokenGenerator::make(),
+            ApiTokenGenerator::make()->canSee(fn ($request) => $request->user()->hasPermissionTo('api_tokens.create')),
         ];
     }
 
