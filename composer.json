@@ -15,7 +15,8 @@
         "laravel/tinker": "^2.7",
         "spatie/laravel-permission": "^5.5",
         "laravel/nova": "~4.0",
-        "mrw/api-token-modal": "*"
+        "mrw/api-token-modal": "*",
+        "mrw/api-token-generator": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
@@ -72,6 +73,10 @@
         "0": {
             "type": "path",
             "url": "./nova-components/ApiTokenModal"
+        },
+        "1": {
+            "type": "path",
+            "url": "./nova-components/ApiTokenGenerator"
         }
     }
 }

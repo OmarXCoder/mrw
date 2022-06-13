@@ -7,10 +7,10 @@ use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
-use Laravel\Nova\Fields\MorphMany;
 use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use Mrw\ApiTokenGenerator\ApiTokenGenerator;
 
 class App extends Resource
 {
@@ -74,7 +74,6 @@ class App extends Resource
                 ->sortable()
                 ->searchable(),
 
-
             Number::make('# Attendees', 'attendees_count')
                 ->sortable()
                 ->onlyOnIndex(),
@@ -98,7 +97,7 @@ class App extends Resource
 
             HasMany::make('Events'),
 
-            MorphMany::make('Api Token', 'tokens', ApiToken::class),
+            ApiTokenGenerator::make(),
         ];
     }
 
@@ -111,7 +110,7 @@ class App extends Resource
     public function cards(NovaRequest $request)
     {
         return [
-            AppAttendeeInteractions::make()->onlyOnDetail()->width('full')
+            AppAttendeeInteractions::make()->onlyOnDetail()->width('full'),
         ];
     }
 
@@ -146,7 +145,7 @@ class App extends Resource
     public function actions(NovaRequest $request)
     {
         return [
-            (new GenerateApiToken)->exceptOnIndex()->confirmButtonText('Generate Token')
+            (new GenerateApiToken)->exceptOnIndex()->confirmButtonText('Generate Token'),
         ];
     }
 }

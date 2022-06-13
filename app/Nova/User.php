@@ -10,6 +10,7 @@ use Laravel\Nova\Fields\MorphToMany;
 use Laravel\Nova\Fields\Password;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use Mrw\ApiTokenGenerator\ApiTokenGenerator;
 
 class User extends Resource
 {
@@ -67,6 +68,8 @@ class User extends Resource
                 ->updateRules('nullable', Rules\Password::defaults()),
 
             MorphToMany::make('Roles'),
+
+            ApiTokenGenerator::make(),
         ];
     }
 
@@ -112,7 +115,7 @@ class User extends Resource
     public function actions(NovaRequest $request)
     {
         return [
-            (new GenerateApiToken)->exceptOnIndex()->confirmButtonText('Generate Token')
+            (new GenerateApiToken)->exceptOnIndex()->confirmButtonText('Generate Token'),
         ];
     }
 }
