@@ -1,7 +1,6 @@
 <?php
 namespace App\Nova;
 
-use App\Nova\Actions\GenerateApiToken;
 use App\Nova\Metrics\AppAttendeeInteractions;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsTo;
@@ -144,8 +143,6 @@ class App extends Resource
      */
     public function actions(NovaRequest $request)
     {
-        return [
-            (new GenerateApiToken)->exceptOnIndex()->confirmButtonText('Generate Token'),
-        ];
+        return [];
     }
 }

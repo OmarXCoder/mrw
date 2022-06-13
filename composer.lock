@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9690f190ade1c84c5fc5149e182cf4d5",
+    "content-hash": "58f2f233cdcef857a08769d0bcc68961",
     "packages": [
         {
             "name": "box/spout",
@@ -2445,42 +2445,6 @@
                 "MIT"
             ],
             "description": "A Laravel Nova resource tool.",
-            "keywords": [
-                "laravel",
-                "nova"
-            ],
-            "transport-options": {
-                "relative": true
-            }
-        },
-        {
-            "name": "mrw/api-token-modal",
-            "version": "dev-api-tokens",
-            "dist": {
-                "type": "path",
-                "url": "./nova-components/ApiTokenModal",
-                "reference": "7041d242cde5cf6cd9e2b4eae885dd2a81d0d1e3"
-            },
-            "require": {
-                "php": "^7.3|^8.0"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "Mrw\\ApiTokenModal\\AssetServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Mrw\\ApiTokenModal\\": "src/"
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "description": "A Laravel Nova asset.",
             "keywords": [
                 "laravel",
                 "nova"
