@@ -28,7 +28,7 @@ Route::get('/', function (Request $request) {
     return PersonalAccessToken::where([
         'tokenable_type' => $tokenableTypes[$q['resourceName']],
         'tokenable_id' => (int) $q['resourceId'],
-    ])->get();
+    ])->latest()->get();
 });
 
 Route::post('/', function (Request $request) {
@@ -40,7 +40,7 @@ Route::post('/', function (Request $request) {
         $model = App::find((int) $q['resourceId']);
     }
 
-    $newToken = $model->createToken("{$q['resourceName']}.{$q['resourceId']}." . \Illuminate\Support\Str::random(4));
+    $newToken = $model->createToken($request->input('name'));
 
     $accessToken = PersonalAccessToken::find($newToken->accessToken->id);
 
@@ -52,5 +52,5 @@ Route::post('/', function (Request $request) {
 Route::delete('/tokens/{id}', function (Request $request, $id) {
     $accessToken = PersonalAccessToken::find($id);
 
-    $accessToken->delete();
+    return $accessToken->delete();
 });
