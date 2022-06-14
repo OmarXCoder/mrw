@@ -114,7 +114,8 @@ class ApiToken extends Resource
         return [
             RegenerateToken::make()
                 ->confirmText('Are you sure you want to regenerate the token?')
-                ->confirmButtonText('Regenerate'),
+                ->confirmButtonText('Regenerate')
+                ->canRun(fn ($request) => $request->user()->hasPermissionTo('api_tokens.create')),
         ];
     }
 }

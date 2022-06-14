@@ -107,10 +107,12 @@ class Permission extends Resource
      */
     public static function relatableQuery(NovaRequest $request, $query)
     {
-        $resourceId = $request->route('resourceId');
+        if ($request->user()->isClientTeamMember()) {
+            $resourceId = $request->route('resourceId');
 
-        $role = Role::findById($resourceId);
+            $role = Role::findById($resourceId);
 
-        return $query->where('available_to_clients', $role->is_client_role);
+            return $query->where('available_to_clients', $role->is_client_role);
+        }
     }
 }
