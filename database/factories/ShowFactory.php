@@ -21,8 +21,9 @@ class ShowFactory extends Factory
         return [
             'name' => $this->faker->sentence(3),
             'organizer' => $this->faker->company(),
-            'start_date' => $start_date = Carbon::create($this->faker->dateTimeThisYear('+3 months')),
-            'end_date' => $end_date = Carbon::create($start_date)->addDays(random_int(1, 15)),
+            'start_date' => $start_date = Carbon::create($this->faker->dateTimeThisYear('+5 months')),
+            'end_date' => $end_date = $start_date->copy()->addDays(random_int(1, 15)),
+            'created_at' => $start_date->copy()->subDays(random_int(1, 5)),
             'status' => Show::determineStatus($start_date, $end_date),
             'client_id' => Client::factory(),
         ];

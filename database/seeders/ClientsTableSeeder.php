@@ -13,6 +13,10 @@ class ClientsTableSeeder extends Seeder
      */
     public function run()
     {
-        Client::factory(21)->create();
+        foreach (range(1, 21) as $i) {
+            Client::factory()->create([
+                'created_at' => today()->subDays(random_int(0, 120)),
+            ]);
+        }
     }
 }
