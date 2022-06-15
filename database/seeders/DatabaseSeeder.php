@@ -1,6 +1,7 @@
 <?php
 namespace Database\Seeders;
 
+use App\Models\Client;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -21,6 +22,7 @@ class DatabaseSeeder extends Seeder
         $clientAdmin = User::factory()->create([
             'name' => 'User',
             'email' => 'user@admin.com',
+            'client_id' => Client::factory(),
         ]);
 
         $this->call([

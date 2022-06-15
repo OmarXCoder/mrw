@@ -20,6 +20,9 @@ class AttendeesTableSeeder extends Seeder
             fn ($show) => Attendee::factory(random_int(10, 35))->create([
                 'show_id' => $show->id,
                 'client_id' => $show->client_id,
+                'created_at' => $show->start_date->addDays(
+                    random_int(0, $show->start_date->diffInDays($show->end_date))
+                ),
             ])
         );
     }

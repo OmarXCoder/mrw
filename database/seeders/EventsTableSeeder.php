@@ -28,6 +28,7 @@ class EventsTableSeeder extends Seeder
 
         App::all()->each(function ($app) use ($actionCodes, $eventCodes) {
             $attendees = $app->attendees->pluck('id')->toArray();
+            $show = $app->show;
 
             if (empty($attendees)) {
                 return;
@@ -40,6 +41,7 @@ class EventsTableSeeder extends Seeder
                 'attendee_id' => Arr::random($attendees),
                 'action_code' => Arr::random($actionCodes),
                 'event_code' => Arr::random($eventCodes),
+                'timestamp' => $show->start_date->addDays(random_int(0, $show->start_date->diffInDays($show->end_date)))->toDateTimeString(),
             ]);
         });
     }

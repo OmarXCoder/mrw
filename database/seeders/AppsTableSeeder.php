@@ -20,6 +20,7 @@ class AppsTableSeeder extends Seeder
             fn ($show) => App::factory(random_int(1, 6))->create([
                 'show_id' => $show->id,
                 'client_id' => $show->client_id,
+                'created_at' => $show->created_at->addDays(random_int(1, 5)),
             ])
         );
     }
