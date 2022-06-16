@@ -1,7 +1,13 @@
 <template>
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
         <div class="py-2" v-if="tokens.length > 0">
-            <TokensListItem v-for="token in tokens" :key="token.id" :token="token" />
+            <TokensListItem
+                v-for="token in tokens"
+                :key="token.id"
+                :token="token"
+                @regenerated="handleTokenRegenerated"
+                @deleted="handleTokenDeleted"
+            />
         </div>
         <div v-else class="flex flex-col justify-center items-center px-6 py-8">
             <svg
@@ -32,9 +38,17 @@
 <script setup>
 import TokensListItem from './TokensListItem.vue';
 
-defineEmits(['asked-to-generate-token']);
+const emit = defineEmits(['asked-to-generate-token', 'token-regenerated', 'token-deleted']);
 
 defineProps({
     tokens: { type: Array },
 });
+
+const handleTokenRegenerated = (oldToken, newToken) => {
+    emit('token-regenerated', oldToken, newToken);
+};
+
+const handleTokenDeleted = (token) => {
+    emit('token-deleted', token);
+};
 </script>

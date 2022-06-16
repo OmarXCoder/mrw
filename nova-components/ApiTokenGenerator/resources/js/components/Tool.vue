@@ -48,55 +48,69 @@
             </form>
         </Modal>
 
-        <TokensList :tokens="tokens" @asked-to-generate-token="showModal = true" />
+        <TokensList
+            :tokens="tokens"
+            @asked-to-generate-token="showModal = true"
+            @token-regenerated="handleTokenRegenerated"
+            @token-deleted="handleTokenDeleted"
+        />
     </div>
 </template>
 
-<script>
+<script setup>
 import TokensList from './TokensList.vue';
+import { ref, onMounted } from 'vue';
 
-export default {
-    props: ['resourceName', 'resourceId', 'panel'],
-    components: { TokensList },
-    data() {
-        return {
-            tokens: [],
-            showModal: false,
-            newTokenName: '',
-            nameError: 'Name is required',
-            showNameError: false,
-        };
-    },
-    mounted() {
+const props = defineProps({
+    resourceName: String,
+    resourceId: Number,
+    panel: Object,
+});
+
+const tokens = ref([]);
+const showModal = ref(false);
+const newTokenName = ref('');
+const nameError = ref('Name is required');
+const showNameError = ref(false);
+
+const url = () =>
+    `/nova-vendor/api-token-generator?resourceName=${props.resourceName}&resourceId=${props.resourceId}`;
+
+const generateToken = () => {
+    if (!newTokenName.value) {
+        showNameError.value = true;
+        return false;
+    } else {
         Nova.request()
-            .get(this.url())
+            .post(url(), { name: newTokenName.value })
             .then((res) => {
-                this.tokens = res.data;
+                showNameError.value = false;
+                newTokenName.value = '';
+                showModal.value = false;
+                tokens.value.unshift(res.data);
             });
-    },
-    methods: {
-        generateToken() {
-            if (!this.newTokenName) {
-                this.showNameError = true;
-                return false;
-            } else {
-                Nova.request()
-                    .post(this.url(), { name: this.newTokenName })
-                    .then((res) => {
-                        this.showNameError = false;
-                        this.newTokenName = '';
-                        window.location.reload();
-                    });
-            }
-        },
-        url() {
-            return `/nova-vendor/api-token-generator?resourceName=${this.$props.resourceName}&resourceId=${this.$props.resourceId}`;
-        },
-        closeModal() {
-            this.newTokenName = '';
-            this.showNameError = false;
-            this.showModal = false;
-        },
-    },
+    }
 };
+
+const closeModal = () => {
+    newTokenName.value = '';
+    showNameError.value = false;
+    showModal.value = false;
+};
+
+const handleTokenRegenerated = (oldToken, newToken) => {
+    tokens.value.splice(tokens.value.indexOf(oldToken), 1, newToken);
+};
+
+const handleTokenDeleted = (token) => {
+    tokens.value.splice(tokens.value.indexOf(token), 1);
+};
+
+onMounted(() => {
+    Nova.request()
+        .get(url())
+        .then((res) => {
+            tokens.value = res.data;
+        });
+});
 </script>

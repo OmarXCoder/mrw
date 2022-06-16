@@ -47,12 +47,16 @@ Route::post('/', function (Request $request) {
     $apiToken->plain_text = $newToken->plainTextToken;
 
     $apiToken->save();
+
+    return $apiToken;
 });
 
 Route::patch('/tokens/{id}', function (Request $request, $id) {
     $apiToken = ApiToken::find($id);
 
-    return $apiToken->regenerate();
+    $apiToken->regenerate();
+
+    return $apiToken;
 });
 
 Route::delete('/tokens/{id}', function (Request $request, $id) {

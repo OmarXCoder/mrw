@@ -65,6 +65,8 @@
 <script setup>
 import { ref } from 'vue';
 
+const emit = defineEmits(['regenerated', 'deleted']);
+
 const props = defineProps({
     token: { type: Object },
 });
@@ -81,7 +83,7 @@ const regenerateToken = () => {
     Nova.request()
         .patch(`/nova-vendor/api-token-generator/tokens/${props.token.id}`)
         .then((res) => {
-            window.location.reload();
+            emit('regenerated', props.token, res.data);
         });
 };
 
@@ -89,7 +91,7 @@ const deleteToken = () => {
     Nova.request()
         .delete(`/nova-vendor/api-token-generator/tokens/${props.token.id}`)
         .then((res) => {
-            window.location.reload();
+            emit('deleted', props.token);
         });
 };
 </script>
