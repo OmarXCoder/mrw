@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Nova\Metrics;
 
 use App\Models\App;
@@ -8,7 +7,12 @@ use Laravel\Nova\Metrics\Value;
 
 class ClientAppsCount extends Value
 {
-    public $name = 'Total Apps';
+    /**
+     * The displayable name of the metric.
+     *
+     * @var string
+     */
+    public $name = 'Apps Count';
 
     /**
      * Calculate the value of the metric.

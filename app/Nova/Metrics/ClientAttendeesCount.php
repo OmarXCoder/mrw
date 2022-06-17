@@ -1,18 +1,18 @@
 <?php
 namespace App\Nova\Metrics;
 
-use App\Models\Show;
+use App\Models\Attendee;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Metrics\Value;
 
-class ClientShowsCount extends Value
+class ClientAttendeesCount extends Value
 {
     /**
      * The displayable name of the metric.
      *
      * @var string
      */
-    public $name = 'Shows Count';
+    public $name = 'Attendees Count';
 
     /**
      * Calculate the value of the metric.
@@ -22,7 +22,7 @@ class ClientShowsCount extends Value
      */
     public function calculate(NovaRequest $request)
     {
-        return $this->result(Show::where('client_id', $request->resourceId)->count());
+        return $this->result(Attendee::where('client_id', $request->resourceId)->count());
     }
 
     /**
@@ -52,6 +52,6 @@ class ClientShowsCount extends Value
      */
     public function uriKey()
     {
-        return 'client-shows-count';
+        return 'client-attendees-count';
     }
 }
