@@ -3,17 +3,10 @@ namespace App\Nova\Metrics;
 
 use App\Models\User;
 use Laravel\Nova\Http\Requests\NovaRequest;
-use Laravel\Nova\Metrics\Value;
+use Laravel\Nova\Metrics\Partition;
 
-class ClientTeamMembersCount extends Value
+class UsersPerRole extends Partition
 {
-    /**
-     * The displayable name of the metric.
-     *
-     * @var string
-     */
-    public $name = 'Team Members Count';
-
     /**
      * Calculate the value of the metric.
      *
@@ -22,17 +15,12 @@ class ClientTeamMembersCount extends Value
      */
     public function calculate(NovaRequest $request)
     {
-        return $this->result(User::where('client_id', $request->resourceId)->count());
-    }
+        $query = User::join('model_has_roles', 'users.id', '=', 'model_has_roles.model_id')
+            ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
+            ->where('users.client_id', $request->resourceId)
+            ->select('users.*', 'roles.label');
 
-    /**
-     * Get the ranges available for the metric.
-     *
-     * @return array
-     */
-    public function ranges()
-    {
-        return [];
+        return $this->count($request, $query, 'label');
     }
 
     /**
@@ -52,6 +40,6 @@ class ClientTeamMembersCount extends Value
      */
     public function uriKey()
     {
-        return 'client-team-members-count';
+        return 'users-per-role';
     }
 }

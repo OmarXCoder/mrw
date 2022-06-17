@@ -4,7 +4,7 @@ namespace App\Nova;
 use App\Nova\Metrics\ClientAppsCount;
 use App\Nova\Metrics\ClientAttendeesCount;
 use App\Nova\Metrics\ClientShowsCount;
-use App\Nova\Metrics\ClientTeamMembersCount;
+use App\Nova\Metrics\UsersPerRole;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
@@ -90,7 +90,7 @@ class Client extends Resource
             ClientShowsCount::make()->width('1/4')->onlyOnDetail(),
             ClientAppsCount::make()->width('1/4')->onlyOnDetail(),
             ClientAttendeesCount::make()->width('1/4')->onlyOnDetail(),
-            ClientTeamMembersCount::make()->width('1/4')->onlyOnDetail(),
+            UsersPerRole::make()->width('1/4')->onlyOnDetail(),
         ];
     }
 
