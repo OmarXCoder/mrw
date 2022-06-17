@@ -3,6 +3,8 @@ namespace App\Nova;
 
 use App\Nova\Filters\ActionTypeFilter;
 use App\Nova\Filters\EventTypeFilter;
+use App\Nova\Metrics\TotalEvents;
+use App\Nova\Metrics\InteractionsByDays;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\ID;
@@ -70,6 +72,10 @@ class Event extends Resource
     public function cards(NovaRequest $request)
     {
         return [
+            TotalEvents::make()->width('1/3'),
+
+            InteractionsByDays::make()->width('2/3'),
+
             Chart::make()
                 ->width('full')
                 ->height('dynamic')

@@ -1,12 +1,11 @@
 <?php
-
 namespace App\Nova\Metrics;
 
 use App\Models\Event;
 use Laravel\Nova\Http\Requests\NovaRequest;
-use Laravel\Nova\Metrics\Trend;
+use Laravel\Nova\Metrics\Value;
 
-class TotalInteractions extends Trend
+class TotalEvents extends Value
 {
     /**
      * Calculate the value of the metric.
@@ -16,9 +15,7 @@ class TotalInteractions extends Trend
      */
     public function calculate(NovaRequest $request)
     {
-        return $this->countByDays($request, Event::class, 'timestamp')
-            ->showSumValue()
-            ->format('0,0');
+        return $this->count($request, Event::class);
     }
 
     /**
@@ -31,7 +28,12 @@ class TotalInteractions extends Trend
         return [
             30 => __('30 Days'),
             60 => __('60 Days'),
-            90 => __('90 Days'),
+            365 => __('365 Days'),
+            'TODAY' => __('Today'),
+            'MTD' => __('Month To Date'),
+            'QTD' => __('Quarter To Date'),
+            'YTD' => __('Year To Date'),
+            'ALL' => __('All Time'),
         ];
     }
 
@@ -42,7 +44,7 @@ class TotalInteractions extends Trend
      */
     public function cacheFor()
     {
-        return now()->addMinutes(5);
+        // return now()->addMinutes(5);
     }
 
     /**
@@ -52,6 +54,6 @@ class TotalInteractions extends Trend
      */
     public function uriKey()
     {
-        return 'total-interactions';
+        return 'total-events';
     }
 }
