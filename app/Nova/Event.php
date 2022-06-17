@@ -8,6 +8,8 @@ use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\KeyValue;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use Mrw\Chart\Chart;
+use Illuminate\Support\Str;
 
 class Event extends Resource
 {
@@ -67,7 +69,17 @@ class Event extends Resource
      */
     public function cards(NovaRequest $request)
     {
-        return [];
+        return [
+            Chart::make()
+                ->width('full')
+                ->height('dynamic')
+                ->url('/api/chart/events_per_event_type_chart')
+                ->title('Interactions Per Event Type')
+                ->options([
+                    'chartId' => Str::uuid(),
+                    'chartHeight' => '500px',
+                ]),
+        ];
     }
 
     /**
