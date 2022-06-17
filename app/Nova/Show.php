@@ -4,6 +4,8 @@ namespace App\Nova;
 use App\Models\Show as ShowModel;
 use App\Nova\Filters\ShowStatusFilter;
 use App\Nova\Filters\TimestampFilter;
+use App\Nova\Metrics\ShowsPerStatus;
+use App\Nova\Metrics\TotalShows;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Badge;
 use Laravel\Nova\Fields\BelongsTo;
@@ -111,7 +113,10 @@ class Show extends Resource
      */
     public function cards(NovaRequest $request)
     {
-        return [];
+        return [
+            TotalShows::make()->width('1/2')->defaultRange('ALL'),
+            ShowsPerStatus::make()->width('1/2'),
+        ];
     }
 
     /**
