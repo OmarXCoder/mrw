@@ -2,6 +2,7 @@
 namespace Mrw\Chart;
 
 use Laravel\Nova\Card;
+use Illuminate\Support\Str;
 
 class Chart extends Card
 {
@@ -11,6 +12,11 @@ class Chart extends Card
      * @var string
      */
     public $width = '1/3';
+
+    public function __construct()
+    {
+        $this->meta['chartId'] = Str::uuid();
+    }
 
     /**
      * Get the component name for the element.

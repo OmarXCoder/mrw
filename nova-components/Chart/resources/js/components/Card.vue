@@ -19,13 +19,15 @@ const props = defineProps({
 });
 
 const defaultOptions = {
-    chartId: 'chart',
+    chartId: 'chartisan-chart',
     chartHeight: '400px',
-    title: 'Chart Title',
+    title: 'Card Title',
 };
 
 const defaultHooks = {
     colors: null,
+    legend: false,
+    responsive: true,
 };
 
 const options = Object.assign({}, defaultOptions, props.card);

@@ -78,12 +78,14 @@ __webpack_require__.r(__webpack_exports__);
     expose();
     var props = __props;
     var defaultOptions = {
-      chartId: 'chart',
+      chartId: 'chartisan-chart',
       chartHeight: '400px',
-      title: 'Chart Title'
+      title: 'Card Title'
     };
     var defaultHooks = {
-      colors: null
+      colors: null,
+      legend: false,
+      responsive: true
     };
     var options = Object.assign({}, defaultOptions, props.card);
     var hooks = Object.assign({}, defaultHooks, props.card.hooks); // Customizing the Chart
