@@ -59,14 +59,27 @@ class Chart extends Card
     }
 
     /**
-     * Set Chart's datasets
+     * Set Chart's data
      *
-     * @param string $datasets
+     * @param string $data
      * @return Chart
      */
-    public function datasets(array $datasets): Chart
+    public function data(array $data): Chart
     {
-        $this->meta['datasets'] = $datasets;
+        $this->meta['data'] = $data;
+
+        return $this;
+    }
+
+    /**
+     * Set Chart's hooks
+     *
+     * @param string $hooks
+     * @return Chart
+     */
+    public function hooks(array $hooks): Chart
+    {
+        $this->meta['hooks'] = $hooks;
 
         return $this;
     }
