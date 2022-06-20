@@ -4,6 +4,9 @@ namespace App\Nova;
 use App\Models\Show as ShowModel;
 use App\Nova\Filters\ShowStatusFilter;
 use App\Nova\Filters\TimestampFilter;
+use App\Nova\Metrics\AttendeesPerApp;
+use App\Nova\Metrics\ShowAppsCount;
+use App\Nova\Metrics\ShowAttendeesCount;
 use App\Nova\Metrics\ShowsPerStatus;
 use App\Nova\Metrics\TotalShows;
 use Illuminate\Http\Request;
@@ -115,7 +118,14 @@ class Show extends Resource
     {
         return [
             TotalShows::make()->width('1/2')->defaultRange('ALL'),
+
             ShowsPerStatus::make()->width('1/2'),
+
+            ShowAppsCount::make()->onlyOnDetail(),
+
+            ShowAttendeesCount::make()->onlyOnDetail(),
+
+            AttendeesPerApp::make()->onlyOnDetail(),
         ];
     }
 
