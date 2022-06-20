@@ -20,6 +20,7 @@ return new class extends Migration {
             $table->string('email');
             $table->string('job_title')->nullable();
             $table->string('company')->nullable();
+            $table->string('profession')->nullable();
             $table->string('phone')->nullable();
             $table->string('address_line_1')->nullable();
             $table->string('address_line_2')->nullable();

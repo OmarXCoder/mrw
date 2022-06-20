@@ -126,6 +126,11 @@ class App extends Resource
                 ->width('full')
                 ->height('dynamic')
                 ->onlyOnDetail(),
+
+            $this->createParticipantsByProfessionChart($request)
+                ->width('full')
+                ->height('dynamic')
+                ->onlyOnDetail(),
         ];
     }
 
@@ -169,6 +174,30 @@ class App extends Resource
                     [
                         'name' => 'Participants',
                         'values' => $participantsByCompany->pluck('attendees_count')->toArray(),
+                    ],
+                ],
+            ])
+            ->hooks([
+                'beginAtZero' => true,
+            ]);
+    }
+
+    private function createParticipantsByProfessionChart(NovaRequest $request): Card
+    {
+        $participantsByProfession = Attendee::join('app_attendee', 'attendees.id', '=', 'app_attendee.attendee_id')
+            ->select('attendees.profession', DB::raw('COUNT(attendees.profession) as attendees_count'))
+            ->groupBy('attendees.profession')
+            ->where('app_attendee.app_id', $request->resourceId)
+            ->get();
+
+        return Chart::make()
+            ->title('Participants By Profession')
+            ->data([
+                'chart' => ['labels' => $participantsByProfession->pluck('profession')->toArray()],
+                'datasets' => [
+                    [
+                        'name' => 'Participants',
+                        'values' => $participantsByProfession->pluck('attendees_count')->toArray(),
                     ],
                 ],
             ])
