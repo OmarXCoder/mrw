@@ -75,7 +75,8 @@ class EventType extends Resource
                 ->options([
                     'chartId' => Str::uuid(),
                     'chartHeight' => '500px',
-                ]),
+                ])
+                ->hooks(['legend' => false]),
         ];
     }
 

@@ -22,27 +22,39 @@ const defaultOptions = {
     chartId: 'chart',
     chartHeight: '400px',
     title: 'Chart Title',
-    prop: 'prop',
-    colors: ['#0FA5E9', '#F99037'],
-    url: null,
+};
+
+const defaultHooks = {
+    colors: null,
 };
 
 const options = Object.assign({}, defaultOptions, props.card);
 
+const hooks = Object.assign({}, defaultHooks, props.card.hooks);
+
 // Customizing the Chart
-const hooks = new ChartisanHooks();
+const chartisanHooks = new ChartisanHooks();
 
-hooks.colors(options.colors).legend(false);
-
-if (options.datasets) {
-    hooks['datasets'](options.datasets);
+for (let hook in hooks) {
+    if (hooks[hook] !== null) {
+        chartisanHooks[hook](hooks[hook]);
+    } else {
+        chartisanHooks[hook]();
+    }
 }
 
 onMounted(() => {
-    const chart = new Chartisan({
+    const chartOptions = {
         el: `#chart-${options.chartId}`,
-        url: options.url,
-        hooks,
-    });
+        hooks: chartisanHooks,
+    };
+
+    if (options.url) {
+        chartOptions['url'] = options.url;
+    } else if (options.data) {
+        chartOptions['data'] = options.data;
+    }
+
+    new Chartisan(chartOptions);
 });
 </script>

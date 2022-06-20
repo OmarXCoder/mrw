@@ -80,32 +80,45 @@ __webpack_require__.r(__webpack_exports__);
     var defaultOptions = {
       chartId: 'chart',
       chartHeight: '400px',
-      title: 'Chart Title',
-      prop: 'prop',
-      colors: ['#0FA5E9', '#F99037'],
-      url: null
+      title: 'Chart Title'
     };
-    var options = Object.assign({}, defaultOptions, props.card); // Customizing the Chart
+    var defaultHooks = {
+      colors: null
+    };
+    var options = Object.assign({}, defaultOptions, props.card);
+    var hooks = Object.assign({}, defaultHooks, props.card.hooks); // Customizing the Chart
 
-    var hooks = new _chartisan_chartjs__WEBPACK_IMPORTED_MODULE_0__.ChartisanHooks();
-    hooks.colors(options.colors).legend(false);
+    var chartisanHooks = new _chartisan_chartjs__WEBPACK_IMPORTED_MODULE_0__.ChartisanHooks();
 
-    if (options.datasets) {
-      hooks['datasets'](options.datasets);
+    for (var hook in hooks) {
+      if (hooks[hook] !== null) {
+        chartisanHooks[hook](hooks[hook]);
+      } else {
+        chartisanHooks[hook]();
+      }
     }
 
     (0,vue__WEBPACK_IMPORTED_MODULE_1__.onMounted)(function () {
-      var chart = new _chartisan_chartjs__WEBPACK_IMPORTED_MODULE_0__.Chartisan({
+      var chartOptions = {
         el: "#chart-".concat(options.chartId),
-        url: options.url,
-        hooks: hooks
-      });
+        hooks: chartisanHooks
+      };
+
+      if (options.url) {
+        chartOptions['url'] = options.url;
+      } else if (options.data) {
+        chartOptions['data'] = options.data;
+      }
+
+      new _chartisan_chartjs__WEBPACK_IMPORTED_MODULE_0__.Chartisan(chartOptions);
     });
     var __returned__ = {
       props: props,
       defaultOptions: defaultOptions,
+      defaultHooks: defaultHooks,
       options: options,
       hooks: hooks,
+      chartisanHooks: chartisanHooks,
       Chartisan: _chartisan_chartjs__WEBPACK_IMPORTED_MODULE_0__.Chartisan,
       ChartisanHooks: _chartisan_chartjs__WEBPACK_IMPORTED_MODULE_0__.ChartisanHooks,
       onMounted: vue__WEBPACK_IMPORTED_MODULE_1__.onMounted
