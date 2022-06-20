@@ -22,6 +22,7 @@ class AttendeeFactory extends Factory
             'first_name' => $this->faker->firstName(),
             'last_name' => $this->faker->lastName(),
             'job_title' => $this->faker->jobTitle(),
+            'profession' => $this->faker->randomElement(['Teacher', 'Software Engineer', 'Civil Engineer', 'Veterinarian', 'Student', 'Doctor', 'Physician', 'Judge', 'Lawyer']),
             'email' => $this->faker->email(),
             'company' => $this->faker->randomElement(['Apple', 'Google', 'Microsoft', 'Samsung', 'Toyota', 'Ford', 'Pfizer', 'LG', 'Philips']),
             'phone' => $this->faker->phoneNumber(),
