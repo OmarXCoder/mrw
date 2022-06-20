@@ -8,7 +8,6 @@ use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Textarea;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Mrw\Chart\Chart;
-use Illuminate\Support\Str;
 
 class EventType extends Resource
 {
@@ -70,13 +69,8 @@ class EventType extends Resource
             Chart::make()
                 ->width('full')
                 ->height('dynamic')
-                ->url('/api/chart/events_per_event_type_chart')
                 ->title('Interactions Per Event Type')
-                ->options([
-                    'chartId' => Str::uuid(),
-                    'chartHeight' => '500px',
-                ])
-                ->hooks(['legend' => false]),
+                ->url('/api/chart/events_per_event_type_chart'),
         ];
     }
 
