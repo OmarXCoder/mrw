@@ -17,8 +17,9 @@ return new class extends Migration {
             $table->string('badge_id')->unique();
             $table->string('first_name');
             $table->string('last_name');
-            $table->string('job_title');
             $table->string('email');
+            $table->string('job_title')->nullable();
+            $table->string('company')->nullable();
             $table->string('phone')->nullable();
             $table->string('address_line_1')->nullable();
             $table->string('address_line_2')->nullable();

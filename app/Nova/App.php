@@ -121,12 +121,17 @@ class App extends Resource
                 ->width('full')
                 ->height('dynamic')
                 ->onlyOnDetail(),
+
+            $this->createParticipantsByCompanyChart($request)
+                ->width('full')
+                ->height('dynamic')
+                ->onlyOnDetail(),
         ];
     }
 
     private function createParticipantsByCountryChart(NovaRequest $request): Card
     {
-        $attendeesPerCountry = Attendee::join('app_attendee', 'attendees.id', '=', 'app_attendee.attendee_id')
+        $participantsByCountry = Attendee::join('app_attendee', 'attendees.id', '=', 'app_attendee.attendee_id')
             ->select('attendees.country', DB::raw('COUNT(attendees.country) as attendees_count'))
             ->groupBy('attendees.country')
             ->where('app_attendee.app_id', $request->resourceId)
@@ -135,11 +140,35 @@ class App extends Resource
         return Chart::make()
             ->title('Participants By Country')
             ->data([
-                'chart' => ['labels' => $attendeesPerCountry->pluck('country')->toArray()],
+                'chart' => ['labels' => $participantsByCountry->pluck('country')->toArray()],
                 'datasets' => [
                     [
-                        'name' => 'Attendees',
-                        'values' => $attendeesPerCountry->pluck('attendees_count')->toArray(),
+                        'name' => 'Participants',
+                        'values' => $participantsByCountry->pluck('attendees_count')->toArray(),
+                    ],
+                ],
+            ])
+            ->hooks([
+                'beginAtZero' => true,
+            ]);
+    }
+
+    private function createParticipantsByCompanyChart(NovaRequest $request): Card
+    {
+        $participantsByCompany = Attendee::join('app_attendee', 'attendees.id', '=', 'app_attendee.attendee_id')
+            ->select('attendees.company', DB::raw('COUNT(attendees.company) as attendees_count'))
+            ->groupBy('attendees.company')
+            ->where('app_attendee.app_id', $request->resourceId)
+            ->get();
+
+        return Chart::make()
+            ->title('Participants By Company')
+            ->data([
+                'chart' => ['labels' => $participantsByCompany->pluck('company')->toArray()],
+                'datasets' => [
+                    [
+                        'name' => 'Participants',
+                        'values' => $participantsByCompany->pluck('attendees_count')->toArray(),
                     ],
                 ],
             ])
