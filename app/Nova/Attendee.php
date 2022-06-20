@@ -77,6 +77,8 @@ class Attendee extends Resource
                 fn () => sprintf('%s %s', $this->first_name, $this->last_name)
             )->onlyOnIndex(),
 
+            Text::make('country')->sortable(),
+
             Text::make('Badge ID')->showOnPreview()->hideFromIndex(),
 
             Text::make('First Name')->showOnPreview()->hideFromIndex(),

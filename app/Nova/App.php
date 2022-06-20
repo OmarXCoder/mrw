@@ -1,8 +1,11 @@
 <?php
 namespace App\Nova;
 
+use App\Models\Attendee;
 use App\Nova\Metrics\AppAttendeeInteractions;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Laravel\Nova\Card;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
@@ -10,6 +13,7 @@ use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Mrw\ApiTokenGenerator\ApiTokenGenerator;
+use Mrw\Chart\Chart;
 
 class App extends Resource
 {
@@ -109,8 +113,39 @@ class App extends Resource
     public function cards(NovaRequest $request)
     {
         return [
-            AppAttendeeInteractions::make()->onlyOnDetail()->width('full'),
+            AppAttendeeInteractions::make()
+                ->width('full')
+                ->onlyOnDetail(),
+
+            $this->createParticipantsByCountryChart($request)
+                ->width('full')
+                ->height('dynamic')
+                ->onlyOnDetail(),
         ];
+    }
+
+    private function createParticipantsByCountryChart(NovaRequest $request): Card
+    {
+        $attendeesPerCountry = Attendee::join('app_attendee', 'attendees.id', '=', 'app_attendee.attendee_id')
+            ->select('attendees.country', DB::raw('COUNT(attendees.country) as attendees_count'))
+            ->groupBy('attendees.country')
+            ->where('app_attendee.app_id', $request->resourceId)
+            ->get();
+
+        return Chart::make()
+            ->title('Participants By Country')
+            ->data([
+                'chart' => ['labels' => $attendeesPerCountry->pluck('country')->toArray()],
+                'datasets' => [
+                    [
+                        'name' => 'Attendees',
+                        'values' => $attendeesPerCountry->pluck('attendees_count')->toArray(),
+                    ],
+                ],
+            ])
+            ->hooks([
+                'beginAtZero' => true,
+            ]);
     }
 
     /**
