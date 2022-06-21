@@ -23,6 +23,7 @@
     -   [Create Attendee](#create-attendee)
 -   [Events](#events)
     -   [Create Event](#create-event)
+-   [Notes](#notes)
 
 # Action Types
 
@@ -437,5 +438,61 @@
         "attendee_id": null,
         "meta": null
     }
+}
+```
+
+# Notes
+
+## Meta And Links Objects
+
+-   **Typically the links object looks like**
+
+```json
+{
+    "first": "http://127.0.0.1:8000/api/shows?page=1",
+    "last": "http://127.0.0.1:8000/api/shows?page=9",
+    "prev": null,
+    "next": "http://127.0.0.1:8000/api/shows?page=2"
+}
+```
+
+-   **And the meta object looks like**
+
+```json
+{
+    "current_page": 1,
+    "from": 1,
+    "last_page": 3,
+    "links": [
+        {
+            "url": null,
+            "label": "&laquo; Previous",
+            "active": false
+        },
+        {
+            "url": "http://127.0.0.1:8000/api/shows?page=1",
+            "label": "1",
+            "active": true
+        },
+        {
+            "url": "http://127.0.0.1:8000/api/shows?page=2",
+            "label": "2",
+            "active": false
+        },
+        {
+            "url": "http://127.0.0.1:8000/api/shows?page=3",
+            "label": "3",
+            "active": false
+        },
+        {
+            "url": "http://127.0.0.1:8000/api/shows?page=2",
+            "label": "Next &raquo;",
+            "active": false
+        }
+    ],
+    "path": "http://127.0.0.1:8000/api/shows",
+    "per_page": 15,
+    "to": 15,
+    "total": 44
 }
 ```
