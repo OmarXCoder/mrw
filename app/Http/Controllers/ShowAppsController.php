@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Resources\AppResource;
@@ -23,10 +22,12 @@ class ShowAppsController extends Controller
             'machine_id' => ['required'],
         ]);
 
-        return $show->apps()->create([
+        $app = $show->apps()->create([
             'name' => $request->input('name'),
             'kiosk_id' => $request->input('kiosk_id'),
             'machine_id' => $request->input('machine_id'),
         ]);
+
+        return AppResource::make($app);
     }
 }
