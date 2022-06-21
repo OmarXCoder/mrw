@@ -20,8 +20,10 @@ class AttendeeResource extends JsonResource
             'first_name' => $this->first_name,
             'first_name' => $this->first_name,
             'last_name' => $this->last_name,
-            'job_title' => $this->job_title,
             'email' => $this->email,
+            'job_title' => $this->job_title,
+            'company' => $this->company,
+            'profession' => $this->profession,
             'phone' => $this->phone,
             'address_line_1' => $this->address_line_1,
             'address_line_2' => $this->address_line_2,
@@ -32,6 +34,7 @@ class AttendeeResource extends JsonResource
             'meta' => $this->meta,
             'notes' => $this->notes,
             'show_id' => $this->show_id,
+            'client_id' => $this->client_id,
         ];
     }
 }
