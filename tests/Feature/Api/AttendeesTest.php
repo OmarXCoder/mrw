@@ -35,7 +35,6 @@ class AttendeesTest extends TestCase
             'first_name' => null,
             'last_name' => null,
             'email' => null,
-            'client_id' => null,
             'show_id' => null,
         ]);
 
@@ -47,7 +46,6 @@ class AttendeesTest extends TestCase
                 'first_name',
                 'last_name',
                 'email',
-                'client_id',
                 'show_id',
             ],
             'error.data'
