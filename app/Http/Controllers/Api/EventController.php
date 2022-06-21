@@ -27,7 +27,7 @@ class EventController extends Controller
             'show_id' => $request->get('show_id'),
             'client_id' => $request->get('client_id'),
             'timestamp' => $request->get('timestamp'),
-            'data' => json_encode($request->get('data')),
+            'meta' => $request->get('meta'),
         ]);
 
         return EventResource::make($event);

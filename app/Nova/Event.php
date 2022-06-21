@@ -59,7 +59,7 @@ class Event extends Resource
 
             BelongsTo::make('Show'),
 
-            KeyValue::make('Data')->rules('json'),
+            KeyValue::make('Meta')->rules('json'),
         ];
     }
 

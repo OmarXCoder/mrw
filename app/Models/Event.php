@@ -18,7 +18,7 @@ class Event extends Model
      * @var array
      */
     protected $casts = [
-        'data' => 'json',
+        'meta' => 'json',
     ];
 
     public function show(): BelongsTo

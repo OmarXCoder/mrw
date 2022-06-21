@@ -21,7 +21,7 @@ return new class extends Migration {
             $table->foreignId('client_id')->constrained('clients')->cascadeOnDelete();
             $table->unsignedBigInteger('attendee_id')->nullable();
             $table->timestamp('timestamp')->nullable();
-            $table->json('data')->nullable();
+            $table->json('meta')->nullable();
             $table->timestamps();
         });
     }

@@ -28,7 +28,7 @@ class EventFactory extends Factory
             'action_code' => Arr::random(range(0, 6)),
             'event_code' => Arr::random(range(0, 13)),
             'timestamp' => \Carbon\Carbon::now()->toDateTimeString(),
-            'data' => [
+            'meta' => [
                 'machine_id' => '351cx-132c234-xwaeu2-sxl2',
                 'kiosk_id' => 'Back Wall, Left',
             ],

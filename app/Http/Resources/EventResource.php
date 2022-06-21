@@ -22,7 +22,7 @@ class EventResource extends JsonResource
             'app_id' => $this->app_id,
             'show_id' => $this->show_id,
             'attendee_id' => $this->attendee_id,
-            'data' => json_decode($this->data),
+            'meta' => $this->meta,
         ];
     }
 }
