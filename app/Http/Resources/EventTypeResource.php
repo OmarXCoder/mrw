@@ -15,7 +15,6 @@ class EventTypeResource extends JsonResource
     {
         return [
             'object_type' => 'EventType',
-            'id' => $this->id,
             'name' => $this->name,
             'code' => $this->code,
             'description' => $this->description,

@@ -23,6 +23,19 @@ class Attendee extends Model
         'meta' => 'json',
     ];
 
+    protected static function booted()
+    {
+        $setClientId = function ($model) {
+            $show = Show::find($model->show_id);
+
+            $model->client_id = $show->client_id;
+        };
+
+        static::creating($setClientId);
+
+        static::updating($setClientId);
+    }
+
     public function show(): BelongsTo
     {
         return $this->belongsTo(Show::class);
