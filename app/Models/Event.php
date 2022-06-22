@@ -21,6 +21,21 @@ class Event extends Model
         'meta' => 'json',
     ];
 
+    protected static function booted()
+    {
+        $setClientIdAndShowId = function ($event) {
+            $app = App::find($event->app_id);
+
+            $event->client_id = $app->client_id;
+
+            $event->show_id = $app->show_id;
+        };
+
+        static::creating($setClientIdAndShowId);
+
+        static::updating($setClientIdAndShowId);
+    }
+
     public function show(): BelongsTo
     {
         return $this->belongsTo(Show::class);

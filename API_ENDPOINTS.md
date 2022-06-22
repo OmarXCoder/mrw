@@ -25,7 +25,12 @@
     -   [Fetch Single Attendee](#fetch-single-attendee)
     -   [Create Attendee](#create-attendee)
 -   [Events](#events)
+    -   [Fetch Events](#fetch-events)
     -   [Create Event](#create-event)
+-   [Show Events](#show-events)
+    -   [Fetch Show Events](#fetch-show-events)
+-   [App Events](#app-events)
+    -   [Fetch App Events](#fetch-app-events)
 -   [Notes](#notes)
 
 # Action Types
@@ -449,6 +454,39 @@
 
 # Events
 
+### Fetch Events
+
+-- **Endpoint:** `[GET] api/events`
+
+-- **Description:** Fetch a paginated list of all events on the system
+
+-- **Response:**
+
+```json
+{
+    "data": [
+        {
+            "object_type": "Event",
+            "id": 1,
+            "action_code": 1,
+            "event_code": 4,
+            "timestamp": "2022-05-18 01:39:45",
+            "app_id": 1,
+            "show_id": 1,
+            "attendee_id": 4,
+            "meta": {
+                "kiosk_id": "Back Wall, Left",
+                "machine_id": "351cx-132c234-xwaeu2-sxl2"
+            }
+        },
+        {},
+        {}
+    ],
+    "links": {},
+    "meta": {}
+}
+```
+
 ### Create Event
 
 -- **Endpoint:** `[POST] api/events`
@@ -460,8 +498,6 @@
 ```json
 {
     "app_id": ["required", "exists:apps,id"],
-    "show_id": ["required", "exists:shows,id"],
-    "client_id": ["required", "exists:clients,id"],
     "action_code": ["required", "exists:action_types,code"],
     "event_code": ["required", "exists:event_types,code"],
     "timestamp": ["required", "date"],
@@ -485,6 +521,76 @@
         "attendee_id": null,
         "meta": null
     }
+}
+```
+
+# Show Events
+
+### Fetch Show Events
+
+-- **Endpoint:** `[GET] api/shows/{show}/events`
+
+-- **Description:** Fetch a paginated list of a specific show events
+
+-- **Response:**
+
+```json
+{
+    "data": [
+        {
+            "object_type": "Event",
+            "id": 1,
+            "action_code": 1,
+            "event_code": 4,
+            "timestamp": "2022-05-18 01:39:45",
+            "app_id": 1,
+            "show_id": 1,
+            "attendee_id": 4,
+            "meta": {
+                "kiosk_id": "Back Wall, Left",
+                "machine_id": "351cx-132c234-xwaeu2-sxl2"
+            }
+        },
+        {},
+        {}
+    ],
+    "links": {},
+    "meta": {}
+}
+```
+
+# App Events
+
+### Fetch App Events
+
+-- **Endpoint:** `[GET] api/apps/{app}/events`
+
+-- **Description:** Fetch a paginated list of a specific app events
+
+-- **Response:**
+
+```json
+{
+    "data": [
+        {
+            "object_type": "Event",
+            "id": 1,
+            "action_code": 1,
+            "event_code": 4,
+            "timestamp": "2022-05-18 01:39:45",
+            "app_id": 1,
+            "show_id": 1,
+            "attendee_id": 4,
+            "meta": {
+                "kiosk_id": "Back Wall, Left",
+                "machine_id": "351cx-132c234-xwaeu2-sxl2"
+            }
+        },
+        {},
+        {}
+    ],
+    "links": {},
+    "meta": {}
 }
 ```
 

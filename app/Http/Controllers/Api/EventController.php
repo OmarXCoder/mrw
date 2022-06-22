@@ -8,12 +8,17 @@ use Illuminate\Http\Request;
 
 class EventController extends Controller
 {
+    public function index()
+    {
+        $events = Event::paginate();
+
+        return EventResource::collection($events);
+    }
+
     public function store(Request $request)
     {
         $request->validate([
             'app_id' => ['required', 'exists:apps,id'],
-            'show_id' => ['required', 'exists:shows,id'],
-            'client_id' => ['required', 'exists:clients,id'],
             'action_code' => ['required', 'exists:action_types,code'],
             'event_code' => ['required', 'exists:event_types,code'],
             'timestamp' => ['required', 'date'],
@@ -24,8 +29,6 @@ class EventController extends Controller
             'event_code' => $request->get('event_code'),
             'app_id' => $request->get('app_id'),
             'attendee_id' => $request->get('attendee_id'),
-            'show_id' => $request->get('show_id'),
-            'client_id' => $request->get('client_id'),
             'timestamp' => $request->get('timestamp'),
             'meta' => $request->get('meta'),
         ]);

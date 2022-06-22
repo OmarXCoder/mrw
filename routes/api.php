@@ -2,12 +2,14 @@
 
 use App\Http\Controllers\Api\ActionTypeController;
 use App\Http\Controllers\Api\AppController;
+use App\Http\Controllers\Api\AppEventsController;
 use App\Http\Controllers\Api\AttendeeController;
 use App\Http\Controllers\Api\ClientController;
 use App\Http\Controllers\Api\ClientShowsController;
 use App\Http\Controllers\Api\EventController;
 use App\Http\Controllers\Api\EventTypeController;
 use App\Http\Controllers\Api\ShowController;
+use App\Http\Controllers\Api\ShowEventsController;
 use App\Http\Controllers\ShowAppsController;
 use Illuminate\Support\Facades\Route;
 
@@ -54,5 +56,12 @@ Route::group(['as' => 'api.', 'middleware' => 'auth:sanctum'], function () {
     Route::get('attendees/{attendee}', [AttendeeController::class, 'show'])->name('attendees.show');
 
     // EVENTS ROUTES
+    Route::get('/events', [EventController::class, 'index'])->name('events.index');
     Route::post('/events', [EventController::class, 'store'])->name('events.store');
+
+    // SHOW EVENTS ROUTES
+    Route::get('/shows/{show}/events', [ShowEventsController::class, 'index'])->name('shows.events.index');
+
+    // APP EVENTS ROUTES
+    Route::get('/apps/{app}/events', [AppEventsController::class, 'index'])->name('apps.events.index');
 });
