@@ -59,4 +59,9 @@ class Show extends Model
     {
         return $this->hasMany(Attendee::class);
     }
+
+    public function events(): HasMany
+    {
+        return $this->hasMany(Event::class);
+    }
 }
