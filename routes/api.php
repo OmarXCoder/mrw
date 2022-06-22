@@ -54,5 +54,6 @@ Route::group(['as' => 'api.', 'middleware' => 'auth:sanctum'], function () {
     Route::get('attendees/{attendee}', [AttendeeController::class, 'show'])->name('attendees.show');
 
     // EVENTS ROUTES
+    Route::get('/events', [EventController::class, 'index'])->name('events.index');
     Route::post('/events', [EventController::class, 'store'])->name('events.store');
 });

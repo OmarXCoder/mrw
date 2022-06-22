@@ -12,6 +12,25 @@ class EventsTest extends TestCase
     use RefreshDatabase;
 
     /** @test */
+    public function it_fetches_a_paginated_list_of_events()
+    {
+        $this->login();
+
+        $this->seed([
+            ActionTypesTableSeeder::class,
+            EventTypesTableSeeder::class,
+        ]);
+
+        Event::factory(3)->create();
+
+        $response = $this->getJson(route('api.events.index'));
+
+        $response->assertStatus(200);
+
+        $response->assertJsonStructure(['data', 'meta', 'links']);
+    }
+
+    /** @test */
     public function it_tracks_attendee_actions()
     {
         $this->login();
