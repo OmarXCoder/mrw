@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\ActionTypeController;
 use App\Http\Controllers\Api\AppController;
+use App\Http\Controllers\Api\AppEventsController;
 use App\Http\Controllers\Api\AttendeeController;
 use App\Http\Controllers\Api\ClientController;
 use App\Http\Controllers\Api\ClientShowsController;
@@ -60,4 +61,7 @@ Route::group(['as' => 'api.', 'middleware' => 'auth:sanctum'], function () {
 
     // SHOW EVENTS ROUTES
     Route::get('/shows/{show}/events', [ShowEventsController::class, 'index'])->name('shows.events.index');
+
+    // APP EVENTS ROUTES
+    Route::get('/apps/{app}/events', [AppEventsController::class, 'index'])->name('apps.events.index');
 });
