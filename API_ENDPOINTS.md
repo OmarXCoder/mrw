@@ -6,6 +6,9 @@
     -   [Fetch Action Types](#fetch-action-types)
 -   [Event Types](#event-types)
     -   [Fetch Event Types](#fetch-event-types)
+-   [Clients](#clients)
+    -   [Fetch Clients](#fetch-clients)
+    -   [Fetch Single Client](#fetch-single-client)
 -   [Shows](#shows)
     -   [Fetch Shows](#fetch-shows)
     -   [Fetch Single Show](#fetch-single-show)
@@ -72,6 +75,50 @@
         {},
         {}
     ]
+}
+```
+
+# Clients
+
+### Fetch Clients
+
+-- **Endpoint:** `[GET] api/clients`
+
+-- **Description:** Fetch a paginated list of clients
+
+-- **Response:**
+
+```json
+{
+    "data": [
+        {
+            "object_type": "Client",
+            "id": 1,
+            "name": "John Doe"
+        },
+        {},
+        {}
+    ],
+    "links": {},
+    "meta": {}
+}
+```
+
+### Fetch Single Client
+
+-- **Endpoint:** `[GET] api/clients/{client}`
+
+-- **Description:** Fetch a single client
+
+-- **Response:**
+
+```json
+{
+    "data": {
+        "object_type": "Client",
+        "id": 1,
+        "name": "John Doe"
+    }
 }
 ```
 
