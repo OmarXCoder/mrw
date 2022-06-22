@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\ActionTypeController;
 use App\Http\Controllers\Api\AppController;
 use App\Http\Controllers\Api\AttendeeController;
+use App\Http\Controllers\Api\ClientController;
 use App\Http\Controllers\Api\ClientShowsController;
 use App\Http\Controllers\Api\EventController;
 use App\Http\Controllers\Api\EventTypeController;
@@ -27,8 +28,9 @@ Route::group(['as' => 'api.', 'middleware' => 'auth:sanctum'], function () {
     // EVENT TYPES
     Route::get('/event-types', [EventTypeController::class, 'index'])->name('event-types.index');
 
-    // EVENTS ROUTES
-    Route::post('/events', [EventController::class, 'store'])->name('events.store');
+    // CLIENTS ROUTES
+    Route::get('clients', [ClientController::class, 'index'])->name('clients.index');
+    Route::get('clients/{client}', [ClientController::class, 'show'])->name('clients.show');
 
     // SHOWS ROUTES
     Route::get('shows', [ShowController::class, 'index'])->name('shows.index');
@@ -50,4 +52,7 @@ Route::group(['as' => 'api.', 'middleware' => 'auth:sanctum'], function () {
     // ATTENDEE ROUTES
     Route::post('attendees', [AttendeeController::class, 'store'])->name('attendees.store');
     Route::get('attendees/{attendee}', [AttendeeController::class, 'show'])->name('attendees.show');
+
+    // EVENTS ROUTES
+    Route::post('/events', [EventController::class, 'store'])->name('events.store');
 });
