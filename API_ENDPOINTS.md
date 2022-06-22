@@ -460,8 +460,6 @@
 ```json
 {
     "app_id": ["required", "exists:apps,id"],
-    "show_id": ["required", "exists:shows,id"],
-    "client_id": ["required", "exists:clients,id"],
     "action_code": ["required", "exists:action_types,code"],
     "event_code": ["required", "exists:event_types,code"],
     "timestamp": ["required", "date"],
