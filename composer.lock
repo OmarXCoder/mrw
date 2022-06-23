@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f6545157d38800697c82f3c852432663",
+    "content-hash": "1975015371189c4e740df1493830ba70",
     "packages": [
         {
             "name": "box/spout",
@@ -2521,7 +2521,7 @@
         },
         {
             "name": "mrw/api-token-generator",
-            "version": "dev-metrics",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "./nova-components/ApiTokenGenerator",
@@ -2557,7 +2557,7 @@
         },
         {
             "name": "mrw/chart",
-            "version": "dev-metrics",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "./nova-components/Chart",
