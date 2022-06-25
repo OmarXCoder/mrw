@@ -11,7 +11,9 @@
         "build-api-token-generator": "cd nova-components/ApiTokenGenerator && npm run dev",
         "build-api-token-generator-prod": "cd nova-components/ApiTokenGenerator && npm run prod",
         "build-chart": "cd nova-components/Chart && npm run dev",
-        "build-chart-prod": "cd nova-components/Chart && npm run prod"
+        "build-chart-prod": "cd nova-components/Chart && npm run prod",
+        "build-report-page-generator": "cd nova-components/ReportPageGenerator && npm run dev",
+        "build-report-page-generator-prod": "cd nova-components/ReportPageGenerator && npm run prod"
     },
     "devDependencies": {
         "axios": "^0.25",

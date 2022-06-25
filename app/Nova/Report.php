@@ -8,6 +8,7 @@ use Laravel\Nova\Fields\MorphTo;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Textarea;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use Mrw\ReportPageGenerator\ReportPageGenerator;
 
 class Report extends Resource
 {
@@ -52,6 +53,11 @@ class Report extends Resource
             BelongsTo::make('Client')->hideWhenCreating()->hideWhenUpdating(),
 
             MorphTo::make('Reportable')->types([Show::class, App::class]),
+
+            ReportPageGenerator::make()->withMeta([
+                'reportable_id' => $this->resource->reportable_id,
+                'reportable_type' => $this->resource->reportable_type,
+            ]),
         ];
     }
 
