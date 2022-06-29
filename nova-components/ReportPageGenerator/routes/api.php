@@ -37,3 +37,7 @@ Route::post('/reports/{report}/pages', function (Request $request, Report $repor
 
     return (new AppReportPageController)->store($request, $report);
 });
+
+Route::delete('/report-pages/{reportPage}', function (Request $request, ReportPage $reportPage) {
+    return $reportPage->delete();
+});
