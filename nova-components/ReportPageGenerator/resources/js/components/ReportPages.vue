@@ -1,7 +1,12 @@
 <template>
-    <div class="bg-gray-50 dark:bg-gray-800 rounded-lg shadow" style="padding-top: 24px">
-        <div class="py-2" v-if="reportPages.length > 0">
-            <ReportPage v-for="page in reportPages" :page="page" :key="page.id" />
+    <div class="bg-gray-50 dark:bg-gray-800 rounded-lg shadow">
+        <div v-if="reportPages.length > 0" class="mx-auto" style="max-width: 1024px">
+            <ReportPage
+                v-for="(page, index) in reportPages"
+                :page="page"
+                :key="page.id"
+                :class="{ 'mb-6': index !== reportPages.length - 1 }"
+            />
         </div>
         <div v-else class="flex flex-col justify-center items-center px-6 py-8">
             <svg

@@ -1,9 +1,5 @@
 <template>
-    <div
-        class="p-8 mx-auto bg-white rounded-lg mb-6"
-        style="max-width: 1024px"
-        :id="`report-page-${page.id}`"
-    >
+    <div class="p-8 mx-auto bg-white rounded-lg" :id="`report-page-${page.id}`">
         <h1 class="text-2xl">{{ page.heading }}</h1>
         <Chart :config="chartConfig" />
 
