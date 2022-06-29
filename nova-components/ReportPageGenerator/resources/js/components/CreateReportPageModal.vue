@@ -135,12 +135,11 @@ const form = reactive(
     })
 );
 
-const reportId = inject('reportId');
-const { addReportPage } = inject('reportPages');
-const toolMeta = inject('toolMeta');
+const { report, addReportPage } = inject('tool');
+const { id: report_id, reportable_id, reportable_type } = report;
 
 const url = () =>
-    `/nova-vendor/report-page-generator/reports/${reportId}/pages?reportableType=${toolMeta.reportable_type}&reportableId=${toolMeta.reportable_id}`;
+    `/nova-vendor/report-page-generator/reports/${report_id}/pages?reportableType=${reportable_type}&reportableId=${reportable_id}`;
 
 const submit = () => {
     form.post(url()).then((response) => {
@@ -154,5 +153,3 @@ const trixChange = (value) => {
     form.content = value;
 };
 </script>
-
-<style></style>

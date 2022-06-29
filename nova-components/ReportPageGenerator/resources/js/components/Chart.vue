@@ -28,8 +28,6 @@ const options = Object.assign({}, defaultOptions, props.config);
 
 const hooks = Object.assign({}, defaultHooks, props.config.hooks);
 
-console.log(hooks);
-
 // Customizing the Chart
 const chartisanHooks = new ChartisanHooks();
 

@@ -1,8 +1,9 @@
 <template>
-    <div class="px-6 py-4 mb-8">
+    <div class="p-8 mx-auto bg-white rounded-lg" :id="`report-page-${page.id}`">
+        <h1 class="text-2xl">{{ page.heading }}</h1>
         <Chart :config="chartConfig" />
 
-        <div class="plain-html" v-html="page.content"></div>
+        <div class="plain-html mt-8" v-html="page.content"></div>
     </div>
 </template>
 
