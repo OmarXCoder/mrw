@@ -1,47 +1,59 @@
 <template>
     <div>
-        <div class="flex flex-row mb-6">
-            <h2 class="text-2xl w-full">Report Pages</h2>
-            <button
-                class="shadow rounded focus:outline-none ring-primary-200 dark:ring-gray-600 focus:ring bg-primary-500 hover:bg-primary-400 active:bg-primary-600 text-white dark:text-gray-800 inline-flex items-center font-bold px-4 h-9 text-sm flex-shrink-0"
-                dusk="create-button"
-                @click="showModal = true"
-            >
-                <span class="inline-block">{{ __('Create New Report Page') }}</span>
-            </button>
+        <div class="flex mb-3">
+            <h2 class="text-90 font-normal text-xl md:text-2xl flex items-center">
+                {{ __('Report Pages') }}
+            </h2>
+            <!-- Toolbar -->
+            <div class="flex md:justify-end ml-auto">
+                <OutlineButton
+                    v-if="reportPages.length > 0"
+                    class="mr-3 flex-shrink-0"
+                    @click="downloadPdf"
+                    v-tooltip="__('Download PDF')"
+                >
+                    <Icon type="download" />
+                </OutlineButton>
+
+                <DefaultButton @click="showCreateReportPageModal = true" class="flex-shrink-0">
+                    <span class="inline-block">{{ __('Create Report Page') }}</span>
+                </DefaultButton>
+            </div>
         </div>
 
-        <ReportPages @asked-to-create-page="showModal = true" @page-deleted="handleTokenDeleted" />
+        <ReportPages @page-deleted="handleTokenDeleted" />
 
-        <NewReportPageModal
-            :show="showModal"
-            @cancel="showModal = false"
-            @created="showModal = false"
+        <CreateReportPageModal
+            :show="showCreateReportPageModal"
+            @cancel="showCreateReportPageModal = false"
+            @created="showCreateReportPageModal = false"
         />
     </div>
 </template>
 
 <script setup>
 import ReportPages from './ReportPages.vue';
-import NewReportPageModal from './NewReportPageModal.vue';
+import CreateReportPageModal from './CreateReportPageModal.vue';
 import { ref, onMounted, provide } from 'vue';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 const props = defineProps({
-    resourceId: Number,
     panel: Object,
 });
 
+const report = props.panel.fields[0].report;
 const reportPages = ref([]);
-const showModal = ref(false);
+const showCreateReportPageModal = ref(false);
 
-provide('reportId', props.resourceId);
-provide('reportPages', {
+provide('tool', {
+    report,
     reportPages,
     addReportPage: (page) => reportPages.value.push(page),
+    showCreateReportPageModal: () => (showCreateReportPageModal.value = true),
 });
-provide('toolMeta', props.panel.fields[0]);
 
-const url = () => `/nova-vendor/report-page-generator?resourceId=${props.resourceId}`;
+const url = () => `/nova-vendor/report-page-generator?resourceId=${report.id}`;
 
 onMounted(() => {
     Nova.request()
@@ -50,4 +62,36 @@ onMounted(() => {
             reportPages.value = res.data.data;
         });
 });
+
+const downloadPdf = async () => {
+    const doc = new jsPDF({
+        unit: 'pt',
+        compressPdf: true,
+    });
+
+    for (let page of reportPages.value) {
+        let pageEl = document.getElementById(`report-page-${page.id}`);
+
+        await html2canvas(pageEl, {
+            width: pageEl.offsetWidth,
+        }).then((canvas) => {
+            doc.internal.pageSize.width = pageEl.offsetWidth;
+            doc.internal.pageSize.height = pageEl.offsetHeight;
+            doc.addImage(
+                canvas.toDataURL('image/jpeg'),
+                'JPEG',
+                0,
+                0,
+                pageEl.offsetWidth,
+                pageEl.offsetHeight
+            );
+        });
+
+        if (reportPages.value.indexOf(page) < reportPages.value.length - 1) {
+            doc.addPage();
+        }
+    }
+
+    doc.save(`${report.name}-${new Date().toLocaleDateString()}`.replace(/[\/\s]/g, '-'));
+};
 </script>

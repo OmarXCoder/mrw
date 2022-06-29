@@ -55,8 +55,7 @@ class Report extends Resource
             MorphTo::make('Reportable')->types([Show::class, App::class]),
 
             ReportPageGenerator::make()->withMeta([
-                'reportable_id' => $this->resource->reportable_id,
-                'reportable_type' => $this->resource->reportable_type,
+                'report' => $this->resource,
             ]),
         ];
     }

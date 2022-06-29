@@ -1,5 +1,4 @@
 <?php
-
 namespace Mrw\ReportPageGenerator;
 
 use Illuminate\Support\Facades\Route;
@@ -21,8 +20,8 @@ class ToolServiceProvider extends ServiceProvider
         });
 
         Nova::serving(function (ServingNova $event) {
-            Nova::script('report-page-generator', __DIR__.'/../dist/js/tool.js');
-            Nova::style('report-page-generator', __DIR__.'/../dist/css/tool.css');
+            Nova::script('report-page-generator', __DIR__ . '/../dist/js/tool.js');
+            Nova::style('report-page-generator', __DIR__ . '/../dist/css/tool.css');
         });
     }
 
@@ -39,7 +38,7 @@ class ToolServiceProvider extends ServiceProvider
 
         Route::middleware(['nova'])
                 ->prefix('nova-vendor/report-page-generator')
-                ->group(__DIR__.'/../routes/api.php');
+                ->group(__DIR__ . '/../routes/api.php');
     }
 
     /**
