@@ -8,100 +8,50 @@
         <form class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
             <ModalHeader>{{ __('Create Report Page') }}</ModalHeader>
 
-            <div
-                class="field-wrapper flex flex-col border-b border-gray-100 dark:border-gray-700 md:flex-row"
-            >
-                <div class="px-6 md:px-8 mt-2 md:mt-0 w-full md:w-1/3 md:py-5">
-                    <label for="heading-field" class="inline-block pt-2 leading-tight">
-                        {{ __('Heading') }}
-                        <span class="text-red-500 text-sm">*</span>
-                    </label>
-                </div>
-                <div class="mt-1 md:mt-0 pb-5 px-6 md:px-8 w-full md:w-2/3 md:py-5">
-                    <input
-                        id="heading-field"
-                        type="text"
-                        placeholder="Name"
-                        class="w-full form-control form-input form-input-bordered"
-                        v-model="form.heading"
-                    />
-                    <HelpText class="mt-2 help-text-error" v-if="form.errors.has('heading')">
-                        {{ form.getError('heading') }}
-                    </HelpText>
-                </div>
-            </div>
+            <InputField
+                :label="__('Heading')"
+                v-model="form.heading"
+                :error="form.getError('heading')"
+                required
+            />
 
-            <div
-                class="field-wrapper flex flex-col border-b border-gray-100 dark:border-gray-700 md:flex-row"
-            >
-                <div class="px-6 md:px-8 mt-2 md:mt-0 w-full md:w-1/3 md:py-5">
-                    <label for="chart-field" class="inline-block pt-2 leading-tight">
-                        {{ __('Chart') }}
-                        <span class="text-red-500 text-sm">*</span>
-                    </label>
-                </div>
-                <div class="mt-1 md:mt-0 pb-5 px-6 md:px-8 w-full md:w-2/3 md:py-5">
-                    <select
-                        id="chart-field"
-                        v-model="form.chart"
-                        class="w-full block form-control form-select form-select-bordered"
-                    >
-                        <option selected disabled value>Select Chart</option>
-                        <option value="participants-by-country">Participant By Country</option>
-                        <option value="participants-by-company">Participant By Company</option>
-                        <option value="participants-by-profession">
-                            Participant By Profession
-                        </option>
-                    </select>
-                    <HelpText class="mt-2 help-text-error" v-if="form.errors.has('chart')">
-                        {{ form.getError('chart') }}
-                    </HelpText>
-                </div>
-            </div>
+            <SelectField
+                :label="__('Chart')"
+                v-model="form.chart"
+                :error="form.getError('chart')"
+                :options="chartOptions"
+                required
+            />
 
-            <div
-                class="field-wrapper flex flex-col border-b border-gray-100 dark:border-gray-700 md:flex-row"
-            >
-                <div class="px-6 md:px-8 mt-2 md:mt-0 w-full md:w-1/3 md:py-5">
-                    <label for="type-field" class="inline-block pt-2 leading-tight">
-                        {{ __('Chart Type') }}
-                        <span class="text-red-500 text-sm">*</span>
-                    </label>
-                </div>
-                <div class="mt-1 md:mt-0 pb-5 px-6 md:px-8 w-full md:w-2/3 md:py-5">
-                    <select
-                        id="type-field"
-                        v-model="form.type"
-                        class="w-full block form-control form-select form-select-bordered"
-                    >
-                        <option selected disabled value>Select Chart Type</option>
-                        <option value="line-chart">Line Chart</option>
-                        <option value="bar-chart">Bar Chart</option>
-                        <option value="pie-chart">Pie Chart</option>
-                    </select>
-                    <HelpText class="mt-2 help-text-error" v-if="form.errors.has('type')">
-                        {{ form.getError('type') }}
-                    </HelpText>
-                </div>
-            </div>
+            <SelectField
+                :label="__('Chart Type')"
+                v-model="form.type"
+                :error="form.getError('type')"
+                :options="chartTypes"
+                required
+            />
 
-            <div class="field-wrapper border-b border-gray-100 dark:border-gray-700">
-                <div class="px-6 md:px-8">
-                    <label for="content-field" class="inline-block pt-2 leading-tight">
-                        {{ __('Content') }}
-                    </label>
-                </div>
-                <div class="mt-3 pb-5 px-6 md:px-8">
-                    <Trix
-                        name="trixman"
-                        placeholder="notes"
-                        :value="form.content"
-                        :with-files="false"
-                        @change="trixChange"
-                        class="min-h-40"
-                    />
-                </div>
-            </div>
+            <InputField
+                :label="__('Chart Color')"
+                v-model="form.color"
+                :error="form.getError('color')"
+                required
+                type="color"
+            />
+
+            <FieldWrapper
+                :label="__('Content')"
+                for-attr="trix-content-filed"
+                :error="form.getError('content')"
+            >
+                <Trix
+                    name="trix-content-filed"
+                    :value="form.content"
+                    :with-files="false"
+                    @change="(value) => (form.content = value)"
+                    class="min-h-40"
+                />
+            </FieldWrapper>
 
             <ModalFooter>
                 <div class="flex items-center ml-auto">
@@ -129,6 +79,7 @@ const emit = defineEmits(['cancel', 'created']);
 const form = reactive(
     Nova.form({
         type: '',
+        color: '',
         chart: '',
         heading: '',
         content: '',
@@ -137,6 +88,18 @@ const form = reactive(
 
 const { report, addReportPage } = inject('tool');
 const { id: report_id, reportable_id, reportable_type } = report;
+
+const chartOptions = [
+    { name: 'Participants By Country', value: 'participants-by-country' },
+    { name: 'Participants By Company', value: 'participants-by-company' },
+    { name: 'Participants By Profession', value: 'participants-by-profession' },
+];
+
+const chartTypes = [
+    { name: 'Line Chart', value: 'line-chart' },
+    { name: 'Bar Chart', value: 'bar-chart' },
+    { name: 'Pie Chart', value: 'pie-chart' },
+];
 
 const url = () =>
     `/nova-vendor/report-page-generator/reports/${report_id}/pages?reportableType=${reportable_type}&reportableId=${reportable_id}`;
@@ -147,9 +110,5 @@ const submit = () => {
 
         emit('created');
     });
-};
-
-const trixChange = (value) => {
-    form.content = value;
 };
 </script>
