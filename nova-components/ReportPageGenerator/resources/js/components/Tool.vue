@@ -50,10 +50,20 @@ provide('tool', {
     report,
     reportPages,
     addReportPage: (page) => reportPages.value.push(page),
+    deleteReportPage,
     showCreateReportPageModal: () => (showCreateReportPageModal.value = true),
 });
 
 const url = () => `/nova-vendor/report-page-generator?resourceId=${report.id}`;
+
+function deleteReportPage(page) {
+    Nova.request()
+        .delete(`/nova-vendor/report-page-generator/report-pages/${page.id}`)
+        .then((res) => {
+            console.log(res);
+            reportPages.value = reportPages.value.filter((item) => item !== page);
+        });
+}
 
 onMounted(() => {
     Nova.request()

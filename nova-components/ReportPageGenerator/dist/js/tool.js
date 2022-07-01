@@ -243,14 +243,17 @@ __webpack_require__.r(__webpack_exports__);
       type: Object
     }
   },
-  emits: ['deleted'],
   setup: function setup(__props, _ref) {
     var _props$page$meta, _props$page$meta$char, _props$page$meta2, _props$page$meta2$cha, _props$page$meta3, _props$page$meta3$cha;
 
-    var expose = _ref.expose,
-        emit = _ref.emit;
+    var expose = _ref.expose;
     expose();
     var props = __props;
+    var showDeleteConfirmation = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(false);
+
+    var _inject = (0,vue__WEBPACK_IMPORTED_MODULE_0__.inject)('tool'),
+        deleteReportPage = _inject.deleteReportPage;
+
     var chartConfig = {
       heading: props.page.heading,
       data: (_props$page$meta = props.page.meta) === null || _props$page$meta === void 0 ? void 0 : (_props$page$meta$char = _props$page$meta.chart) === null || _props$page$meta$char === void 0 ? void 0 : _props$page$meta$char.data,
@@ -258,10 +261,12 @@ __webpack_require__.r(__webpack_exports__);
       chartId: (_props$page$meta3 = props.page.meta) === null || _props$page$meta3 === void 0 ? void 0 : (_props$page$meta3$cha = _props$page$meta3.chart) === null || _props$page$meta3$cha === void 0 ? void 0 : _props$page$meta3$cha.chartId
     };
     var __returned__ = {
-      emit: emit,
       props: props,
+      showDeleteConfirmation: showDeleteConfirmation,
+      deleteReportPage: deleteReportPage,
       chartConfig: chartConfig,
       ref: vue__WEBPACK_IMPORTED_MODULE_0__.ref,
+      inject: vue__WEBPACK_IMPORTED_MODULE_0__.inject,
       Chart: _Chart_vue__WEBPACK_IMPORTED_MODULE_1__["default"]
     };
     Object.defineProperty(__returned__, '__isScriptSetup', {
@@ -373,6 +378,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       addReportPage: function addReportPage(page) {
         return reportPages.value.push(page);
       },
+      deleteReportPage: deleteReportPage,
       showCreateReportPageModal: function showCreateReportPageModal() {
         return _showCreateReportPageModal.value = true;
       }
@@ -381,6 +387,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     var url = function url() {
       return "/nova-vendor/report-page-generator?resourceId=".concat(report.id);
     };
+
+    function deleteReportPage(page) {
+      Nova.request()["delete"]("/nova-vendor/report-page-generator/report-pages/".concat(page.id)).then(function (res) {
+        console.log(res);
+        reportPages.value = reportPages.value.filter(function (item) {
+          return item !== page;
+        });
+      });
+    }
 
     (0,vue__WEBPACK_IMPORTED_MODULE_2__.onMounted)(function () {
       Nova.request().get(url()).then(function (res) {
@@ -485,6 +500,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       reportPages: reportPages,
       showCreateReportPageModal: _showCreateReportPageModal,
       url: url,
+      deleteReportPage: deleteReportPage,
       downloadPdf: downloadPdf,
       ReportPages: _ReportPages_vue__WEBPACK_IMPORTED_MODULE_0__["default"],
       CreateReportPageModal: _CreateReportPageModal_vue__WEBPACK_IMPORTED_MODULE_1__["default"],
@@ -853,16 +869,34 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "vue");
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(vue__WEBPACK_IMPORTED_MODULE_0__);
 
-var _hoisted_1 = ["id"];
-var _hoisted_2 = {
+var _hoisted_1 = {
+  "class": "relative"
+};
+var _hoisted_2 = ["id"];
+var _hoisted_3 = {
   "class": "text-2xl"
 };
-var _hoisted_3 = ["innerHTML"];
+var _hoisted_4 = ["innerHTML"];
 function render(_ctx, _cache, $props, $setup, $data, $options) {
-  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
-    "class": "p-8 mx-auto bg-white rounded-lg",
+  var _component_Icon = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("Icon");
+
+  var _component_DeleteResourceModal = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("DeleteResourceModal");
+
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    onClick: _cache[0] || (_cache[0] = function ($event) {
+      return $setup.showDeleteConfirmation = true;
+    }),
+    "class": "absolute text-red-400",
+    style: {
+      "top": "20px",
+      "right": "20px"
+    }
+  }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_Icon, {
+    type: "trash"
+  })]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+    "class": "p-8 bg-white rounded-lg",
     id: "report-page-".concat($props.page.id)
-  }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h1", _hoisted_2, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.page.heading), 1
+  }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h1", _hoisted_3, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.page.heading), 1
   /* TEXT */
   ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)($setup["Chart"], {
     config: $setup.chartConfig
@@ -871,9 +905,19 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     innerHTML: $props.page.content
   }, null, 8
   /* PROPS */
-  , _hoisted_3)], 8
+  , _hoisted_4)], 8
   /* PROPS */
-  , _hoisted_1);
+  , _hoisted_2), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_DeleteResourceModal, {
+    show: $setup.showDeleteConfirmation,
+    onConfirm: _cache[1] || (_cache[1] = function ($event) {
+      return $setup.deleteReportPage($props.page);
+    }),
+    onClose: _cache[2] || (_cache[2] = function ($event) {
+      return $setup.showDeleteConfirmation = false;
+    })
+  }, null, 8
+  /* PROPS */
+  , ["show"])]);
 }
 
 /***/ }),
