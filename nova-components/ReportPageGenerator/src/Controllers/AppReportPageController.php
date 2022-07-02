@@ -6,10 +6,8 @@ use App\Http\Resources\ReportPageResource;
 use App\Models\App;
 use App\Models\Attendee;
 use App\Models\Report;
-use App\Models\ReportPage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class AppReportPageController extends Controller
 {
@@ -19,28 +17,13 @@ class AppReportPageController extends Controller
 
         $app = App::find($q['reportableId']);
 
-        $chart = match ($request->input('chart')) {
-            'participants-by-country' => $this->participantsByCountry($app),
-            'participants-by-company' => $this->participantsByCompany($app),
-            'participants-by-profession' => $this->participantsByProfession($app),
+        [$labels, $values] = match ($request->input('chart')) {
+            'participants-by-country' => $this->appAttendeesByColumn($app, 'country'),
+            'participants-by-company' => $this->appAttendeesByColumn($app, 'company'),
+            'participants-by-profession' => $this->appAttendeesByColumn($app, 'profession'),
         };
 
-        $hooks = array_merge($chart['hooks'], [
-            'beginAtZero' => true,
-            'title' => $request->input('heading'),
-        ]);
-
-        $hooks['datasets'] = match ($request->input('type')) {
-            'line-chart' => [['type' => 'line', 'fill' => false]],
-            'pie-chart' => 'doughnut',
-            'bar-chart' => [['type' => 'bar', 'fill' => true]],
-        };
-
-        if ($request->input('type') == 'pie-chart') {
-            $hooks['pieColors'] = null;
-        }
-
-        $reportPage = ReportPage::create([
+        $reportPage = $report->reportPages()->create([
             'type' => 'chart',
             'heading' => $request->input('heading'),
             'content' => $request->input('content'),
@@ -49,9 +32,22 @@ class AppReportPageController extends Controller
             'report_id' => $report->id,
             'meta' => [
                 'chart' => [
-                    'chartId' => Str::uuid(),
-                    'data' => $chart['data'],
-                    'hooks' => $hooks,
+                    'id' => \Illuminate\Support\Str::uuid(),
+                    'type' => $request->input('type'),
+                    'title' => $request->input('heading'),
+                    'width' => 712,
+                    'height' => 400,
+                    'datasetIdKey' => 'label',
+                    'data' => [
+                        'labels' => $labels,
+                        'datasets' => [
+                            [
+                                'label' => 'Participants',
+                                'data' => $values,
+                                'backgroundColor' => $request->input('color'),
+                            ],
+                        ],
+                    ],
                 ],
             ],
         ]);
@@ -59,75 +55,17 @@ class AppReportPageController extends Controller
         return ReportPageResource::make($reportPage);
     }
 
-    private function participantsByCountry(App $app)
+    public function appAttendeesByColumn(App $app, string $column)
     {
-        $participantsByCountry = Attendee::join('app_attendee', 'attendees.id', '=', 'app_attendee.attendee_id')
-            ->select('attendees.country', DB::raw('COUNT(attendees.country) as attendees_count'))
-            ->groupBy('attendees.country')
+        $result = Attendee::join('app_attendee', 'attendees.id', '=', 'app_attendee.attendee_id')
+            ->select("attendees.{$column}", DB::raw("COUNT(attendees.{$column}) as attendees_count"))
+            ->groupBy("attendees.{$column}")
             ->where('app_attendee.app_id', $app->id)
             ->get();
 
         return [
-            'data' => [
-                'chart' => [
-                    'labels' => $participantsByCountry->pluck('country')->toArray(),
-                ],
-                'datasets' => [
-                    [
-                        'name' => 'Participants',
-                        'values' => $participantsByCountry->pluck('attendees_count')->toArray(),
-                    ],
-                ],
-            ],
-            'hooks' => [],
-        ];
-    }
-
-    private function participantsByCompany(App $app)
-    {
-        $participantsByCompany = Attendee::join('app_attendee', 'attendees.id', '=', 'app_attendee.attendee_id')
-            ->select('attendees.company', DB::raw('COUNT(attendees.company) as attendees_count'))
-            ->groupBy('attendees.company')
-            ->where('app_attendee.app_id', $app->id)
-            ->get();
-
-        return [
-            'data' => [
-                'chart' => [
-                    'labels' => $participantsByCompany->pluck('company')->toArray(),
-                ],
-                'datasets' => [
-                    [
-                        'name' => 'Participants',
-                        'values' => $participantsByCompany->pluck('attendees_count')->toArray(),
-                    ],
-                ],
-            ],
-            'hooks' => [],
-        ];
-    }
-
-    private function participantsByProfession(App $app)
-    {
-        $participantsByProfession = Attendee::join('app_attendee', 'attendees.id', '=', 'app_attendee.attendee_id')
-            ->select('attendees.profession', DB::raw('COUNT(attendees.profession) as attendees_count'))
-            ->groupBy('attendees.profession')
-            ->where('app_attendee.app_id', $app->id)
-            ->get();
-
-        return [
-            'data' => [
-                'chart' => [
-                    'labels' => $participantsByProfession->pluck('profession')->toArray(),
-                ],
-                'datasets' => [
-                    [
-                        'name' => 'Participants',
-                        'values' => $participantsByProfession->pluck('attendees_count')->toArray(),
-                    ],
-                ],
-            ],
-            'hooks' => [],
+            $result->pluck($column)->toArray(),
+            $result->pluck('attendees_count')->toArray(),
         ];
     }
 }

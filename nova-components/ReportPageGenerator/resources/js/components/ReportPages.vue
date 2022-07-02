@@ -1,5 +1,5 @@
 <template>
-    <div class="bg-gray-50 dark:bg-gray-800 rounded-lg shadow">
+    <div class="bg-gray-50 dark:bg-gray-800 rounded-lg shadow p-6">
         <div v-if="reportPages.length > 0" class="mx-auto" style="max-width: 1024px">
             <ReportPage
                 v-for="(page, index) in reportPages"

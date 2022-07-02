@@ -3,19 +3,19 @@
         role="dialog"
         :show="show"
         data-testid="mrw-create-report-page-modal"
-        max-width="screen-md"
+        class="max-w-screen-lg"
     >
         <form class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
             <ModalHeader>{{ __('Create Report Page') }}</ModalHeader>
 
-            <InputField
+            <MrwInputField
                 :label="__('Heading')"
                 v-model="form.heading"
                 :error="form.getError('heading')"
                 required
             />
 
-            <SelectField
+            <MrwSelectField
                 :label="__('Chart')"
                 v-model="form.chart"
                 :error="form.getError('chart')"
@@ -23,7 +23,7 @@
                 required
             />
 
-            <SelectField
+            <MrwSelectField
                 :label="__('Chart Type')"
                 v-model="form.type"
                 :error="form.getError('type')"
@@ -31,7 +31,7 @@
                 required
             />
 
-            <InputField
+            <MrwInputField
                 :label="__('Chart Color')"
                 v-model="form.color"
                 :error="form.getError('color')"
@@ -39,7 +39,7 @@
                 type="color"
             />
 
-            <FieldWrapper
+            <MrwFieldWrapper
                 :label="__('Content')"
                 for-attr="trix-content-filed"
                 :error="form.getError('content')"
@@ -51,7 +51,7 @@
                     @change="(value) => (form.content = value)"
                     class="min-h-40"
                 />
-            </FieldWrapper>
+            </MrwFieldWrapper>
 
             <ModalFooter>
                 <div class="flex items-center ml-auto">
@@ -96,9 +96,9 @@ const chartOptions = [
 ];
 
 const chartTypes = [
-    { name: 'Line Chart', value: 'line-chart' },
-    { name: 'Bar Chart', value: 'bar-chart' },
-    { name: 'Pie Chart', value: 'pie-chart' },
+    { name: 'Line Chart', value: 'line' },
+    { name: 'Bar Chart', value: 'bar' },
+    { name: 'Pie Chart', value: 'pie' },
 ];
 
 const url = () =>

@@ -8,8 +8,14 @@
             <Icon type="trash" />
         </button>
         <div class="p-8 bg-white rounded-lg" :id="`report-page-${page.id}`">
-            <h1 class="text-2xl">{{ page.heading }}</h1>
-            <Chart :config="chartConfig" />
+            <component
+                :is="chartComponents[chart.type]"
+                :chart-id="chart.id"
+                :height="chart.height"
+                :width="chart.width"
+                :data="chart.data"
+                :options="defaultChartOptions"
+            />
 
             <div class="plain-html mt-8" v-html="page.content"></div>
         </div>
@@ -24,20 +30,45 @@
 
 <script setup>
 import { ref, inject } from 'vue';
-import Chart from './Chart.vue';
+import BarChart from '@/components/charts/BarChart.vue';
+import LineChart from '@/components/charts/LineChart.vue';
+import PieChart from '@/components/charts/PieChart.vue';
 
 const props = defineProps({
     page: { type: Object },
 });
 
+const chartComponents = {
+    bar: BarChart,
+    line: LineChart,
+    pie: PieChart,
+};
+
 const showDeleteConfirmation = ref(false);
 
 const { deleteReportPage } = inject('tool');
 
-const chartConfig = {
-    heading: props.page.heading,
-    data: props.page.meta?.chart?.data,
-    hooks: props.page.meta?.chart?.hooks,
-    chartId: props.page.meta?.chart?.chartId,
+const chart = props.page.meta?.chart;
+
+const defaultChartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+        y: {
+            beginAtZero: true,
+        },
+    },
+    plugins: {
+        title: {
+            text: 'Custom Chart Title',
+            display: true,
+            padding: {
+                bottom: 24,
+            },
+            font: {
+                size: 16,
+            },
+        },
+    },
 };
 </script>

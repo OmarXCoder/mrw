@@ -5,7 +5,7 @@ import SelectField from './components/SelectField.vue';
 
 Nova.booting((app, store) => {
     app.component('report-page-generator', Tool);
-    app.component('FieldWrapper', FieldWrapper);
-    app.component('InputField', InputField);
-    app.component('SelectField', SelectField);
+    app.component('MrwFieldWrapper', FieldWrapper);
+    app.component('MrwInputField', InputField);
+    app.component('MrwSelectField', SelectField);
 });

@@ -1,2 +1,5 @@
 /* Nova Resource Tool CSS */
+.max-w-screen-lg {
+    max-width: 1024px;
+}
 
