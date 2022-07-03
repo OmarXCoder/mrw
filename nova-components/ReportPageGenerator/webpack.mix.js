@@ -5,7 +5,8 @@ require('./nova.mix');
 mix.setPublicPath('dist')
     .js('resources/js/tool.js', 'js')
     .vue({ version: 3 })
-    .css('resources/css/tool.css', 'css')
+    // .css('resources/css/tool.css', 'css')
+    .postCss('resources/css/tool.css', 'css', [require('tailwindcss')])
     .nova('mrw/report-page-generator')
     .alias({
         '@': path.join(__dirname, 'resources/js'),
