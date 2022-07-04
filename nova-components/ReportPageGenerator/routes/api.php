@@ -4,6 +4,7 @@ use App\Http\Resources\ReportPageResource;
 use App\Models\Report;
 use App\Models\ReportPage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Mrw\ReportPageGenerator\Controllers\AppReportPageController;
 
@@ -28,11 +29,14 @@ Route::get('/', function (Request $request) {
     return ReportPageResource::collection($reportPages);
 });
 
-Route::post('/reports/{report}/pages', function (Request $request, Report $report) {
+Route::post('/reports/{report}/charts', function (Request $request, Report $report) {
+    Log::info($request->all());
+
     $request->validate([
-        'heading' => ['required'],
+        'title' => ['required'],
         'type' => ['required'],
-        'chart' => ['required'],
+        'table' => ['required'],
+        'column' => ['required'],
     ]);
 
     return (new AppReportPageController)->store($request, $report);

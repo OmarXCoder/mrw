@@ -1,5 +1,9 @@
 <template>
-    <MrwFieldWrapper :label="label" :label-for="labelFor" :required="required" :error="error">
+    <div :class="$attrs.class">
+        <label :for="labelFor" class="inline-block leading-tight mb-2">
+            <span>{{ label }}</span>
+            <span v-if="required" class="tw-text-red-500 tw-text-sm">*</span>
+        </label>
         <div class="flex relative">
             <select
                 :id="labelFor"
@@ -8,17 +12,26 @@
                 @change="$emit('update:modelValue', $event.target.value)"
                 class="w-full block form-control form-select form-select-bordered"
             >
-                <option disabled value>{{ label }}</option>
-                <option v-for="(option, index) in options" :key="index" v-bind="attrsFor(option)">
+                <option disabled selected value>{{ label }}</option>
+                <option
+                    v-for="(option, index) in normalizedOptions"
+                    :key="index"
+                    v-bind="attrsFor(option)"
+                >
                     {{ option.name }}
                 </option>
             </select>
             <IconArrow class="pointer-events-none form-select-arrow" />
         </div>
-    </MrwFieldWrapper>
+        <div class="mt-2 tw-text-red-500" v-if="error">
+            {{ error }}
+        </div>
+    </div>
 </template>
 
 <script>
+import { capitalize, kebabCase } from 'lodash';
+
 export default {
     emits: ['update:modelValue'],
     inheritAttrs: false,
@@ -40,7 +53,17 @@ export default {
     },
     computed: {
         labelFor() {
-            return this.label.toLowerCase().replace(/\s/g, '-') + '-select-field';
+            return kebabCase(this.label) + '-select-field'; // .toLowerCase().replace(/\s/g, '-')
+        },
+        defaultAttributes() {
+            return omit(this.$attrs, ['class']);
+        },
+        normalizedOptions() {
+            return this.options.map((option) =>
+                typeof option === 'string'
+                    ? { value: option, name: capitalize(option).replace(/[-_]/g, ' ') }
+                    : option
+            );
         },
     },
 };
