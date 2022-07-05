@@ -54,6 +54,7 @@ Route::group(['as' => 'api.', 'middleware' => 'auth:sanctum'], function () {
     // ATTENDEE ROUTES
     Route::post('attendees', [AttendeeController::class, 'store'])->name('attendees.store');
     Route::get('attendees/{attendee}', [AttendeeController::class, 'show'])->name('attendees.show');
+    Route::patch('attendees/{attendee}', [AttendeeController::class, 'update'])->name('attendees.update');
 
     // EVENTS ROUTES
     Route::get('/events', [EventController::class, 'index'])->name('events.index');

@@ -85,4 +85,61 @@ class AttendeesTest extends TestCase
         $response->assertJsonPath('data.first_name', $attendee->first_name);
         $response->assertJsonPath('data.email', $attendee->email);
     }
+
+    /** @test */
+    public function it_updates_an_attendee()
+    {
+        $this->login();
+
+        $attendee = Attendee::factory()->create();
+
+        $data = [
+            'first_name' => 'new first name',
+            'last_name' => 'new last name',
+        ];
+
+        $response = $this->patchJson(route('api.attendees.update', $attendee), $data);
+
+        $response->assertSuccessful();
+
+        $this->assertEquals($data['first_name'], $attendee->refresh()->first_name);
+    }
+
+    /** @test */
+    public function it_makes_sure_the_email_is_unique_on_update()
+    {
+        $this->login();
+
+        Attendee::factory()->create(['email' => 'email@example.com']);
+
+        $attendee = Attendee::factory()->create();
+
+        $data = [
+            'email' => 'email@example.com',
+        ];
+
+        $response = $this->patchJson(route('api.attendees.update', $attendee), $data);
+
+        $response->assertJsonValidationErrors([
+            'email',
+        ], 'error.data');
+    }
+
+    /** @test */
+    public function it_updates_only_provided_fields_and_returns_updated_attendee()
+    {
+        $this->login();
+
+        $attendee = Attendee::factory()->create();
+
+        $data = [
+            'first_name' => 'new first name',
+        ];
+
+        $response = $this->patchJson(route('api.attendees.update', $attendee), $data);
+
+        $response->assertJsonPath('data.first_name', $data['first_name']);
+
+        $response->assertJsonPath('data.email', $attendee->email);
+    }
 }
