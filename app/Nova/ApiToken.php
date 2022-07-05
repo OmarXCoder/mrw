@@ -5,6 +5,7 @@ use App\Models\ApiToken as ApiTokenModel;
 use App\Nova\Actions\RegenerateToken;
 use App\Nova\Filters\TokenableType;
 use Illuminate\Http\Request;
+use Laravel\Nova\Actions\ExportAsCsv;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\MorphTo;
 use Laravel\Nova\Fields\Text;
@@ -116,6 +117,17 @@ class ApiToken extends Resource
                 ->confirmText('Are you sure you want to regenerate the token?')
                 ->confirmButtonText('Regenerate')
                 ->canRun(fn ($request) => $request->user()->hasPermissionTo('api_tokens.create')),
+
+            ExportAsCsv::make()
+                ->withFormat(fn ($model) => [
+                    'ID' => $model->getKey(),
+                    'Name' => $model->name,
+                    'Tokenable' => sprintf('%s: %s', class_basename($model->tokenable_type), $model->tokenable->name),
+                    'Token' => $model->plain_text,
+                    'Created At' => $model->created_at->toDateString(),
+                ])
+                ->nameable('api-tokens-exported-' . today()->toDateString())
+                ->onlyOnIndex(),
         ];
     }
 }

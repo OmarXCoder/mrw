@@ -2,6 +2,7 @@
 namespace App\Nova;
 
 use Illuminate\Http\Request;
+use Laravel\Nova\Actions\ExportAsCsv;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\Country;
 use Laravel\Nova\Fields\Email;
@@ -156,7 +157,23 @@ class Attendee extends Resource
      */
     public function actions(NovaRequest $request)
     {
-        return [];
+        return [
+            ExportAsCsv::make()
+                ->withFormat(fn ($model) => [
+                    'ID' => $model->getKey(),
+                    'Name' => sprintf('%s %s', $model->first_name, $model->last_name),
+                    'Email' => $model->email,
+                    'Phone' => $model->phone,
+                    'Profession' => $model->profession,
+                    'Job Title' => $model->job_title,
+                    'Company' => $model->company,
+                    'Country' => $model->country,
+                    'State' => $model->state,
+                    'Created At' => $model->created_at->toDateString(),
+                ])
+                ->nameable('attendees-exported-' . today()->toDateString())
+                ->onlyOnIndex(),
+        ];
     }
 
     /**

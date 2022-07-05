@@ -3,6 +3,7 @@ namespace App\Nova;
 
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Laravel\Nova\Actions\ExportAsCsv;
 use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Textarea;
@@ -97,6 +98,15 @@ class ActionType extends Resource
      */
     public function actions(NovaRequest $request)
     {
-        return [];
+        return [
+            ExportAsCsv::make()
+                ->withFormat(fn ($model) => [
+                    'Code' => $model->getKey(),
+                    'Name' => $model->name,
+                    'Description' => $model->description,
+                ])
+                ->nameable('action-types-exported-' . today()->toDateString())
+                ->onlyOnIndex(),
+        ];
     }
 }

@@ -6,6 +6,7 @@ use App\Nova\Metrics\ClientAttendeesCount;
 use App\Nova\Metrics\ClientShowsCount;
 use App\Nova\Metrics\UsersPerRole;
 use Illuminate\Http\Request;
+use Laravel\Nova\Actions\ExportAsCsv;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Number;
@@ -124,6 +125,15 @@ class Client extends Resource
      */
     public function actions(NovaRequest $request)
     {
-        return [];
+        return [
+            ExportAsCsv::make()
+                ->withFormat(fn ($model) => [
+                    'ID' => $model->getKey(),
+                    'Name' => $model->name,
+                    'Created At' => $model->created_at->toDateString(),
+                ])
+                ->nameable('clients-exported-' . today()->toDateString())
+                ->onlyOnIndex(),
+        ];
     }
 }

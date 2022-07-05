@@ -18,7 +18,6 @@ class AttendeeResource extends JsonResource
             'id' => $this->id,
             'badge_id' => $this->badge_id,
             'first_name' => $this->first_name,
-            'first_name' => $this->first_name,
             'last_name' => $this->last_name,
             'email' => $this->email,
             'job_title' => $this->job_title,

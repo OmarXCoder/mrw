@@ -3,6 +3,7 @@ namespace App\Nova;
 
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules;
+use Laravel\Nova\Actions\ExportAsCsv;
 use Laravel\Nova\Fields\Gravatar;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\MorphToMany;
@@ -113,6 +114,16 @@ class User extends Resource
      */
     public function actions(NovaRequest $request)
     {
-        return [];
+        return [
+            ExportAsCsv::make()
+                ->withFormat(fn ($model) => [
+                    'ID' => $model->getKey(),
+                    'Name' => $model->name,
+                    'email' => $model->email,
+                    'Created At' => $model->created_at->toDateString(),
+                ])
+                ->nameable('users-exported-' . today()->toDateString())
+                ->onlyOnIndex(),
+        ];
     }
 }

@@ -5,6 +5,7 @@ use App\Models\Attendee;
 use App\Nova\Metrics\AppAttendeeInteractions;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Laravel\Nova\Actions\ExportAsCsv;
 use Laravel\Nova\Card;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\HasMany;
@@ -236,6 +237,17 @@ class App extends Resource
      */
     public function actions(NovaRequest $request)
     {
-        return [];
+        return [
+            ExportAsCsv::make()
+                ->withFormat(fn ($model) => [
+                    'ID' => $model->getKey(),
+                    'Name' => $model->name,
+                    'Show' => $model->show->name,
+                    'Client' => $model->client->name,
+                    'Created At' => $model->created_at->toDateString(),
+                ])
+                ->nameable('apps-exported-' . today()->toDateString())
+                ->onlyOnIndex(),
+        ];
     }
 }

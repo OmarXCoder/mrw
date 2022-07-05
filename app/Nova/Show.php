@@ -10,6 +10,7 @@ use App\Nova\Metrics\ShowAttendeesCount;
 use App\Nova\Metrics\ShowsPerStatus;
 use App\Nova\Metrics\TotalShows;
 use Illuminate\Http\Request;
+use Laravel\Nova\Actions\ExportAsCsv;
 use Laravel\Nova\Fields\Badge;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\DateTime;
@@ -163,6 +164,19 @@ class Show extends Resource
      */
     public function actions(NovaRequest $request)
     {
-        return [];
+        return [
+            ExportAsCsv::make()
+                ->withFormat(fn ($model) => [
+                    'ID' => $model->getKey(),
+                    'Name' => $model->name,
+                    'Organizer' => $model->organizer,
+                    'Client' => $model->client->name,
+                    'Start Date' => $model->start_date->toDateTimeString(),
+                    'End Date' => $model->end_date->toDateTimeString(),
+                    'Created At' => $model->created_at->toDateString(),
+                ])
+                ->nameable('shows-exported-' . today()->toDateString())
+                ->onlyOnIndex(),
+        ];
     }
 }
