@@ -60,7 +60,6 @@ function deleteReportPage(page) {
     Nova.request()
         .delete(`/nova-vendor/report-page-generator/report-pages/${page.id}`)
         .then((res) => {
-            console.log(res);
             reportPages.value = reportPages.value.filter((item) => item !== page);
         });
 }

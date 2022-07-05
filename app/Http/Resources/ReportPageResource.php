@@ -16,7 +16,7 @@ class ReportPageResource extends JsonResource
         return [
             'object_type' => 'ReportPage',
             'id' => $this->id,
-            'type' => $this->type,
+            'content_type' => $this->content_type,
             'title' => $this->title,
             'content' => $this->content,
             'meta' => $this->meta,

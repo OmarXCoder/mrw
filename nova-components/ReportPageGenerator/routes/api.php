@@ -1,12 +1,10 @@
 <?php
 
 use App\Http\Resources\ReportPageResource;
-use App\Models\Report;
 use App\Models\ReportPage;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
-use Mrw\ReportPageGenerator\Controllers\AppReportPageController;
+use Mrw\ReportPageGenerator\Controllers\ReportChartsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,18 +27,7 @@ Route::get('/', function (Request $request) {
     return ReportPageResource::collection($reportPages);
 });
 
-Route::post('/reports/{report}/charts', function (Request $request, Report $report) {
-    Log::info($request->all());
-
-    $request->validate([
-        'title' => ['required'],
-        'type' => ['required'],
-        'table' => ['required'],
-        'column' => ['required'],
-    ]);
-
-    return (new AppReportPageController)->store($request, $report);
-});
+Route::post('/reports/{report}/charts', [ReportChartsController::class, 'store']);
 
 Route::delete('/report-pages/{reportPage}', function (Request $request, ReportPage $reportPage) {
     return $reportPage->delete();
