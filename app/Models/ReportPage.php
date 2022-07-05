@@ -15,10 +15,19 @@ class ReportPage extends Model
      * @var array
      */
     protected $casts = [
-        'meta' => 'json',
+        'meta' => 'array',
+        'page_order' => 'integer',
     ];
 
     protected $guarded = [];
+
+    protected static function booted()
+    {
+        static::creating(function ($page) {
+            $max = static::where('report_id', $page->report_id)->max('page_order');
+            $page->page_order = $max + 1;
+        });
+    }
 
     public function report(): BelongsTo
     {

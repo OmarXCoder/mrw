@@ -1,17 +1,33 @@
 <template>
     <div class="relative">
-        <button
-            @click="showDeleteConfirmation = true"
-            class="absolute text-red-400"
-            style="top: 20px; right: 20px"
-        >
-            <Icon type="trash" />
-        </button>
-        <div class="p-8 bg-white rounded-lg" :id="`report-page-${page.id}`">
-            <h1 class="text-2xl">{{ page.heading }}</h1>
-            <Chart :config="chartConfig" />
+        <div class="tw-absolute tw-top-5 tw-right-5 tw-flex">
+            <button @click="showDeleteConfirmation = true" class="text-red-400">
+                <Icon type="trash" />
+            </button>
+        </div>
 
-            <div class="plain-html mt-8" v-html="page.content"></div>
+        <div
+            class="tw-w-12 tw-flex tw-flex-col tw-justify-center tw-absolute tw-top-5 -tw-right-12"
+        >
+            <button
+                v-if="showUpArrow"
+                @click="movePageUp(page)"
+                class="tw-text-gray-400 hover:tw-text-blue-400 tw-transition-colors tw-py-1"
+            >
+                <Icon type="arrow-up" />
+            </button>
+
+            <button
+                v-if="showDownArrow"
+                @click="movePageDown(page)"
+                class="tw-text-gray-400 hover:tw-text-blue-400 tw-transition-colors tw-py-1"
+            >
+                <Icon type="arrow-down" />
+            </button>
+        </div>
+
+        <div class="p-8 bg-white rounded-lg" :id="`report-page-${page.id}`">
+            <component :is="pageTypes[page.content_type]" :page="page" />
         </div>
 
         <DeleteResourceModal
@@ -24,20 +40,21 @@
 
 <script setup>
 import { ref, inject } from 'vue';
-import Chart from './Chart.vue';
+import ChartPage from '@/components/page-types/ChartPage.vue';
+import RichTextPage from '@/components/page-types/RichTextPage.vue';
 
 const props = defineProps({
     page: { type: Object },
+    showUpArrow: { type: Boolean, default: false },
+    showDownArrow: { type: Boolean, default: false },
 });
+
+const pageTypes = {
+    chart: ChartPage,
+    'rich-text': RichTextPage,
+};
 
 const showDeleteConfirmation = ref(false);
 
-const { deleteReportPage } = inject('tool');
-
-const chartConfig = {
-    heading: props.page.heading,
-    data: props.page.meta?.chart?.data,
-    hooks: props.page.meta?.chart?.hooks,
-    chartId: props.page.meta?.chart?.chartId,
-};
+const { deleteReportPage, movePageUp, movePageDown } = inject('tool');
 </script>

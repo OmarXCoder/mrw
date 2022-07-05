@@ -1,11 +1,11 @@
 <?php
 
 use App\Http\Resources\ReportPageResource;
-use App\Models\Report;
 use App\Models\ReportPage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Mrw\ReportPageGenerator\Controllers\AppReportPageController;
+use Mrw\ReportPageGenerator\Controllers\ReportChartsController;
+use Mrw\ReportPageGenerator\Controllers\ReportPageController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,21 +23,38 @@ Route::get('/', function (Request $request) {
 
     $reportPages = ReportPage::where([
         'report_id' => (int) $q['resourceId'],
-    ])->oldest()->get();
+    ])->orderBy('page_order')->get();
 
     return ReportPageResource::collection($reportPages);
 });
 
-Route::post('/reports/{report}/pages', function (Request $request, Report $report) {
-    $request->validate([
-        'heading' => ['required'],
-        'type' => ['required'],
-        'chart' => ['required'],
-    ]);
-
-    return (new AppReportPageController)->store($request, $report);
-});
+Route::post('/reports/{report}/charts', [ReportChartsController::class, 'store']);
+Route::post('/reports/{report}/pages', [ReportPageController::class, 'store']);
 
 Route::delete('/report-pages/{reportPage}', function (Request $request, ReportPage $reportPage) {
     return $reportPage->delete();
+});
+
+Route::patch('/report-pages/{reportPage}/up', function (Request $request, ReportPage $reportPage) {
+    if ($prevReportPage = ReportPage::where('page_order', $reportPage->page_order - 1)->first()) {
+        $prevReportPage->increment('page_order');
+    }
+
+    $reportPage->decrement('page_order');
+
+    $reportPages = ReportPage::where('report_id', $reportPage->report_id)->orderBy('page_order')->get();
+
+    return ReportPageResource::collection($reportPages);
+});
+
+Route::patch('/report-pages/{reportPage}/down', function (Request $request, ReportPage $reportPage) {
+    if ($nextReportPage = ReportPage::where('page_order', $reportPage->page_order + 1)->first()) {
+        $nextReportPage->decrement('page_order');
+    }
+
+    $reportPage->increment('page_order');
+
+    $reportPages = ReportPage::where('report_id', $reportPage->report_id)->orderBy('page_order')->get();
+
+    return ReportPageResource::collection($reportPages);
 });

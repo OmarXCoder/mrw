@@ -23,7 +23,7 @@ class ReportPage extends Resource
      *
      * @var string
      */
-    public static $title = 'heading';
+    public static $title = 'title';
 
     /**
      * The columns that should be searched.
@@ -31,7 +31,7 @@ class ReportPage extends Resource
      * @var array
      */
     public static $search = [
-        'id', 'heading',
+        'id', 'title',
     ];
 
     /**
@@ -52,7 +52,7 @@ class ReportPage extends Resource
         return [
             ID::make()->sortable(),
 
-            Text::make('Heading')->rules(['required']),
+            Text::make('Title')->rules(['required']),
 
             Select::make('Type')->options([
                 'line-chart' => 'Line Chart',

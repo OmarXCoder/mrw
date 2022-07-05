@@ -18,7 +18,7 @@ class ReportPageFactory extends Factory
     {
         return [
             'type' => $this->faker->randomElement(['line-chart', 'bar-chart', 'pie-chart']),
-            'heading' => $this->faker->sentence(),
+            'title' => $this->faker->sentence(),
             'content' => $this->faker->realText(),
             'report_id' => Report::factory()->forShow(),
             'meta' => [],
