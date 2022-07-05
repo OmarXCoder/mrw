@@ -6,6 +6,8 @@
                 :page="page"
                 :key="page.id"
                 :class="{ 'mb-6': index !== reportPages.length - 1 }"
+                :show-up-arrow="reportPages.length > 1 && index > 0"
+                :show-down-arrow="reportPages.length > 1 && index < reportPages.length - 1"
             />
         </div>
         <div v-else class="flex flex-col justify-center items-center px-6 py-8">

@@ -51,6 +51,8 @@ provide('tool', {
     reportPages,
     addReportPage: (page) => reportPages.value.push(page),
     deleteReportPage,
+    movePageUp,
+    movePageDown,
     showCreateReportPageModal: () => (showCreateReportPageModal.value = true),
 });
 
@@ -61,6 +63,22 @@ function deleteReportPage(page) {
         .delete(`/nova-vendor/report-page-generator/report-pages/${page.id}`)
         .then((res) => {
             reportPages.value = reportPages.value.filter((item) => item !== page);
+        });
+}
+
+function movePageUp(page) {
+    Nova.request()
+        .patch(`/nova-vendor/report-page-generator/report-pages/${page.id}/up`)
+        .then((res) => {
+            reportPages.value = res.data.data;
+        });
+}
+
+function movePageDown(page) {
+    Nova.request()
+        .patch(`/nova-vendor/report-page-generator/report-pages/${page.id}/down`)
+        .then((res) => {
+            reportPages.value = res.data.data;
         });
 }
 

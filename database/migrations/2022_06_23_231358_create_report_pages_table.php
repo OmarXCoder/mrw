@@ -21,6 +21,7 @@ return new class extends Migration {
             $table->boolean('include_header')->default(true);
             $table->boolean('include_footer')->default(true);
             $table->foreignId('report_id')->constrained('reports')->cascadeOnDelete();
+            $table->unsignedInteger('page_order')->nullable()->default(1);
             $table->timestamps();
         });
     }

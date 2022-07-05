@@ -23,6 +23,7 @@ class ReportPageResource extends JsonResource
             'report_id' => $this->report_id,
             'include_header' => $this->include_header,
             'include_footer' => $this->include_footer,
+            'page_order' => $this->page_order,
         ];
     }
 }

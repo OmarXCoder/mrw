@@ -143,6 +143,14 @@ __webpack_require__.r(__webpack_exports__);
   props: {
     page: {
       type: Object
+    },
+    showUpArrow: {
+      type: Boolean,
+      "default": false
+    },
+    showDownArrow: {
+      type: Boolean,
+      "default": false
     }
   },
   setup: function setup(__props, _ref) {
@@ -156,13 +164,17 @@ __webpack_require__.r(__webpack_exports__);
     var showDeleteConfirmation = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(false);
 
     var _inject = (0,vue__WEBPACK_IMPORTED_MODULE_0__.inject)('tool'),
-        deleteReportPage = _inject.deleteReportPage;
+        deleteReportPage = _inject.deleteReportPage,
+        movePageUp = _inject.movePageUp,
+        movePageDown = _inject.movePageDown;
 
     var __returned__ = {
       props: props,
       pageTypes: pageTypes,
       showDeleteConfirmation: showDeleteConfirmation,
       deleteReportPage: deleteReportPage,
+      movePageUp: movePageUp,
+      movePageDown: movePageDown,
       ref: vue__WEBPACK_IMPORTED_MODULE_0__.ref,
       inject: vue__WEBPACK_IMPORTED_MODULE_0__.inject,
       ChartPage: _components_page_types_ChartPage_vue__WEBPACK_IMPORTED_MODULE_1__["default"],
@@ -350,6 +362,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         return reportPages.value.push(page);
       },
       deleteReportPage: deleteReportPage,
+      movePageUp: movePageUp,
+      movePageDown: movePageDown,
       showCreateReportPageModal: function showCreateReportPageModal() {
         return _showCreateReportPageModal.value = true;
       }
@@ -364,6 +378,18 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         reportPages.value = reportPages.value.filter(function (item) {
           return item !== page;
         });
+      });
+    }
+
+    function movePageUp(page) {
+      Nova.request().patch("/nova-vendor/report-page-generator/report-pages/".concat(page.id, "/up")).then(function (res) {
+        reportPages.value = res.data.data;
+      });
+    }
+
+    function movePageDown(page) {
+      Nova.request().patch("/nova-vendor/report-page-generator/report-pages/".concat(page.id, "/down")).then(function (res) {
+        reportPages.value = res.data.data;
       });
     }
 
@@ -471,6 +497,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       showCreateReportPageModal: _showCreateReportPageModal,
       url: url,
       deleteReportPage: deleteReportPage,
+      movePageUp: movePageUp,
+      movePageDown: movePageDown,
       downloadPdf: downloadPdf,
       ReportPages: _ReportPages_vue__WEBPACK_IMPORTED_MODULE_0__["default"],
       CreateReportPageModal: _CreateReportPageModal_vue__WEBPACK_IMPORTED_MODULE_1__["default"],
@@ -1197,24 +1225,42 @@ __webpack_require__.r(__webpack_exports__);
 var _hoisted_1 = {
   "class": "relative"
 };
-var _hoisted_2 = ["id"];
+var _hoisted_2 = {
+  "class": "tw-absolute tw-top-5 tw-right-5 tw-flex"
+};
+var _hoisted_3 = {
+  "class": "tw-w-12 tw-flex tw-flex-col tw-justify-center tw-absolute tw-top-5 -tw-right-12"
+};
+var _hoisted_4 = ["id"];
 function render(_ctx, _cache, $props, $setup, $data, $options) {
   var _component_Icon = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("Icon");
 
   var _component_DeleteResourceModal = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("DeleteResourceModal");
 
-  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     onClick: _cache[0] || (_cache[0] = function ($event) {
       return $setup.showDeleteConfirmation = true;
     }),
-    "class": "absolute text-red-400",
-    style: {
-      "top": "20px",
-      "right": "20px"
-    }
+    "class": "text-red-400"
   }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_Icon, {
     type: "trash"
-  })]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+  })])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [$props.showUpArrow ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("button", {
+    key: 0,
+    onClick: _cache[1] || (_cache[1] = function ($event) {
+      return $setup.movePageUp($props.page);
+    }),
+    "class": "tw-text-gray-400 hover:tw-text-blue-400 tw-transition-colors tw-py-1"
+  }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_Icon, {
+    type: "arrow-up"
+  })])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $props.showDownArrow ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("button", {
+    key: 1,
+    onClick: _cache[2] || (_cache[2] = function ($event) {
+      return $setup.movePageDown($props.page);
+    }),
+    "class": "tw-text-gray-400 hover:tw-text-blue-400 tw-transition-colors tw-py-1"
+  }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_Icon, {
+    type: "arrow-down"
+  })])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
     "class": "p-8 bg-white rounded-lg",
     id: "report-page-".concat($props.page.id)
   }, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)((0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveDynamicComponent)($setup.pageTypes[$props.page.content_type]), {
@@ -1223,12 +1269,12 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
   /* PROPS */
   , ["page"]))], 8
   /* PROPS */
-  , _hoisted_2), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_DeleteResourceModal, {
+  , _hoisted_4), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_DeleteResourceModal, {
     show: $setup.showDeleteConfirmation,
-    onConfirm: _cache[1] || (_cache[1] = function ($event) {
+    onConfirm: _cache[3] || (_cache[3] = function ($event) {
       return $setup.deleteReportPage($props.page);
     }),
-    onClose: _cache[2] || (_cache[2] = function ($event) {
+    onClose: _cache[4] || (_cache[4] = function ($event) {
       return $setup.showDeleteConfirmation = false;
     })
   }, null, 8
@@ -1295,10 +1341,12 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       key: page.id,
       "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)({
         'mb-6': index !== $setup.reportPages.length - 1
-      })
+      }),
+      "show-up-arrow": $setup.reportPages.length > 1 && index > 0,
+      "show-down-arrow": $setup.reportPages.length > 1 && index < $setup.reportPages.length - 1
     }, null, 8
     /* PROPS */
-    , ["page", "class"]);
+    , ["page", "class", "show-up-arrow", "show-down-arrow"]);
   }), 128
   /* KEYED_FRAGMENT */
   ))])) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_3, [_hoisted_4, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h3", _hoisted_5, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.__("This Report doesn't have any pages yet")), 1
