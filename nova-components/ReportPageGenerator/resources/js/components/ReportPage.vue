@@ -23,6 +23,7 @@
 <script setup>
 import { ref, inject } from 'vue';
 import ChartPage from '@/components/page-types/ChartPage.vue';
+import RichTextPage from '@/components/page-types/RichTextPage.vue';
 
 const props = defineProps({
     page: { type: Object },
@@ -30,6 +31,7 @@ const props = defineProps({
 
 const pageTypes = {
     chart: ChartPage,
+    'rich-text': RichTextPage,
 };
 
 const showDeleteConfirmation = ref(false);
