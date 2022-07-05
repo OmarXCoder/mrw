@@ -15,7 +15,11 @@ class AttendeeController extends Controller
             'first_name' => ['required'],
             'last_name' => ['required'],
             'email' => ['required', 'email'],
-            'show_id' => ['required', 'exists:shows,id'],
+            'show_id' => [
+                'required',
+                fn ($attribute, $value, $fail) => is_int($value) ?: $fail('The ' . $attribute . ' must be an integer.'),
+                'exists:shows,id',
+            ],
         ]);
 
         $attendee = Attendee::where('badge_id', $request->get('badge_id'))

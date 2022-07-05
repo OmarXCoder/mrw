@@ -33,8 +33,8 @@ class AttendeeResource extends JsonResource
             'postal_code' => $this->postal_code,
             'meta' => $this->meta,
             'notes' => $this->notes,
-            'show_id' => $this->show_id,
-            'client_id' => $this->client_id,
+            'show_id' => (int) $this->show_id,
+            'client_id' => (int) $this->client_id,
         ];
     }
 }

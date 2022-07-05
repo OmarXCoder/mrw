@@ -16,12 +16,12 @@ class EventResource extends JsonResource
         return [
             'object_type' => 'Event',
             'id' => $this->id,
-            'action_code' => $this->action_code,
-            'event_code' => $this->event_code,
+            'action_code' => (int) $this->action_code,
+            'event_code' => (int) $this->event_code,
+            'app_id' => (int) $this->app_id,
+            'show_id' => (int) $this->show_id,
+            'attendee_id' => (int) $this->attendee_id,
             'timestamp' => $this->timestamp,
-            'app_id' => $this->app_id,
-            'show_id' => $this->show_id,
-            'attendee_id' => $this->attendee_id,
             'meta' => $this->meta,
         ];
     }

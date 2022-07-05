@@ -10,7 +10,7 @@ use App\Http\Controllers\Api\EventController;
 use App\Http\Controllers\Api\EventTypeController;
 use App\Http\Controllers\Api\ShowController;
 use App\Http\Controllers\Api\ShowEventsController;
-use App\Http\Controllers\ShowAppsController;
+use App\Http\Controllers\Api\ShowAppsController;
 use Illuminate\Support\Facades\Route;
 
 /*

@@ -19,8 +19,16 @@ class EventController extends Controller
     {
         $request->validate([
             'app_id' => ['required', 'exists:apps,id'],
-            'action_code' => ['required', 'exists:action_types,code'],
-            'event_code' => ['required', 'exists:event_types,code'],
+            'action_code' => [
+                'required',
+                fn ($attribute, $value, $fail) => is_int($value) ?: $fail('The ' . $attribute . ' must be an integer.'),
+                'exists:action_types,code',
+            ],
+            'event_code' => [
+                'required',
+                fn ($attribute, $value, $fail) => is_int($value) ?: $fail('The ' . $attribute . ' must be an integer.'),
+                'exists:event_types,code',
+            ],
             'timestamp' => ['required', 'date'],
         ]);
 

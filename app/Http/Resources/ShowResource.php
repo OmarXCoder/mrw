@@ -20,7 +20,7 @@ class ShowResource extends JsonResource
             'organizer' => $this->organizer,
             'start_date' => $this->start_date?->format('Y-m-d'),
             'end_date' => $this->end_date?->format('Y-m-d'),
-            'client_id' => $this->client_id,
+            'client_id' => (int) $this->client_id,
         ];
     }
 }

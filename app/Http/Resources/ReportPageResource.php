@@ -20,7 +20,7 @@ class ReportPageResource extends JsonResource
             'title' => $this->title,
             'content' => $this->content,
             'meta' => $this->meta,
-            'report_id' => $this->report_id,
+            'report_id' => (int) $this->report_id,
             'include_header' => $this->include_header,
             'include_footer' => $this->include_footer,
             'page_order' => $this->page_order,

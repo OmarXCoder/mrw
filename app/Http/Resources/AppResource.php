@@ -17,8 +17,8 @@ class AppResource extends JsonResource
             'object_type' => 'App',
             'id' => $this->id,
             'name' => $this->name,
-            'client_id' => $this->client_id,
-            'show_id' => $this->show_id,
+            'client_id' => (int) $this->client_id,
+            'show_id' => (int) $this->show_id,
             'kiosk_id' => $this->kiosk_id,
             'machine_id' => $this->machine_id,
         ];
