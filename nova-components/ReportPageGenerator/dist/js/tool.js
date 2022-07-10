@@ -37,7 +37,7 @@ __webpack_require__.r(__webpack_exports__);
       'rich-text': _components_forms_RichTextForm_vue__WEBPACK_IMPORTED_MODULE_2__["default"]
     };
     var pageTitle = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)('');
-    var defaultContentType = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)('rich-text');
+    var defaultContentType = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)('chart');
     var contentTypes = [{
       name: 'Rich Text',
       value: 'rich-text'
@@ -95,6 +95,10 @@ __webpack_require__.r(__webpack_exports__);
       type: String,
       "default": 'text'
     },
+    id: {
+      type: String,
+      "default": null
+    },
     label: {
       type: String,
       "default": 'label'
@@ -110,7 +114,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   computed: {
     labelFor: function labelFor() {
-      return (0,lodash__WEBPACK_IMPORTED_MODULE_0__.kebabCase)(this.label) + '-input-field';
+      return this.id ? this.id : (0,lodash__WEBPACK_IMPORTED_MODULE_0__.kebabCase)(this.label) + '-input-field';
     },
     defaultAttributes: function defaultAttributes() {
       return (0,lodash__WEBPACK_IMPORTED_MODULE_0__.omit)(this.$attrs, ['class']);
@@ -260,6 +264,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       type: String,
       "default": null
     },
+    id: {
+      type: String,
+      "default": null
+    },
     label: {
       type: String,
       "default": 'label'
@@ -269,7 +277,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       "default": false
     },
     options: {
-      type: Array,
+      type: [Array, Object],
       "default": []
     },
     modelValue: {
@@ -286,17 +294,26 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   computed: {
     labelFor: function labelFor() {
-      return (0,lodash__WEBPACK_IMPORTED_MODULE_0__.kebabCase)(this.label) + '-select-field'; // .toLowerCase().replace(/\s/g, '-')
+      return this.id ? this.id : (0,lodash__WEBPACK_IMPORTED_MODULE_0__.kebabCase)(this.label) + '-select-field';
     },
     defaultAttributes: function defaultAttributes() {
       return omit(this.$attrs, ['class']);
     },
     normalizedOptions: function normalizedOptions() {
-      return this.options.map(function (option) {
-        return typeof option === 'string' ? {
-          value: option,
-          name: (0,lodash__WEBPACK_IMPORTED_MODULE_0__.capitalize)(option).replace(/[-_]/g, ' ')
-        } : option;
+      if ((0,lodash__WEBPACK_IMPORTED_MODULE_0__.isArray)(this.options)) {
+        return this.options.map(function (option) {
+          return typeof option === 'string' ? {
+            value: option,
+            name: (0,lodash__WEBPACK_IMPORTED_MODULE_0__.capitalize)(option).replace(/[-_]/g, ' ')
+          } : option;
+        });
+      }
+
+      return (0,lodash__WEBPACK_IMPORTED_MODULE_0__.map)(this.options, function (name, value) {
+        return {
+          name: name,
+          value: value
+        };
       });
     }
   }
@@ -699,15 +716,12 @@ __webpack_require__.r(__webpack_exports__);
     var expose = _ref.expose,
         emit = _ref.emit;
     expose();
-    var tables = {
+    var queryResources = {
       app: ['app-participants', 'app-events'],
       show: ['show-participants', 'show-events']
     };
-    var attendeesTableColumns = ['company', 'profession', 'country', 'state'];
-    var tableColumnsMap = {
-      'app-participants': attendeesTableColumns,
-      'show-participants': attendeesTableColumns
-    };
+    var queryFields = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)([]);
+    var whereKeys = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)([]);
     var chartTypes = ['line', 'bar', 'pie'];
     var form = (0,vue__WEBPACK_IMPORTED_MODULE_0__.reactive)(Nova.form({
       contentType: 'chart',
@@ -715,8 +729,8 @@ __webpack_require__.r(__webpack_exports__);
       pageContent: '',
       type: '',
       title: '',
-      table: '',
-      column: '',
+      queryResource: '',
+      queryField: '',
       whereKey: '',
       height: 400,
       width: 600,
@@ -724,7 +738,7 @@ __webpack_require__.r(__webpack_exports__);
         label: 'Dataset #1',
         whereValue: '',
         whereOperator: '=',
-        colors: ['#1FEAA6']
+        colors: ['#5E43CC']
       }]
     }));
 
@@ -775,6 +789,16 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (response) {
         addReportPage(response.data);
         emit('submited');
+        window.scrollTo({
+          top: window.outerHeight
+        });
+      });
+    };
+
+    var queryResourceChanged = function queryResourceChanged(queryResource) {
+      Nova.request().get("/nova-vendor/report-page-generator/query-fields?queryResource=".concat(queryResource)).then(function (response) {
+        queryFields.value = response.data;
+        whereKeys.value = response.data;
       });
     };
 
@@ -787,9 +811,9 @@ __webpack_require__.r(__webpack_exports__);
     });
     var __returned__ = {
       emit: emit,
-      tables: tables,
-      attendeesTableColumns: attendeesTableColumns,
-      tableColumnsMap: tableColumnsMap,
+      queryResources: queryResources,
+      queryFields: queryFields,
+      whereKeys: whereKeys,
       chartTypes: chartTypes,
       form: form,
       addDataset: addDataset,
@@ -805,6 +829,7 @@ __webpack_require__.r(__webpack_exports__);
       reportableType: reportableType,
       url: url,
       submit: submit,
+      queryResourceChanged: queryResourceChanged,
       genColor: genColor,
       reactive: vue__WEBPACK_IMPORTED_MODULE_0__.reactive,
       inject: vue__WEBPACK_IMPORTED_MODULE_0__.inject,
@@ -1728,58 +1753,46 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
   /* PROPS */
   , ["modelValue", "error"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_TwSelectField, {
     "class": "tw-col-span-4",
-    label: "Chart data source",
-    modelValue: $setup.form.table,
-    "onUpdate:modelValue": _cache[1] || (_cache[1] = function ($event) {
-      return $setup.form.table = $event;
-    }),
-    error: $setup.form.getError('table'),
-    options: $setup.tables[$setup.reportableType],
+    label: "Data query resource",
+    modelValue: $setup.form.queryResource,
+    "onUpdate:modelValue": [_cache[1] || (_cache[1] = function ($event) {
+      return $setup.form.queryResource = $event;
+    }), $setup.queryResourceChanged],
+    error: $setup.form.getError('queryResource'),
+    options: $setup.queryResources[$setup.reportableType],
     required: ""
   }, null, 8
   /* PROPS */
-  , ["modelValue", "error", "options"]), $setup.tableColumnsMap[$setup.form.table] ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_TwSelectField, {
-    key: 0,
+  , ["modelValue", "error", "options"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_TwSelectField, {
     "class": "tw-col-span-4",
-    label: "Data field",
-    modelValue: $setup.form.column,
+    label: "Query field",
+    modelValue: $setup.form.queryField,
     "onUpdate:modelValue": _cache[2] || (_cache[2] = function ($event) {
-      return $setup.form.column = $event;
+      return $setup.form.queryField = $event;
     }),
-    error: $setup.form.getError('column'),
-    options: $setup.tableColumnsMap[$setup.form.table],
-    required: ""
+    error: $setup.form.getError('queryField'),
+    options: $setup.queryFields,
+    required: "",
+    disabled: !$setup.form.queryResource
   }, null, 8
   /* PROPS */
-  , ["modelValue", "error", "options"])) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_TwInputField, {
-    key: 1,
-    "class": "tw-col-span-4",
-    label: "Data field",
-    modelValue: $setup.form.column,
-    "onUpdate:modelValue": _cache[3] || (_cache[3] = function ($event) {
-      return $setup.form.column = $event;
-    }),
-    error: $setup.form.getError('column'),
-    placeholder: "Ex: video, page, ect.",
-    required: ""
-  }, null, 8
-  /* PROPS */
-  , ["modelValue", "error"])), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_TwInputField, {
+  , ["modelValue", "error", "options", "disabled"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_TwSelectField, {
     "class": "tw-col-span-4",
     label: "Where field (optional)",
     modelValue: $setup.form.whereKey,
-    "onUpdate:modelValue": _cache[4] || (_cache[4] = function ($event) {
+    "onUpdate:modelValue": _cache[3] || (_cache[3] = function ($event) {
       return $setup.form.whereKey = $event;
     }),
     error: $setup.form.getError('whereKey'),
-    placeholder: "Some condition to be met"
+    options: $setup.whereKeys,
+    disabled: !$setup.form.queryResource
   }, null, 8
   /* PROPS */
-  , ["modelValue", "error"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_TwSelectField, {
+  , ["modelValue", "error", "options", "disabled"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_TwSelectField, {
     "class": "tw-col-span-4",
     label: "Chart type",
     modelValue: $setup.form.type,
-    "onUpdate:modelValue": _cache[5] || (_cache[5] = function ($event) {
+    "onUpdate:modelValue": _cache[4] || (_cache[4] = function ($event) {
       return $setup.form.type = $event;
     }),
     error: $setup.form.getError('type'),
@@ -1792,7 +1805,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     label: "Chart height",
     type: "number",
     modelValue: $setup.form.height,
-    "onUpdate:modelValue": _cache[6] || (_cache[6] = function ($event) {
+    "onUpdate:modelValue": _cache[5] || (_cache[5] = function ($event) {
       return $setup.form.height = $event;
     }),
     error: $setup.form.getError('height')
@@ -1803,7 +1816,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     label: "Chart width",
     type: "number",
     modelValue: $setup.form.width,
-    "onUpdate:modelValue": _cache[7] || (_cache[7] = function ($event) {
+    "onUpdate:modelValue": _cache[6] || (_cache[6] = function ($event) {
       return $setup.form.width = $event;
     }),
     error: $setup.form.getError('width')
@@ -1827,6 +1840,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     , _hoisted_5)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_TwInputField, {
       "class": "tw-col-span-4",
       label: "Dataset label",
+      id: "dataset-label-".concat(index),
       modelValue: dataset.label,
       "onUpdate:modelValue": function onUpdateModelValue($event) {
         return dataset.label = $event;
@@ -1835,10 +1849,11 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       required: ""
     }, null, 8
     /* PROPS */
-    , ["modelValue", "onUpdate:modelValue", "error"]), $setup.form.whereKey !== '' ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_TwSelectField, {
+    , ["id", "modelValue", "onUpdate:modelValue", "error"]), $setup.form.whereKey !== '' ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_TwSelectField, {
       key: 1,
       "class": "tw-col-span-4",
       label: "Operator",
+      id: "where-operator-".concat(index),
       modelValue: dataset.whereOperator,
       "onUpdate:modelValue": function onUpdateModelValue($event) {
         return dataset.whereOperator = $event;
@@ -1847,10 +1862,11 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       options: ['=', '!=', '>', '<', '>=', '<=', 'like']
     }, null, 8
     /* PROPS */
-    , ["modelValue", "onUpdate:modelValue", "error"])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $setup.form.whereKey !== '' ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_TwInputField, {
+    , ["id", "modelValue", "onUpdate:modelValue", "error"])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $setup.form.whereKey !== '' ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_TwInputField, {
       key: 2,
       "class": "tw-col-span-4",
       label: $setup.form.whereKey,
+      id: "where-value-".concat(index),
       modelValue: dataset.whereValue,
       "onUpdate:modelValue": function onUpdateModelValue($event) {
         return dataset.whereValue = $event;
@@ -1858,7 +1874,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       error: $setup.form.getError("datasets.".concat(index, ".whereValue"))
     }, null, 8
     /* PROPS */
-    , ["label", "modelValue", "onUpdate:modelValue", "error"])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [_hoisted_7, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_8, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)(dataset.colors, function (color, index) {
+    , ["label", "id", "modelValue", "onUpdate:modelValue", "error"])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [_hoisted_7, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_8, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)(dataset.colors, function (color, index) {
       return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
         key: index,
         "class": "tw-col-span-2 tw-flex tw-rounded bg-gray-100 dark:bg-gray-700"
@@ -1922,7 +1938,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     name: "trix-page-content-filed",
     value: $setup.form.pageContent,
     "with-files": false,
-    onChange: _cache[8] || (_cache[8] = function (value) {
+    onChange: _cache[7] || (_cache[7] = function (value) {
       return $setup.form.pageContent = value;
     }),
     "class": "min-h-40"

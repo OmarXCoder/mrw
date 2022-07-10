@@ -6,6 +6,7 @@
             <div class="tw-col-span-12">
                 <h4 class="tw-text-lg tw-leading-none tw-font-semibold">Chart Configuration</h4>
             </div>
+
             <TwInputField
                 class="tw-col-span-12"
                 label="Chart title"
@@ -17,39 +18,31 @@
 
             <TwSelectField
                 class="tw-col-span-4"
-                label="Chart data source"
-                v-model="form.table"
-                :error="form.getError('table')"
-                :options="tables[reportableType]"
+                label="Data query resource"
+                v-model="form.queryResource"
+                :error="form.getError('queryResource')"
+                :options="queryResources[reportableType]"
+                @update:modelValue="queryResourceChanged"
                 required
             />
 
             <TwSelectField
-                v-if="tableColumnsMap[form.table]"
                 class="tw-col-span-4"
-                label="Data field"
-                v-model="form.column"
-                :error="form.getError('column')"
-                :options="tableColumnsMap[form.table]"
+                label="Query field"
+                v-model="form.queryField"
+                :error="form.getError('queryField')"
+                :options="queryFields"
                 required
+                :disabled="!form.queryResource"
             />
 
-            <TwInputField
-                v-else
-                class="tw-col-span-4"
-                label="Data field"
-                v-model="form.column"
-                :error="form.getError('column')"
-                placeholder="Ex: video, page, ect."
-                required
-            />
-
-            <TwInputField
+            <TwSelectField
                 class="tw-col-span-4"
                 label="Where field (optional)"
                 v-model="form.whereKey"
                 :error="form.getError('whereKey')"
-                placeholder="Some condition to be met"
+                :options="whereKeys"
+                :disabled="!form.queryResource"
             />
 
             <TwSelectField
@@ -97,6 +90,7 @@
                 <TwInputField
                     class="tw-col-span-4"
                     label="Dataset label"
+                    :id="`dataset-label-${index}`"
                     v-model="dataset.label"
                     :error="form.getError(`datasets.${index}.label`)"
                     required
@@ -106,6 +100,7 @@
                     v-if="form.whereKey !== ''"
                     class="tw-col-span-4"
                     label="Operator"
+                    :id="`where-operator-${index}`"
                     v-model="dataset.whereOperator"
                     :error="form.getError(`datasets.${index}.whereOperator`)"
                     :options="['=', '!=', '>', '<', '>=', '<=', 'like']"
@@ -115,6 +110,7 @@
                     v-if="form.whereKey !== ''"
                     class="tw-col-span-4"
                     :label="form.whereKey"
+                    :id="`where-value-${index}`"
                     v-model="dataset.whereValue"
                     :error="form.getError(`datasets.${index}.whereValue`)"
                 />
@@ -183,17 +179,13 @@ import { reactive, inject, ref, watch } from 'vue';
 
 const emit = defineEmits(['submited']);
 
-const tables = {
+const queryResources = {
     app: ['app-participants', 'app-events'],
     show: ['show-participants', 'show-events'],
 };
 
-const attendeesTableColumns = ['company', 'profession', 'country', 'state'];
-
-const tableColumnsMap = {
-    'app-participants': attendeesTableColumns,
-    'show-participants': attendeesTableColumns,
-};
+const queryFields = ref([]);
+const whereKeys = ref([]);
 
 const chartTypes = ['line', 'bar', 'pie'];
 
@@ -204,8 +196,8 @@ const form = reactive(
         pageContent: '',
         type: '',
         title: '',
-        table: '',
-        column: '',
+        queryResource: '',
+        queryField: '',
         whereKey: '',
         height: 400,
         width: 600,
@@ -214,7 +206,7 @@ const form = reactive(
                 label: 'Dataset #1',
                 whereValue: '',
                 whereOperator: '=',
-                colors: ['#1FEAA6'],
+                colors: ['#5E43CC'],
             },
         ],
     })
@@ -257,7 +249,18 @@ const submit = () => {
         addReportPage(response.data);
 
         emit('submited');
+
+        window.scrollTo({ top: window.outerHeight });
     });
+};
+
+const queryResourceChanged = (queryResource) => {
+    Nova.request()
+        .get(`/nova-vendor/report-page-generator/query-fields?queryResource=${queryResource}`)
+        .then((response) => {
+            queryFields.value = response.data;
+            whereKeys.value = response.data;
+        });
 };
 
 function genColor() {

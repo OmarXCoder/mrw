@@ -30,16 +30,17 @@
 </template>
 
 <script>
-import { capitalize, kebabCase } from 'lodash';
+import { capitalize, kebabCase, map, isArray } from 'lodash';
 
 export default {
     emits: ['update:modelValue'],
     inheritAttrs: false,
     props: {
         error: { type: String, default: null },
+        id: { type: String, default: null },
         label: { type: String, default: 'label' },
         required: { type: Boolean, default: false },
-        options: { type: Array, default: [] },
+        options: { type: [Array, Object], default: [] },
         modelValue: { type: String, default: '' },
     },
 
@@ -53,17 +54,20 @@ export default {
     },
     computed: {
         labelFor() {
-            return kebabCase(this.label) + '-select-field'; // .toLowerCase().replace(/\s/g, '-')
+            return this.id ? this.id : kebabCase(this.label) + '-select-field';
         },
         defaultAttributes() {
             return omit(this.$attrs, ['class']);
         },
         normalizedOptions() {
-            return this.options.map((option) =>
-                typeof option === 'string'
-                    ? { value: option, name: capitalize(option).replace(/[-_]/g, ' ') }
-                    : option
-            );
+            if (isArray(this.options)) {
+                return this.options.map((option) =>
+                    typeof option === 'string'
+                        ? { value: option, name: capitalize(option).replace(/[-_]/g, ' ') }
+                        : option
+                );
+            }
+            return map(this.options, (name, value) => ({ name, value }));
         },
     },
 };

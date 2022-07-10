@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Resources\ReportPageResource;
+use App\Models\EventType;
 use App\Models\ReportPage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -57,4 +58,23 @@ Route::patch('/report-pages/{reportPage}/down', function (Request $request, Repo
     $reportPages = ReportPage::where('report_id', $reportPage->report_id)->orderBy('page_order')->get();
 
     return ReportPageResource::collection($reportPages);
+});
+
+Route::get('/query-fields', function (Request $request) {
+    $queryResource = $request->queryResource;
+
+    $result = match ($queryResource) {
+        'app-participants','show-participants' => [
+            'company',
+            'profession',
+            'country',
+            'state',
+        ],
+        'app-events','show-events' => EventType::all()
+            ->map(fn ($item) => [
+                'name' => $item->name,
+                'value' => $item->code,
+            ]),
+    };
+    return $result;
 });
