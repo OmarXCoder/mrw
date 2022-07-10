@@ -8,6 +8,8 @@
                 :value="form.pageContent"
                 :with-files="true"
                 @change="(value) => (form.pageContent = value)"
+                @file-added="handleFileAdded"
+                @file-removed="handleFileRemoved"
                 class="tw-min-h-[480px]"
             />
             <div class="mt-2 tw-text-red-500" v-if="form.errors.has('pageContent')">
@@ -21,6 +23,7 @@
 
 <script setup>
 import { reactive, inject, watch } from 'vue';
+import { handleFileAdded, handleFileRemoved } from '@/mixins/trix-attachment-upload';
 
 const emit = defineEmits(['submited']);
 

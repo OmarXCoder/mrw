@@ -37,7 +37,7 @@ __webpack_require__.r(__webpack_exports__);
       'rich-text': _components_forms_RichTextForm_vue__WEBPACK_IMPORTED_MODULE_2__["default"]
     };
     var pageTitle = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)('');
-    var defaultContentType = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)('chart');
+    var defaultContentType = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)('rich-text');
     var contentTypes = [{
       name: 'Rich Text',
       value: 'rich-text'
@@ -859,6 +859,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "vue");
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(vue__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _mixins_trix_attachment_upload__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @/mixins/trix-attachment-upload */ "./resources/js/mixins/trix-attachment-upload.js");
+
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   __name: 'RichTextForm',
@@ -915,7 +917,9 @@ __webpack_require__.r(__webpack_exports__);
       submit: submit,
       reactive: vue__WEBPACK_IMPORTED_MODULE_0__.reactive,
       inject: vue__WEBPACK_IMPORTED_MODULE_0__.inject,
-      watch: vue__WEBPACK_IMPORTED_MODULE_0__.watch
+      watch: vue__WEBPACK_IMPORTED_MODULE_0__.watch,
+      handleFileAdded: _mixins_trix_attachment_upload__WEBPACK_IMPORTED_MODULE_1__.handleFileAdded,
+      handleFileRemoved: _mixins_trix_attachment_upload__WEBPACK_IMPORTED_MODULE_1__.handleFileRemoved
     };
     Object.defineProperty(__returned__, '__isScriptSetup', {
       enumerable: false,
@@ -1991,10 +1995,12 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     onChange: _cache[0] || (_cache[0] = function (value) {
       return $setup.form.pageContent = value;
     }),
+    onFileAdded: $setup.handleFileAdded,
+    onFileRemoved: $setup.handleFileRemoved,
     "class": "tw-min-h-[480px]"
   }, null, 8
   /* PROPS */
-  , ["value"]), $setup.form.errors.has('pageContent') ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_3, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($setup.form.getError('pageContent')), 1
+  , ["value", "onFileAdded", "onFileRemoved"]), $setup.form.errors.has('pageContent') ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_3, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($setup.form.getError('pageContent')), 1
   /* TEXT */
   )) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderSlot)(_ctx.$slots, "footer", {
     submit: $setup.submit
@@ -2128,6 +2134,94 @@ __webpack_require__.r(__webpack_exports__);
     "default": function _default() {}
   }
 });
+
+/***/ }),
+
+/***/ "./resources/js/mixins/trix-attachment-upload.js":
+/*!*******************************************************!*\
+  !*** ./resources/js/mixins/trix-attachment-upload.js ***!
+  \*******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "handleFileAdded": () => (/* binding */ handleFileAdded),
+/* harmony export */   "handleFileRemoved": () => (/* binding */ handleFileRemoved),
+/* harmony export */   "uploadAttachment": () => (/* binding */ uploadAttachment)
+/* harmony export */ });
+/* harmony import */ var _uuid__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./uuid */ "./resources/js/mixins/uuid.js");
+
+var draftId = (0,_uuid__WEBPACK_IMPORTED_MODULE_0__.uuidv4)();
+/**
+ * Initiate an attachement upload
+ */
+
+function handleFileAdded(_ref) {
+  var attachment = _ref.attachment;
+
+  if (attachment.file) {
+    uploadAttachment(attachment);
+  }
+}
+/**
+ * Upload an attachment
+ */
+
+function uploadAttachment(attachment) {
+  var data = new FormData();
+  data.append('Content-Type', attachment.file.type);
+  data.append('attachment', attachment.file);
+  data.append('draftId', draftId);
+  Nova.request().post("/nova-vendor/report-page-generator/trix-attachment", data, {
+    onUploadProgress: function onUploadProgress(progressEvent) {
+      attachment.setUploadProgress(Math.round(progressEvent.loaded * 100 / progressEvent.total));
+    }
+  }).then(function (_ref2) {
+    var url = _ref2.data.url;
+    return attachment.setAttributes({
+      url: url,
+      href: url
+    });
+  })["catch"](function (error) {
+    Nova.error('An error occured while uploading your file.');
+  });
+}
+/**
+ * Remove an attachment from the server
+ */
+
+function handleFileRemoved(_ref3) {
+  var attachment = _ref3.attachment.attachment;
+  Nova.request()["delete"]("/nova-vendor/report-page-generator/trix-attachment", {
+    params: {
+      attachmentUrl: attachment.attributes.values.url
+    }
+  }).then(function (response) {
+    Nova.success(response.data);
+  })["catch"](function (error) {
+    Nova.error(error);
+  });
+}
+
+/***/ }),
+
+/***/ "./resources/js/mixins/uuid.js":
+/*!*************************************!*\
+  !*** ./resources/js/mixins/uuid.js ***!
+  \*************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "uuidv4": () => (/* binding */ uuidv4)
+/* harmony export */ });
+function uuidv4() {
+  return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, function (c) {
+    return (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16);
+  });
+}
 
 /***/ }),
 

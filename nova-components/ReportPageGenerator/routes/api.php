@@ -4,7 +4,9 @@ use App\Http\Resources\ReportPageResource;
 use App\Models\EventType;
 use App\Models\ReportPage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 use Mrw\ReportPageGenerator\Controllers\ReportChartsController;
 use Mrw\ReportPageGenerator\Controllers\ReportPageController;
 
@@ -77,4 +79,20 @@ Route::get('/query-fields', function (Request $request) {
             ]),
     };
     return $result;
+});
+
+Route::post('/trix-attachment', function (Request $request) {
+    $path = $request->file('attachment')->store('public/attachments');
+
+    Log::debug($path);
+
+    return [
+        'url' => Storage::url($path),
+    ];
+});
+
+Route::delete('/trix-attachment', function (Request $request) {
+    $deleted = Storage::delete(str_replace('/storage', 'public', $request->attachmentUrl));
+
+    return $deleted ? 'File has been deleted' : 'File has not been deleted';
 });
