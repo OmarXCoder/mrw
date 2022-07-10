@@ -27,13 +27,14 @@ export default {
     props: {
         modelValue: { type: [String, Number] },
         type: { type: String, default: 'text' },
+        id: { type: String, default: null },
         label: { type: String, default: 'label' },
         error: { type: String, default: null },
         required: { type: Boolean, default: false },
     },
     computed: {
         labelFor() {
-            return kebabCase(this.label) + '-input-field';
+            return this.id ? this.id : kebabCase(this.label) + '-input-field';
         },
         defaultAttributes() {
             return omit(this.$attrs, ['class']);
