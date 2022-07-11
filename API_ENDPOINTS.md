@@ -24,6 +24,7 @@
 -   [Attendees](#attendees)
     -   [Fetch Single Attendee](#fetch-single-attendee)
     -   [Create Attendee](#create-attendee)
+    -   [Update Attendee](#update-attendee)
 -   [Events](#events)
     -   [Fetch Events](#fetch-events)
     -   [Create Event](#create-event)
@@ -420,6 +421,49 @@
     "postal_code": ["string", "nullable"],
     "meta": ["object", "nullable"],
     "notes": ["string", "nullable"]
+}
+```
+
+-- **Response:**
+
+```json
+{
+    "data": {
+        "object_type": "Attendee",
+        "id": 1,
+        "badge_id": "11f7ab11-3fd0-3cf0-a320-bcd8d5ace9b3",
+        "first_name": "Khalil",
+        "last_name": "Schroeder",
+        "email": "marina03@gmail.com",
+        "job_title": "Recreation and Fitness Studies Teacher",
+        "company": "LG",
+        "profession": "Teacher",
+        "phone": "+1-747-774-4978",
+        "address_line_1": "74137 Hettinger Burgs",
+        "address_line_2": "6257 Vida Expressway Apt. 447",
+        "city": "South Budton",
+        "state": "ID",
+        "country": "Turkey",
+        "postal_code": "38292",
+        "meta": [],
+        "notes": "Voluptatem qui culpa illo. Tenetur nostrum adipisci et vel illum. Sunt reiciendis reprehenderit ea iste aliquid sed.",
+        "show_id": 1,
+        "client_id": 1
+    }
+}
+```
+
+### Update Attendee
+
+-- **Endpoint:** `[PATCH] api/attendees/{attendee}`
+
+-- **Description:** Update an attendee
+
+-- **Input:**
+
+```json
+{
+    "email": ["nullable", "unique:attendees"]
 }
 ```
 
