@@ -1,13 +1,11 @@
 <?php
 
-use App\Http\Resources\ReportPageResource;
 use App\Models\EventType;
-use App\Models\ReportPage;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use Mrw\ReportPageGenerator\Controllers\ReportChartsController;
+use Mrw\ReportPageGenerator\Controllers\ReportPagesController;
 use Mrw\ReportPageGenerator\Controllers\ReportPageController;
 
 /*
@@ -21,46 +19,13 @@ use Mrw\ReportPageGenerator\Controllers\ReportPageController;
 |
 */
 
-Route::get('/', function (Request $request) {
-    $q = $request->query();
+Route::get('/', [ReportPageController::class, 'index']);
+Route::delete('/report-pages/{reportPage}', [ReportPageController::class, 'destroy']);
+Route::patch('/report-pages/{reportPage}/up', [ReportPageController::class, 'moveUp']);
+Route::patch('/report-pages/{reportPage}/down', [ReportPageController::class, 'moveDown']);
 
-    $reportPages = ReportPage::where([
-        'report_id' => (int) $q['resourceId'],
-    ])->orderBy('page_order')->get();
-
-    return ReportPageResource::collection($reportPages);
-});
-
+Route::post('/reports/{report}/pages', [ReportPagesController::class, 'store']);
 Route::post('/reports/{report}/charts', [ReportChartsController::class, 'store']);
-Route::post('/reports/{report}/pages', [ReportPageController::class, 'store']);
-
-Route::delete('/report-pages/{reportPage}', function (Request $request, ReportPage $reportPage) {
-    return $reportPage->delete();
-});
-
-Route::patch('/report-pages/{reportPage}/up', function (Request $request, ReportPage $reportPage) {
-    if ($prevReportPage = ReportPage::where('page_order', $reportPage->page_order - 1)->first()) {
-        $prevReportPage->increment('page_order');
-    }
-
-    $reportPage->decrement('page_order');
-
-    $reportPages = ReportPage::where('report_id', $reportPage->report_id)->orderBy('page_order')->get();
-
-    return ReportPageResource::collection($reportPages);
-});
-
-Route::patch('/report-pages/{reportPage}/down', function (Request $request, ReportPage $reportPage) {
-    if ($nextReportPage = ReportPage::where('page_order', $reportPage->page_order + 1)->first()) {
-        $nextReportPage->decrement('page_order');
-    }
-
-    $reportPage->increment('page_order');
-
-    $reportPages = ReportPage::where('report_id', $reportPage->report_id)->orderBy('page_order')->get();
-
-    return ReportPageResource::collection($reportPages);
-});
 
 Route::get('/query-fields', function (Request $request) {
     $queryResource = $request->queryResource;
@@ -83,8 +48,6 @@ Route::get('/query-fields', function (Request $request) {
 
 Route::post('/trix-attachment', function (Request $request) {
     $path = $request->file('attachment')->store('public/attachments');
-
-    Log::debug($path);
 
     return [
         'url' => Storage::url($path),
