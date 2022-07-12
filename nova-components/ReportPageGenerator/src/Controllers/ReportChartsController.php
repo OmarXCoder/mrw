@@ -6,7 +6,6 @@ use App\Http\Resources\ReportPageResource;
 use App\Models\App;
 use App\Models\Attendee;
 use App\Models\Event;
-use App\Models\EventType;
 use App\Models\Report;
 use App\Models\Show;
 use Illuminate\Database\Eloquent\Model;
@@ -77,9 +76,9 @@ class ReportChartsController extends Controller
 
         foreach ($request->datasets as $dataset) {
             $resultValues = match ($request->queryResource) {
-                'app-participants' => $this->appParticipantsByColumn($reportable, $request->queryField, $this->getConditionParameters($request, $dataset)),
-                'show-participants' => $this->showParticipantsByColumn($reportable, $request->queryField, $this->getConditionParameters($request, $dataset)),
-                'app-events', 'show-events' => $this->eventsByMetaColumn($reportable, $request->queryField, $this->getConditionParameters($request, $dataset)),
+                'app-participants' => $this->appParticipantsByColumn($request, $reportable, $this->getConditionParameters($request, $dataset)),
+                'show-participants' => $this->showParticipantsByColumn($request, $reportable, $this->getConditionParameters($request, $dataset)),
+                'app-events', 'show-events' => $this->eventsByMetaColumn($request, $reportable, $this->getConditionParameters($request, $dataset)),
             };
 
             foreach ($allLabels as $label) {
@@ -165,11 +164,11 @@ class ReportChartsController extends Controller
     {
         $modelName = strtolower(class_basename($model));
 
-        $metaColumn = strtolower(EventType::find($request->queryField)?->name);
+        $metaField = $request->queryField;
 
-        return Event::select("meta->{$metaColumn} as {$metaColumn}")
-            ->whereNotNull("meta->{$metaColumn}")
-            ->where("{$modelName}_id", $model->id)
+        return Event::select("meta->{$metaField} as {$metaField}")
+            ->whereNotNull("meta->{$metaField}")
+            ->where(["{$modelName}_id" => $model->id, 'event_code' => $request->eventCode])
             ->when($request->whereKey, function ($query) use ($request) {
                 foreach ($request->datasets as $key => $dataset) {
                     if (!$condition = $this->getConditionParameters($request, $dataset)) {
@@ -183,11 +182,13 @@ class ReportChartsController extends Controller
                     $query->{$whereMethod}("meta->{$whereKey}", $whereOperator, $whereValue);
                 }
             })
-            ->get()->pluck($metaColumn)->unique()->values()->toArray();
+            ->get()->pluck($metaField)->unique()->values()->toArray();
     }
 
-    protected function appParticipantsByColumn(Model $app, string $column, ?array $condition)
+    protected function appParticipantsByColumn(Request $request, Model $app, ?array $condition)
     {
+        $column = $request->queryField;
+
         $result = Attendee::join('app_attendee', 'attendees.id', '=', 'app_attendee.attendee_id')
             ->select("attendees.{$column}", DB::raw("COUNT(attendees.{$column}) as attendees_count"))
             ->when($condition, fn ($query) => $query->where(...$condition))
@@ -198,8 +199,10 @@ class ReportChartsController extends Controller
         return $result->pluck('attendees_count', $column)->toArray();
     }
 
-    protected function showParticipantsByColumn(Model $show, string $column, ?array $condition)
+    protected function showParticipantsByColumn(Request $request, Model $show, ?array $condition)
     {
+        $column = $request->queryField;
+
         $result = Attendee::where('show_id', $show->id)
             ->select($column, DB::raw("COUNT({$column}) as attendees_count"))
             ->when($condition, fn ($query) => $query->where(...$condition))
@@ -209,23 +212,23 @@ class ReportChartsController extends Controller
         return $result->pluck('attendees_count', $column)->toArray();
     }
 
-    protected function eventsByMetaColumn(Model $model, string $column, ?array $condition)
+    protected function eventsByMetaColumn(Request $request, Model $model, ?array $condition)
     {
         $modelName = strtolower(class_basename($model));
 
-        $metaColumn = strtolower(EventType::find($column)?->name);
+        $metaField = $request->queryField;
 
-        $result = Event::where("{$modelName}_id", $model->id)
-            ->whereNotNull("meta->{$metaColumn}")
-            ->select("meta->{$metaColumn} as {$metaColumn}", DB::raw("COUNT(JSON_EXTRACT(meta, \"$.{$metaColumn}\")) as times_count"))
+        $result = Event::where(["{$modelName}_id" => $model->id, 'event_code' => $request->eventCode])
+            ->whereNotNull("meta->{$metaField}")
+            ->select("meta->{$metaField} as {$metaField}", DB::raw("COUNT(JSON_EXTRACT(meta, \"$.{$metaField}\")) as times_count"))
             ->when($condition, function ($query) use ($condition) {
                 [$key, $operator, $value] = $condition;
                 $query->where("meta->{$key}", $operator, $value);
             })
-            ->groupBy("meta->{$metaColumn}")
+            ->groupBy("meta->{$metaField}")
             ->get();
 
-        return $result->pluck('times_count', $metaColumn)->toArray();
+        return $result->pluck('times_count', $metaField)->toArray();
     }
 
     protected function getConditionParameters(Request $request, ?array $dataset)

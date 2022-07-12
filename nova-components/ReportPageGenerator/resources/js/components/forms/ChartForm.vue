@@ -6,69 +6,87 @@
             <div class="tw-col-span-12">
                 <h4 class="tw-text-lg tw-leading-none tw-font-semibold">Chart Configuration</h4>
             </div>
-
+            <!-- Chart Title -->
             <TwInputField
-                class="tw-col-span-12"
+                class="tw-col-span-6"
                 label="Chart title"
                 v-model="form.title"
                 :error="form.getError('title')"
                 placeholder="Chart title"
                 required
             />
-
+            <!-- Query Resource -->
             <TwSelectField
-                class="tw-col-span-4"
+                class="tw-col-span-6"
                 label="Data query resource"
                 v-model="form.queryResource"
                 :error="form.getError('queryResource')"
                 :options="queryResources[reportableType]"
-                @update:modelValue="queryResourceChanged"
+                @update:modelValue="handleQueryResourceChange"
                 required
             />
 
-            <TwSelectField
-                class="tw-col-span-4"
-                label="Query field"
-                v-model="form.queryField"
-                :error="form.getError('queryField')"
-                :options="queryFields"
-                required
-                :disabled="!form.queryResource"
-            />
+            <div v-if="form.queryResource" class="tw-grid tw-grid-cols-12 tw-gap-6 tw-col-span-12">
+                <!-- Event Type -->
+                <TwSelectField
+                    v-if="form.queryResource === 'show-events'"
+                    class="tw-col-span-4"
+                    label="Event type"
+                    v-model="form.eventCode"
+                    :error="form.getError('eventCode')"
+                    :options="eventCodes"
+                    @update:modelValue="handleEventCodeChange"
+                    required
+                />
+                <!-- Query Field -->
+                <TwSelectField
+                    class="tw-col-span-4"
+                    label="Query field"
+                    v-model="form.queryField"
+                    :error="form.getError('queryField')"
+                    :options="queryFields"
+                    required
+                    :disabled="queryFields.length == 0"
+                />
+                <!-- Where Key -->
+                <TwSelectField
+                    class="tw-col-span-4"
+                    label="Where field (optional)"
+                    v-model="form.whereKey"
+                    :error="form.getError('whereKey')"
+                    :options="queryFields"
+                    :disabled="queryFields.length == 0"
+                    @update:modelValue="handleWhereKeyChange"
+                />
+            </div>
 
-            <TwSelectField
-                class="tw-col-span-4"
-                label="Where field (optional)"
-                v-model="form.whereKey"
-                :error="form.getError('whereKey')"
-                :options="whereKeys"
-                :disabled="!form.queryResource"
-            />
-
-            <TwSelectField
-                class="tw-col-span-4"
-                label="Chart type"
-                v-model="form.type"
-                :error="form.getError('type')"
-                :options="chartTypes"
-                required
-            />
-
-            <TwInputField
-                class="tw-col-span-4"
-                label="Chart height"
-                type="number"
-                v-model="form.height"
-                :error="form.getError('height')"
-            />
-
-            <TwInputField
-                class="tw-col-span-4"
-                label="Chart width"
-                type="number"
-                v-model="form.width"
-                :error="form.getError('width')"
-            />
+            <div v-if="form.queryResource" class="tw-grid tw-grid-cols-12 tw-gap-6 tw-col-span-12">
+                <!-- Chart Type -->
+                <TwSelectField
+                    class="tw-col-span-4"
+                    label="Chart type"
+                    v-model="form.type"
+                    :error="form.getError('type')"
+                    :options="chartTypes"
+                    required
+                />
+                <!-- Chart Height -->
+                <TwInputField
+                    class="tw-col-span-4"
+                    label="Chart height"
+                    type="number"
+                    v-model="form.height"
+                    :error="form.getError('height')"
+                />
+                <!-- Chart Width -->
+                <TwInputField
+                    class="tw-col-span-4"
+                    label="Chart width"
+                    type="number"
+                    v-model="form.width"
+                    :error="form.getError('width')"
+                />
+            </div>
         </div>
 
         <div class="p-6 border-t border-gray-100 dark:border-gray-700">
@@ -97,22 +115,24 @@
                 />
 
                 <TwSelectField
-                    v-if="form.whereKey !== ''"
+                    v-if="form.whereKey"
                     class="tw-col-span-4"
                     label="Operator"
                     :id="`where-operator-${index}`"
                     v-model="dataset.whereOperator"
                     :error="form.getError(`datasets.${index}.whereOperator`)"
-                    :options="['=', '!=', '>', '<', '>=', '<=', 'like']"
+                    :options="['=', '!=', '>', '<', '>=', '<=']"
                 />
 
-                <TwInputField
-                    v-if="form.whereKey !== ''"
+                <TwSelectField
+                    v-if="form.whereKey"
                     class="tw-col-span-4"
                     :label="form.whereKey"
                     :id="`where-value-${index}`"
                     v-model="dataset.whereValue"
                     :error="form.getError(`datasets.${index}.whereValue`)"
+                    :options="whereValueOptions"
+                    :disabled="whereValueOptions.length == 0"
                 />
 
                 <div class="tw-col-span-12">
@@ -184,8 +204,9 @@ const queryResources = {
     show: ['show-participants', 'show-events'],
 };
 
+const eventCodes = ref([]);
 const queryFields = ref([]);
-const whereKeys = ref([]);
+const whereValueOptions = ref([]);
 
 const chartTypes = ['line', 'bar', 'pie'];
 
@@ -197,8 +218,9 @@ const form = reactive(
         type: '',
         title: '',
         queryResource: '',
-        queryField: '',
-        whereKey: '',
+        eventCode: null,
+        queryField: null,
+        whereKey: null,
         height: 400,
         width: 600,
         datasets: [
@@ -241,30 +263,71 @@ const reportableType = reportable_type
     .substring(reportable_type.lastIndexOf('\\') + 1, reportable_type.length)
     .toLowerCase();
 
-const url = () =>
-    `/nova-vendor/report-page-generator/reports/${report_id}/charts?reportableType=${reportable_type}&reportableId=${reportable_id}`;
+const baseUrl = `/nova-vendor/report-page-generator`;
 
-const submit = () => {
-    form.post(url(), { preserveSate: true }).then((response) => {
-        addReportPage(response.data);
+function handleQueryResourceChange(queryResource) {
+    queryFields.value = [];
+    form.whereKey = null;
 
-        emit('submited');
+    if (['show-participants', 'app-participants'].includes(queryResource)) {
+        fetchQueryFields();
+    } else {
+        fetchEventCodes();
+    }
+}
 
-        window.scrollTo({ top: window.outerHeight });
-    });
-};
+function handleEventCodeChange() {
+    queryFields.value = [];
+    form.whereKey = null;
 
-const queryResourceChanged = (queryResource) => {
+    fetchQueryFields();
+}
+
+function handleWhereKeyChange(field) {
+    whereValueOptions.value = [];
+
     Nova.request()
-        .get(`/nova-vendor/report-page-generator/query-fields?queryResource=${queryResource}`)
+        .get(
+            `${baseUrl}/field-values?queryResource=${form.queryResource}&eventCode=${form.eventCode}&field=${field}&reportableType=${reportableType}&reportableId=${reportable_id}`
+        )
+        .then((response) => {
+            whereValueOptions.value = response.data;
+        });
+}
+
+function fetchEventCodes() {
+    Nova.request()
+        .get(
+            `${baseUrl}/event-types?reportableType=${reportable_type}&reportableId=${reportable_id}`
+        )
+        .then((response) => {
+            eventCodes.value = response.data;
+        });
+}
+
+function fetchQueryFields() {
+    Nova.request()
+        .get(
+            `${baseUrl}/query-fields?queryResource=${form.queryResource}&eventCode=${form.eventCode}&reportableType=${reportable_type}&reportableId=${reportable_id}`
+        )
         .then((response) => {
             queryFields.value = response.data;
-            whereKeys.value = response.data;
         });
-};
+}
 
 function genColor() {
     return '#' + Math.floor(Math.random() * 16777215).toString(16);
+}
+
+function submit() {
+    form.post(
+        `${baseUrl}/reports/${report_id}/charts?reportableType=${reportable_type}&reportableId=${reportable_id}`,
+        { preserveSate: true }
+    ).then((response) => {
+        addReportPage(response.data);
+
+        emit('submited');
+    });
 }
 
 watch(pageTitle, (nVal, oVal) => {

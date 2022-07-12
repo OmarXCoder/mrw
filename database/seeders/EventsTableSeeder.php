@@ -22,11 +22,62 @@ class EventsTableSeeder extends Seeder
             EventTypesTableSeeder::class,
         ]);
 
-        $actionCodes = ActionType::all()->pluck('code')->toArray();
+        $actionCodes = ActionType::whereIn('name', ['opened', 'viewed', 'started'])->get()->pluck('code')->toArray();
 
-        $eventCodes = EventType::all()->pluck('code')->toArray();
+        $eventCodes = EventType::whereIn('name', ['video', 'page', 'pdf'])->get()->pluck('code')->toArray();
 
-        App::all()->each(function ($app) use ($actionCodes, $eventCodes) {
+        $pages = [
+            ['title' => 'Page #1', 'group' => 'Group #1'],
+            ['title' => 'Page #2', 'group' => 'Group #2'],
+            ['title' => 'Page #3', 'group' => 'Group #1'],
+            ['title' => 'Page #4', 'group' => 'Group #2'],
+            ['title' => 'Page #5', 'group' => 'Group #1'],
+            ['title' => 'Page #6', 'group' => 'Group #2'],
+            ['title' => 'Page #7', 'group' => 'Group #1'],
+            ['title' => 'Page #1', 'group' => 'Group #2'],
+            ['title' => 'Page #2', 'group' => 'Group #1'],
+            ['title' => 'Page #3', 'group' => 'Group #2'],
+            ['title' => 'Page #4', 'group' => 'Group #1'],
+            ['title' => 'Page #5', 'group' => 'Group #2'],
+            ['title' => 'Page #6', 'group' => 'Group #1'],
+            ['title' => 'Page #7', 'group' => 'Group #2'],
+        ];
+
+        $videos = [
+            ['title' => 'Video #1', 'path' => 'video-1.mp4', 'source' => 'local'],
+            ['title' => 'Video #2', 'path' => 'video-2.mp4', 'source' => 'youtube'],
+            ['title' => 'Video #3', 'path' => 'video-3.mp4', 'source' => 'local'],
+            ['title' => 'Video #4', 'path' => 'video-4.mp4', 'source' => 'youtube'],
+            ['title' => 'Video #5', 'path' => 'video-5.mp4', 'source' => 'local'],
+            ['title' => 'Video #6', 'path' => 'video-6.mp4', 'source' => 'youtube'],
+            ['title' => 'Video #7', 'path' => 'video-7.mp4', 'source' => 'local'],
+            ['title' => 'Video #1', 'path' => 'video-1.mp4', 'source' => 'youtube'],
+            ['title' => 'Video #2', 'path' => 'video-2.mp4', 'source' => 'local'],
+            ['title' => 'Video #3', 'path' => 'video-3.mp4', 'source' => 'youtube'],
+            ['title' => 'Video #4', 'path' => 'video-4.mp4', 'source' => 'local'],
+            ['title' => 'Video #5', 'path' => 'video-5.mp4', 'source' => 'youtube'],
+            ['title' => 'Video #6', 'path' => 'video-6.mp4', 'source' => 'local'],
+            ['title' => 'Video #7', 'path' => 'video-7.mp4', 'source' => 'youtube'],
+        ];
+
+        $PDFs = [
+            ['title' => 'PDF #1', 'path' => 'file-1.pdf', 'group' => 'Group #1'],
+            ['title' => 'PDF #2', 'path' => 'file-2.pdf', 'group' => 'Group #2'],
+            ['title' => 'PDF #3', 'path' => 'file-3.pdf', 'group' => 'Group #1'],
+            ['title' => 'PDF #4', 'path' => 'file-4.pdf', 'group' => 'Group #2'],
+            ['title' => 'PDF #5', 'path' => 'file-5.pdf', 'group' => 'Group #1'],
+            ['title' => 'PDF #6', 'path' => 'file-6.pdf', 'group' => 'Group #2'],
+            ['title' => 'PDF #7', 'path' => 'file-7.pdf', 'group' => 'Group #1'],
+            ['title' => 'PDF #1', 'path' => 'file-1.pdf', 'group' => 'Group #2'],
+            ['title' => 'PDF #2', 'path' => 'file-2.pdf', 'group' => 'Group #1'],
+            ['title' => 'PDF #3', 'path' => 'file-3.pdf', 'group' => 'Group #2'],
+            ['title' => 'PDF #4', 'path' => 'file-4.pdf', 'group' => 'Group #1'],
+            ['title' => 'PDF #5', 'path' => 'file-5.pdf', 'group' => 'Group #2'],
+            ['title' => 'PDF #6', 'path' => 'file-6.pdf', 'group' => 'Group #1'],
+            ['title' => 'PDF #7', 'path' => 'file-7.pdf', 'group' => 'Group #2'],
+        ];
+
+        App::all()->each(function ($app) use ($actionCodes, $eventCodes, $pages, $videos, $PDFs) {
             $attendees = $app->attendees->pluck('id')->toArray();
             $show = $app->show;
 
@@ -36,9 +87,9 @@ class EventsTableSeeder extends Seeder
 
             foreach (range(1, random_int(10, 30)) as $i) {
                 $eventMeta = [
-                    'video' => Arr::random(['Video #1', 'Video #2', 'Video #3', 'Video #4', 'Video #5', 'Video #6']),
-                    'page' => Arr::random(['Page #1', 'Page #2', 'Page #3', 'Page #4', 'Page #5', 'Page #6', 'Page #7']),
-                    'pdf' => Arr::random(['PDF #1', 'PDF #2', 'PDF #3', 'PDF #4', 'PDF #5', 'PDF #6', 'PDF #7', 'PDF #8']),
+                    4 => Arr::random($pages),
+                    6 => Arr::random($PDFs),
+                    7 => Arr::random($videos),
                 ];
 
                 Event::factory()->create([
@@ -47,11 +98,9 @@ class EventsTableSeeder extends Seeder
                     'client_id' => $app->client_id,
                     'attendee_id' => Arr::random($attendees),
                     'action_code' => Arr::random($actionCodes),
-                    'event_code' => Arr::random($eventCodes),
+                    'event_code' => $eventCode = Arr::random($eventCodes),
                     'timestamp' => $show->start_date->addDays(random_int(0, $show->start_date->diffInDays($show->end_date)))->toDateTimeString(),
-                    'meta' => [
-                        $key = Arr::random(['video', 'page', 'pdf']) => $eventMeta[$key],
-                    ],
+                    'meta' => $eventMeta[$eventCode] ?? ['key' => 'value'],
                 ]);
             }
         });
