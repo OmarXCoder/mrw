@@ -12,6 +12,7 @@ use Laravel\Nova\Fields\KeyValue;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Mrw\Chart\Chart;
 use Illuminate\Support\Str;
+use Laravel\Nova\Actions\ExportAsCsv;
 
 class Event extends Resource
 {
@@ -121,6 +122,18 @@ class Event extends Resource
      */
     public function actions(NovaRequest $request)
     {
-        return [];
+        return [
+            ExportAsCsv::make()
+                ->withFormat(fn ($model) => [
+                    'ID' => $model->getKey(),
+                    'Action Type' => $model->actionType->name,
+                    'Event Type' => $model->eventType->name,
+                    'App' => $model->app->name,
+                    'Show' => $model->show->name,
+                    'Timestamp' => $model->timestamp->toDateTimeLocalString(),
+                ])
+                ->nameable('events-exported-' . today()->toDateString())
+                ->onlyOnIndex(),
+        ];
     }
 }

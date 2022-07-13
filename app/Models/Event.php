@@ -21,6 +21,10 @@ class Event extends Model
         'meta' => 'json',
     ];
 
+    protected $dates = [
+        'timestamp',
+    ];
+
     protected static function booted()
     {
         $setClientIdAndShowId = function ($event) {
