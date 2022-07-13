@@ -1,12 +1,13 @@
 <template>
     <div class="relative">
-        <div class="tw-absolute tw-top-5 tw-right-5 tw-flex">
+        <div v-if="showActions" class="tw-absolute tw-top-5 tw-right-5 tw-flex">
             <button @click="showDeleteConfirmation = true" class="text-red-400">
                 <Icon type="trash" />
             </button>
         </div>
 
         <div
+            v-if="showActions"
             class="tw-w-12 tw-flex tw-flex-col tw-justify-center tw-absolute tw-top-5 -tw-right-12"
         >
             <button
@@ -31,6 +32,7 @@
         </div>
 
         <DeleteResourceModal
+            v-if="showTools"
             :show="showDeleteConfirmation"
             @confirm="deleteReportPage(page)"
             @close="showDeleteConfirmation = false"
@@ -45,6 +47,7 @@ import RichTextPage from '@/components/page-types/RichTextPage.vue';
 
 const props = defineProps({
     page: { type: Object },
+    showActions: { type: Boolean, default: true },
     showUpArrow: { type: Boolean, default: false },
     showDownArrow: { type: Boolean, default: false },
 });

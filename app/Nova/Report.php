@@ -2,6 +2,7 @@
 namespace App\Nova;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\MorphTo;
@@ -54,14 +55,19 @@ class Report extends Resource
 
             MorphTo::make('Reportable')->types([Show::class, App::class]),
 
-            ReportPageGenerator::make()->withMeta([
-                'report' => [
-                    'id' => $this->resource->id,
-                    'name' => $this->resource->name,
-                    'reportableId' => $this->resource->reportable_id,
-                    'reportableType' => strtolower(class_basename($this->resource->reportable_type)),
-                ],
-            ]),
+            ReportPageGenerator::make()->withMeta((function (): array {
+                $uniqueKey = "{$this->resource->id}-{$this->resource->reportable_type}-{$this->resource->reportable_id}";
+
+                return [
+                    'report' => [
+                        'id' => $this->resource->id,
+                        'uuid' => Hash::make($uniqueKey),
+                        'name' => $this->resource->name,
+                        'reportableId' => $this->resource->reportable_id,
+                        'reportableType' => strtolower(class_basename($this->resource->reportable_type)),
+                    ],
+                ];
+            })()),
         ];
     }
 

@@ -15,6 +15,15 @@
                     <Icon type="download" />
                 </OutlineButton>
 
+                <OutlineButton
+                    v-if="reportPages.length > 0"
+                    class="mr-3 flex-shrink-0"
+                    @click="viewReport"
+                    v-tooltip="__('View Report')"
+                >
+                    <Icon type="eye" />
+                </OutlineButton>
+
                 <DefaultButton @click="showCreateReportPageModal = true" class="flex-shrink-0">
                     <span class="inline-block">{{ __('Create Report Page') }}</span>
                 </DefaultButton>
@@ -94,6 +103,10 @@ onMounted(() => {
             reportPages.value = res.data.data;
         });
 });
+
+const viewReport = () => {
+    Nova.visit(`/report-page-generator/reports/${report.id}/view?uuid=${report.uuid}`);
+};
 
 const downloadPdf = async () => {
     const doc = new jsPDF({
