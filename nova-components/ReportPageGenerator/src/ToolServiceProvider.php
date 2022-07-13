@@ -36,6 +36,9 @@ class ToolServiceProvider extends ServiceProvider
             return;
         }
 
+        Nova::router(['nova'], 'report-page-generator')
+            ->group(__DIR__ . '/../routes/inertia.php');
+
         Route::middleware(['nova'])
                 ->prefix('nova-vendor/report-page-generator')
                 ->group(__DIR__ . '/../routes/api.php');
