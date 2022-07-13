@@ -12,7 +12,7 @@
                 @change="$emit('update:modelValue', $event.target.value)"
                 class="w-full block form-control form-select form-select-bordered"
             >
-                <option disabled selected value>{{ label }}</option>
+                <option selected value>Select</option>
                 <option
                     v-for="(option, index) in normalizedOptions"
                     :key="index"

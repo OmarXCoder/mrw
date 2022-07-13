@@ -4,7 +4,6 @@ namespace Mrw\ReportPageGenerator\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ReportPageResource;
 use App\Models\App;
-use App\Models\Attendee;
 use App\Models\Event;
 use App\Models\Report;
 use App\Models\Show;
@@ -28,8 +27,8 @@ class ReportChartsController extends Controller
         ]);
 
         $reportable = match ($request->reportableType) {
-            Show::class => Show::find($request->reportableId),
-            App::class => App::find($request->reportableId),
+            'show' => Show::find($request->reportableId),
+            'app' => App::find($request->reportableId),
         };
 
         [$labels, $datasets] = $this->buildChart($request, $reportable);
@@ -69,16 +68,14 @@ class ReportChartsController extends Controller
         $labelValues = [];
 
         $allLabels = match ($request->queryResource) {
-            'app-participants' => $this->getAppAttendeesLabelsByColumn($request, $reportable),
-            'show-participants' => $this->getShowAttendeesLabelsByColumn($request, $reportable),
-            'app-events', 'show-events' => $this->getEventLabelsByColumn($request, $reportable),
+            'attendees' => $this->getAttendeeFieldValuesAsLabels($request, $reportable),
+            'events' => $this->getEventFieldValuesAsLabels($request, $reportable),
         };
 
         foreach ($request->datasets as $dataset) {
             $resultValues = match ($request->queryResource) {
-                'app-participants' => $this->appParticipantsByColumn($request, $reportable, $this->getConditionParameters($request, $dataset)),
-                'show-participants' => $this->showParticipantsByColumn($request, $reportable, $this->getConditionParameters($request, $dataset)),
-                'app-events', 'show-events' => $this->eventsByMetaColumn($request, $reportable, $this->getConditionParameters($request, $dataset)),
+                'attendees' => $this->groupAttendeesByFieldValue($request, $reportable, $this->getConditionParameters($request, $dataset)),
+                'events' => $this->groupEventsByFieldValue($request, $reportable, $this->getConditionParameters($request, $dataset)),
             };
 
             foreach ($allLabels as $label) {
@@ -86,9 +83,11 @@ class ReportChartsController extends Controller
             }
         }
 
-        $filteredLabelValues = collect($labelValues)->filter(function ($value, $key) {
-            return collect($value)->some(fn ($item) => $item != null);
-        })->toArray();
+        $filteredLabelValues = collect($labelValues)
+            ->filter(
+                fn ($value) => collect($value)->some(fn ($item) => $item != null)
+            )
+            ->toArray();
 
         foreach ($request->datasets as $index => $dataset) {
             $datasetData = [];
@@ -119,33 +118,10 @@ class ReportChartsController extends Controller
         ];
     }
 
-    protected function getAppAttendeesLabelsByColumn(Request $request, App $app)
+    protected function getAttendeeFieldValuesAsLabels(Request $request, Model $model)
     {
-        $result = Attendee::join('app_attendee', 'attendees.id', '=', 'app_attendee.attendee_id')
-            ->select('attendees.*')
-            ->where('app_attendee.app_id', $app->id)
-            ->when($request->whereKey, function ($query) use ($request) {
-                foreach ($request->datasets as $key => $dataset) {
-                    if (!$condition = $this->getConditionParameters($request, $dataset)) {
-                        continue;
-                    }
-
-                    $whereMethod = $key === 0 ? 'where' : 'orWhere';
-
-                    [$whereKey, $whereOperator, $whereValue] = $condition;
-
-                    $query->{$whereMethod}("attendees.{$whereKey}", $whereOperator, $whereValue);
-                }
-            })
-            ->get()->pluck($request->queryField)->unique()->values()->toArray();
-
-        return $result;
-    }
-
-    protected function getShowAttendeesLabelsByColumn(Request $request, Show $show)
-    {
-        return Attendee::select($request->queryField)
-            ->where('show_id', $show->id)
+        return $model->attendees()
+            ->select($request->queryField)
             ->when($request->whereKey, function ($query) use ($request) {
                 foreach ($request->datasets as $key => $dataset) {
                     if (!$condition = $this->getConditionParameters($request, $dataset)) {
@@ -157,10 +133,13 @@ class ReportChartsController extends Controller
                     $query->{$whereMethod}(...$condition);
                 }
             })
-            ->get()->pluck($request->queryField)->unique()->values()->toArray();
+            ->pluck($request->queryField)
+            ->unique()
+            ->values()
+            ->toArray();
     }
 
-    protected function getEventLabelsByColumn(Request $request, Model $model)
+    protected function getEventFieldValuesAsLabels(Request $request, Model $model)
     {
         $modelName = strtolower(class_basename($model));
 
@@ -182,43 +161,31 @@ class ReportChartsController extends Controller
                     $query->{$whereMethod}("meta->{$whereKey}", $whereOperator, $whereValue);
                 }
             })
-            ->get()->pluck($metaField)->unique()->values()->toArray();
+            ->pluck($metaField)
+            ->unique()
+            ->values()
+            ->toArray();
     }
 
-    protected function appParticipantsByColumn(Request $request, Model $app, ?array $condition)
+    protected function groupAttendeesByFieldValue(Request $request, Model $model, ?array $condition)
     {
         $column = $request->queryField;
 
-        $result = Attendee::join('app_attendee', 'attendees.id', '=', 'app_attendee.attendee_id')
-            ->select("attendees.{$column}", DB::raw("COUNT(attendees.{$column}) as attendees_count"))
-            ->when($condition, fn ($query) => $query->where(...$condition))
-            ->groupBy("attendees.{$column}")
-            ->where('app_attendee.app_id', $app->id)
-            ->get();
-
-        return $result->pluck('attendees_count', $column)->toArray();
-    }
-
-    protected function showParticipantsByColumn(Request $request, Model $show, ?array $condition)
-    {
-        $column = $request->queryField;
-
-        $result = Attendee::where('show_id', $show->id)
+        return $model->attendees()
             ->select($column, DB::raw("COUNT({$column}) as attendees_count"))
             ->when($condition, fn ($query) => $query->where(...$condition))
             ->groupBy($column)
-            ->get();
-
-        return $result->pluck('attendees_count', $column)->toArray();
+            ->pluck('attendees_count', $column)
+            ->toArray();
     }
 
-    protected function eventsByMetaColumn(Request $request, Model $model, ?array $condition)
+    protected function groupEventsByFieldValue(Request $request, Model $model, ?array $condition)
     {
         $modelName = strtolower(class_basename($model));
 
         $metaField = $request->queryField;
 
-        $result = Event::where(["{$modelName}_id" => $model->id, 'event_code' => $request->eventCode])
+        return Event::where(["{$modelName}_id" => $model->id, 'event_code' => $request->eventCode])
             ->whereNotNull("meta->{$metaField}")
             ->select("meta->{$metaField} as {$metaField}", DB::raw("COUNT(JSON_EXTRACT(meta, \"$.{$metaField}\")) as times_count"))
             ->when($condition, function ($query) use ($condition) {
@@ -226,9 +193,8 @@ class ReportChartsController extends Controller
                 $query->where("meta->{$key}", $operator, $value);
             })
             ->groupBy("meta->{$metaField}")
-            ->get();
-
-        return $result->pluck('times_count', $metaField)->toArray();
+            ->pluck('times_count', $metaField)
+            ->toArray();
     }
 
     protected function getConditionParameters(Request $request, ?array $dataset)
@@ -237,7 +203,7 @@ class ReportChartsController extends Controller
             empty($request->whereKey) ||
             !is_array($dataset) ||
             !isset($dataset['whereValue']) ||
-            !in_array($dataset['whereOperator'], ['=', '!=', '>', '<', '>=', '<=', 'like'])
+            !in_array($dataset['whereOperator'], ['=', '!=', '>', '<', '>=', '<='])
         ) {
             return null;
         }

@@ -28,8 +28,8 @@ import { handleFileAdded, handleFileRemoved } from '@/mixins/trix-attachment-upl
 const emit = defineEmits(['submited']);
 
 const { pageTitle } = inject('newReportPage');
-const { report, addReportPage } = inject('tool');
-const { id: report_id, reportable_id, reportable_type } = report;
+const { baseUrl, report, addReportPage } = inject('tool');
+const { id: reportId, reportableId, reportableType } = report;
 
 const form = reactive(
     Nova.form({
@@ -39,12 +39,8 @@ const form = reactive(
     })
 );
 
-const reportableType = reportable_type
-    .substring(reportable_type.lastIndexOf('\\') + 1, reportable_type.length)
-    .toLowerCase();
-
 const url = () =>
-    `/nova-vendor/report-page-generator/reports/${report_id}/pages?reportableType=${reportable_type}&reportableId=${reportable_id}`;
+    `${baseUrl}/reports/${reportId}/pages?reportableType=${reportableType}&reportableId=${reportableId}`;
 
 const submit = () => {
     form.post(url(), { preserveSate: true }).then((response) => {

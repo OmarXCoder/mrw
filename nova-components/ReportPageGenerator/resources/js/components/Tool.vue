@@ -42,25 +42,30 @@ const props = defineProps({
     panel: Object,
 });
 
+const baseUrl = `/nova-vendor/report-page-generator`;
 const report = props.panel.fields[0].report;
 const reportPages = ref([]);
 const showCreateReportPageModal = ref(false);
 
 provide('tool', {
+    baseUrl,
     report,
     reportPages,
-    addReportPage: (page) => reportPages.value.push(page),
+    addReportPage: (page) => {
+        reportPages.value.push(page);
+        setTimeout(() => {
+            window.scrollTo({ top: document.body.offsetHeight });
+        }, 250);
+    },
     deleteReportPage,
     movePageUp,
     movePageDown,
     showCreateReportPageModal: () => (showCreateReportPageModal.value = true),
 });
 
-const url = () => `/nova-vendor/report-page-generator?resourceId=${report.id}`;
-
 function deleteReportPage(page) {
     Nova.request()
-        .delete(`/nova-vendor/report-page-generator/report-pages/${page.id}`)
+        .delete(`${baseUrl}/report-pages/${page.id}`)
         .then((res) => {
             reportPages.value = reportPages.value.filter((item) => item !== page);
         });
@@ -68,7 +73,7 @@ function deleteReportPage(page) {
 
 function movePageUp(page) {
     Nova.request()
-        .patch(`/nova-vendor/report-page-generator/report-pages/${page.id}/up`)
+        .patch(`${baseUrl}/report-pages/${page.id}/up`)
         .then((res) => {
             reportPages.value = res.data.data;
         });
@@ -76,7 +81,7 @@ function movePageUp(page) {
 
 function movePageDown(page) {
     Nova.request()
-        .patch(`/nova-vendor/report-page-generator/report-pages/${page.id}/down`)
+        .patch(`${baseUrl}/report-pages/${page.id}/down`)
         .then((res) => {
             reportPages.value = res.data.data;
         });
@@ -84,7 +89,7 @@ function movePageDown(page) {
 
 onMounted(() => {
     Nova.request()
-        .get(url())
+        .get(`${baseUrl}?resourceId=${report.id}`)
         .then((res) => {
             reportPages.value = res.data.data;
         });

@@ -21,7 +21,7 @@
                 label="Data query resource"
                 v-model="form.queryResource"
                 :error="form.getError('queryResource')"
-                :options="queryResources[reportableType]"
+                :options="queryResources"
                 @update:modelValue="handleQueryResourceChange"
                 required
             />
@@ -29,7 +29,7 @@
             <div v-if="form.queryResource" class="tw-grid tw-grid-cols-12 tw-gap-6 tw-col-span-12">
                 <!-- Event Type -->
                 <TwSelectField
-                    v-if="form.queryResource === 'show-events'"
+                    v-if="'events' === form.queryResource"
                     class="tw-col-span-4"
                     label="Event type"
                     v-model="form.eventCode"
@@ -199,15 +199,15 @@ import { reactive, inject, ref, watch } from 'vue';
 
 const emit = defineEmits(['submited']);
 
-const queryResources = {
-    app: ['app-participants', 'app-events'],
-    show: ['show-participants', 'show-events'],
-};
+// Injects
+const { pageTitle } = inject('newReportPage');
+const { baseUrl, report, addReportPage } = inject('tool');
+const { id: reportId, reportableId, reportableType } = report;
 
 const eventCodes = ref([]);
 const queryFields = ref([]);
 const whereValueOptions = ref([]);
-
+const queryResources = ['attendees', 'events'];
 const chartTypes = ['line', 'bar', 'pie'];
 
 const form = reactive(
@@ -255,21 +255,11 @@ const deleteColorInput = (dataset, colorIndex) => {
     dataset.colors = dataset.colors.filter((color, index) => index != colorIndex);
 };
 
-const { pageTitle } = inject('newReportPage');
-const { report, addReportPage } = inject('tool');
-const { id: report_id, reportable_id, reportable_type } = report;
-
-const reportableType = reportable_type
-    .substring(reportable_type.lastIndexOf('\\') + 1, reportable_type.length)
-    .toLowerCase();
-
-const baseUrl = `/nova-vendor/report-page-generator`;
-
 function handleQueryResourceChange(queryResource) {
     queryFields.value = [];
     form.whereKey = null;
 
-    if (['show-participants', 'app-participants'].includes(queryResource)) {
+    if ('attendees' === queryResource) {
         fetchQueryFields();
     } else {
         fetchEventCodes();
@@ -286,9 +276,13 @@ function handleEventCodeChange() {
 function handleWhereKeyChange(field) {
     whereValueOptions.value = [];
 
+    if (!field) {
+        return;
+    }
+
     Nova.request()
         .get(
-            `${baseUrl}/field-values?queryResource=${form.queryResource}&eventCode=${form.eventCode}&field=${field}&reportableType=${reportableType}&reportableId=${reportable_id}`
+            `${baseUrl}/field-values?queryResource=${form.queryResource}&eventCode=${form.eventCode}&field=${field}&reportableType=${reportableType}&reportableId=${reportableId}`
         )
         .then((response) => {
             whereValueOptions.value = response.data;
@@ -297,9 +291,7 @@ function handleWhereKeyChange(field) {
 
 function fetchEventCodes() {
     Nova.request()
-        .get(
-            `${baseUrl}/event-types?reportableType=${reportable_type}&reportableId=${reportable_id}`
-        )
+        .get(`${baseUrl}/event-types?reportableType=${reportableType}&reportableId=${reportableId}`)
         .then((response) => {
             eventCodes.value = response.data;
         });
@@ -308,7 +300,7 @@ function fetchEventCodes() {
 function fetchQueryFields() {
     Nova.request()
         .get(
-            `${baseUrl}/query-fields?queryResource=${form.queryResource}&eventCode=${form.eventCode}&reportableType=${reportable_type}&reportableId=${reportable_id}`
+            `${baseUrl}/query-fields?queryResource=${form.queryResource}&eventCode=${form.eventCode}&reportableType=${reportableType}&reportableId=${reportableId}`
         )
         .then((response) => {
             queryFields.value = response.data;
@@ -321,7 +313,7 @@ function genColor() {
 
 function submit() {
     form.post(
-        `${baseUrl}/reports/${report_id}/charts?reportableType=${reportable_type}&reportableId=${reportable_id}`,
+        `${baseUrl}/reports/${reportId}/charts?reportableType=${reportableType}&reportableId=${reportableId}`,
         { preserveSate: true }
     ).then((response) => {
         addReportPage(response.data);

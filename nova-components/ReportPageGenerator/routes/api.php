@@ -10,41 +10,50 @@ use Mrw\ReportPageGenerator\Controllers\ReportChartsController;
 use Mrw\ReportPageGenerator\Controllers\ReportPagesController;
 use Mrw\ReportPageGenerator\Controllers\ReportPageController;
 
-/*
-|--------------------------------------------------------------------------
-| Tool API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you may register API routes for your tool. These routes
-| are loaded by the ServiceProvider of your tool. You're free to add
-| as many additional routes to this file as your tool may require.
-|
-*/
-
+/**
+ * Get all reportPages of the current viewed report
+ */
 Route::get('/', [ReportPageController::class, 'index']);
+
+/**
+ * Delete a reportPage
+ */
 Route::delete('/report-pages/{reportPage}', [ReportPageController::class, 'destroy']);
+
+/**
+ * Move a specific reportPage up withen the report document
+ */
 Route::patch('/report-pages/{reportPage}/up', [ReportPageController::class, 'moveUp']);
+
+/**
+ * Move a specific reportPage down withen the report document
+ */
 Route::patch('/report-pages/{reportPage}/down', [ReportPageController::class, 'moveDown']);
 
+/**
+ * Store a new ReportPage of content type: rich-text
+ */
 Route::post('/reports/{report}/pages', [ReportPagesController::class, 'store']);
+
+/**
+ * Store a new ReportPage of content type: chart
+ */
 Route::post('/reports/{report}/charts', [ReportChartsController::class, 'store']);
 
+/**
+ * Get a list of table columns
+ *
+ * @return array ['col1', 'col2', 'col3', ...]
+ */
 Route::get('/query-fields', function (Request $request) {
     $queryResource = $request->queryResource;
 
     $result = match ($queryResource) {
-        'app-participants','show-participants' => [
-            'company',
-            'profession',
-            'country',
-            'state',
-        ],
-        'app-events','show-events' => (
+        'attendees' => ['company', 'profession', 'country', 'state'],
+        'events' => (
             function ($request) {
-                $modelName = strtolower(class_basename($request->reportableType));
-
                 $meta = Event::select('event_code', 'meta')
-                    ->where(['event_code' => $request->eventCode, "{$modelName}_id" => $request->reportableId])
+                    ->where(['event_code' => $request->eventCode, "{$request->reportableType}_id" => $request->reportableId])
                     ->first()
                     ->meta;
 
@@ -55,18 +64,25 @@ Route::get('/query-fields', function (Request $request) {
     return $result;
 });
 
+/**
+ * Get a list of event_types of the events occured on a specific show/app
+ *
+ * @return array [['name' => 'video', 'value' => 7], [], ...]
+ */
 Route::get('/event-types', function (Request $request) {
-    $modelName = strtolower(class_basename($request->reportableType));
-
     return Event::join('event_types', 'events.event_code', '=', 'event_types.code')
-            ->where("{$modelName}_id", $request->reportableId)
-            ->get()
-            ->pluck('name', 'code')
+            ->where("{$request->reportableType}_id", $request->reportableId)
+            ->pluck('event_types.name', 'event_types.code')
             ->unique()
             ->map(fn ($item, $key) => ['name' => $item, 'value' => $key])
             ->values();
 });
 
+/**
+ * Get all possible values of a spicific database column
+ *
+ * @return array $values
+ */
 Route::get('/field-values', function (Request $request) {
     $model = match ($request->reportableType) {
         'app' => App::find($request->reportableId),
@@ -74,7 +90,7 @@ Route::get('/field-values', function (Request $request) {
     };
 
     return match ($request->queryResource) {
-        'show-participants', 'app-participants' => (
+        'attendees' => (
             fn () => $model
                 ->attendees()
                 ->select($request->field)
@@ -82,7 +98,7 @@ Route::get('/field-values', function (Request $request) {
                 ->unique()
                 ->values()
         )(),
-        'show-events', 'app-events' => (
+        'events' => (
             fn () => $model
                 ->events()
                 ->where('event_code', $request->eventCode)
@@ -94,6 +110,9 @@ Route::get('/field-values', function (Request $request) {
     };
 });
 
+/**
+ * Store a trix-editor attachment and return the attachment's url
+ */
 Route::post('/trix-attachment', function (Request $request) {
     $path = $request->file('attachment')->store('public/attachments');
 
@@ -102,6 +121,9 @@ Route::post('/trix-attachment', function (Request $request) {
     ];
 });
 
+/**
+ * Delete a trix-editor attachment
+ */
 Route::delete('/trix-attachment', function (Request $request) {
     $deleted = Storage::delete(str_replace('/storage', 'public', $request->attachmentUrl));
 

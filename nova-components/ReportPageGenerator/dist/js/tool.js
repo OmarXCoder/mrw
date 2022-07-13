@@ -367,12 +367,14 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     var expose = _ref.expose;
     expose();
     var props = __props;
+    var baseUrl = "/nova-vendor/report-page-generator";
     var report = props.panel.fields[0].report;
     var reportPages = (0,vue__WEBPACK_IMPORTED_MODULE_2__.ref)([]);
 
     var _showCreateReportPageModal = (0,vue__WEBPACK_IMPORTED_MODULE_2__.ref)(false);
 
     (0,vue__WEBPACK_IMPORTED_MODULE_2__.provide)('tool', {
+      baseUrl: baseUrl,
       report: report,
       reportPages: reportPages,
       addReportPage: function addReportPage(page) {
@@ -391,12 +393,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }
     });
 
-    var url = function url() {
-      return "/nova-vendor/report-page-generator?resourceId=".concat(report.id);
-    };
-
     function deleteReportPage(page) {
-      Nova.request()["delete"]("/nova-vendor/report-page-generator/report-pages/".concat(page.id)).then(function (res) {
+      Nova.request()["delete"]("".concat(baseUrl, "/report-pages/").concat(page.id)).then(function (res) {
         reportPages.value = reportPages.value.filter(function (item) {
           return item !== page;
         });
@@ -404,19 +402,19 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     }
 
     function movePageUp(page) {
-      Nova.request().patch("/nova-vendor/report-page-generator/report-pages/".concat(page.id, "/up")).then(function (res) {
+      Nova.request().patch("".concat(baseUrl, "/report-pages/").concat(page.id, "/up")).then(function (res) {
         reportPages.value = res.data.data;
       });
     }
 
     function movePageDown(page) {
-      Nova.request().patch("/nova-vendor/report-page-generator/report-pages/".concat(page.id, "/down")).then(function (res) {
+      Nova.request().patch("".concat(baseUrl, "/report-pages/").concat(page.id, "/down")).then(function (res) {
         reportPages.value = res.data.data;
       });
     }
 
     (0,vue__WEBPACK_IMPORTED_MODULE_2__.onMounted)(function () {
-      Nova.request().get(url()).then(function (res) {
+      Nova.request().get("".concat(baseUrl, "?resourceId=").concat(report.id)).then(function (res) {
         reportPages.value = res.data.data;
       });
     });
@@ -514,10 +512,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
     var __returned__ = {
       props: props,
+      baseUrl: baseUrl,
       report: report,
       reportPages: reportPages,
       showCreateReportPageModal: _showCreateReportPageModal,
-      url: url,
       deleteReportPage: deleteReportPage,
       movePageUp: movePageUp,
       movePageDown: movePageDown,
@@ -720,14 +718,23 @@ __webpack_require__.r(__webpack_exports__);
   setup: function setup(__props, _ref) {
     var expose = _ref.expose,
         emit = _ref.emit;
-    expose();
-    var queryResources = {
-      app: ['app-participants', 'app-events'],
-      show: ['show-participants', 'show-events']
-    };
+    expose(); // Injects
+
+    var _inject = (0,vue__WEBPACK_IMPORTED_MODULE_0__.inject)('newReportPage'),
+        pageTitle = _inject.pageTitle;
+
+    var _inject2 = (0,vue__WEBPACK_IMPORTED_MODULE_0__.inject)('tool'),
+        baseUrl = _inject2.baseUrl,
+        report = _inject2.report,
+        addReportPage = _inject2.addReportPage;
+
+    var reportId = report.id,
+        reportableId = report.reportableId,
+        reportableType = report.reportableType;
     var eventCodes = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)([]);
     var queryFields = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)([]);
     var whereValueOptions = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)([]);
+    var queryResources = ['attendees', 'events'];
     var chartTypes = ['line', 'bar', 'pie'];
     var form = (0,vue__WEBPACK_IMPORTED_MODULE_0__.reactive)(Nova.form({
       contentType: 'chart',
@@ -774,24 +781,11 @@ __webpack_require__.r(__webpack_exports__);
       });
     };
 
-    var _inject = (0,vue__WEBPACK_IMPORTED_MODULE_0__.inject)('newReportPage'),
-        pageTitle = _inject.pageTitle;
-
-    var _inject2 = (0,vue__WEBPACK_IMPORTED_MODULE_0__.inject)('tool'),
-        report = _inject2.report,
-        addReportPage = _inject2.addReportPage;
-
-    var report_id = report.id,
-        reportable_id = report.reportable_id,
-        reportable_type = report.reportable_type;
-    var reportableType = reportable_type.substring(reportable_type.lastIndexOf('\\') + 1, reportable_type.length).toLowerCase();
-    var baseUrl = "/nova-vendor/report-page-generator";
-
     function handleQueryResourceChange(queryResource) {
       queryFields.value = [];
       form.whereKey = null;
 
-      if (['show-participants', 'app-participants'].includes(queryResource)) {
+      if ('attendees' === queryResource) {
         fetchQueryFields();
       } else {
         fetchEventCodes();
@@ -806,19 +800,24 @@ __webpack_require__.r(__webpack_exports__);
 
     function handleWhereKeyChange(field) {
       whereValueOptions.value = [];
-      Nova.request().get("".concat(baseUrl, "/field-values?queryResource=").concat(form.queryResource, "&eventCode=").concat(form.eventCode, "&field=").concat(field, "&reportableType=").concat(reportableType, "&reportableId=").concat(reportable_id)).then(function (response) {
+
+      if (!field) {
+        return;
+      }
+
+      Nova.request().get("".concat(baseUrl, "/field-values?queryResource=").concat(form.queryResource, "&eventCode=").concat(form.eventCode, "&field=").concat(field, "&reportableType=").concat(reportableType, "&reportableId=").concat(reportableId)).then(function (response) {
         whereValueOptions.value = response.data;
       });
     }
 
     function fetchEventCodes() {
-      Nova.request().get("".concat(baseUrl, "/event-types?reportableType=").concat(reportable_type, "&reportableId=").concat(reportable_id)).then(function (response) {
+      Nova.request().get("".concat(baseUrl, "/event-types?reportableType=").concat(reportableType, "&reportableId=").concat(reportableId)).then(function (response) {
         eventCodes.value = response.data;
       });
     }
 
     function fetchQueryFields() {
-      Nova.request().get("".concat(baseUrl, "/query-fields?queryResource=").concat(form.queryResource, "&eventCode=").concat(form.eventCode, "&reportableType=").concat(reportable_type, "&reportableId=").concat(reportable_id)).then(function (response) {
+      Nova.request().get("".concat(baseUrl, "/query-fields?queryResource=").concat(form.queryResource, "&eventCode=").concat(form.eventCode, "&reportableType=").concat(reportableType, "&reportableId=").concat(reportableId)).then(function (response) {
         queryFields.value = response.data;
       });
     }
@@ -828,7 +827,7 @@ __webpack_require__.r(__webpack_exports__);
     }
 
     function submit() {
-      form.post("".concat(baseUrl, "/reports/").concat(report_id, "/charts?reportableType=").concat(reportable_type, "&reportableId=").concat(reportable_id), {
+      form.post("".concat(baseUrl, "/reports/").concat(reportId, "/charts?reportableType=").concat(reportableType, "&reportableId=").concat(reportableId), {
         preserveSate: true
       }).then(function (response) {
         addReportPage(response.data);
@@ -841,24 +840,23 @@ __webpack_require__.r(__webpack_exports__);
     });
     var __returned__ = {
       emit: emit,
-      queryResources: queryResources,
+      pageTitle: pageTitle,
+      baseUrl: baseUrl,
+      report: report,
+      addReportPage: addReportPage,
+      reportId: reportId,
+      reportableId: reportableId,
+      reportableType: reportableType,
       eventCodes: eventCodes,
       queryFields: queryFields,
       whereValueOptions: whereValueOptions,
+      queryResources: queryResources,
       chartTypes: chartTypes,
       form: form,
       addDataset: addDataset,
       deleteDataset: deleteDataset,
       addColorInput: addColorInput,
       deleteColorInput: deleteColorInput,
-      pageTitle: pageTitle,
-      report: report,
-      addReportPage: addReportPage,
-      report_id: report_id,
-      reportable_id: reportable_id,
-      reportable_type: reportable_type,
-      reportableType: reportableType,
-      baseUrl: baseUrl,
       handleQueryResourceChange: handleQueryResourceChange,
       handleEventCodeChange: handleEventCodeChange,
       handleWhereKeyChange: handleWhereKeyChange,
@@ -909,21 +907,21 @@ __webpack_require__.r(__webpack_exports__);
         pageTitle = _inject.pageTitle;
 
     var _inject2 = (0,vue__WEBPACK_IMPORTED_MODULE_0__.inject)('tool'),
+        baseUrl = _inject2.baseUrl,
         report = _inject2.report,
         addReportPage = _inject2.addReportPage;
 
-    var report_id = report.id,
-        reportable_id = report.reportable_id,
-        reportable_type = report.reportable_type;
+    var reportId = report.id,
+        reportableId = report.reportableId,
+        reportableType = report.reportableType;
     var form = (0,vue__WEBPACK_IMPORTED_MODULE_0__.reactive)(Nova.form({
       contentType: 'rich-text',
       pageTitle: '',
       pageContent: ''
     }));
-    var reportableType = reportable_type.substring(reportable_type.lastIndexOf('\\') + 1, reportable_type.length).toLowerCase();
 
     var url = function url() {
-      return "/nova-vendor/report-page-generator/reports/".concat(report_id, "/pages?reportableType=").concat(reportable_type, "&reportableId=").concat(reportable_id);
+      return "".concat(baseUrl, "/reports/").concat(reportId, "/pages?reportableType=").concat(reportableType, "&reportableId=").concat(reportableId);
     };
 
     var submit = function submit() {
@@ -941,13 +939,13 @@ __webpack_require__.r(__webpack_exports__);
     var __returned__ = {
       emit: emit,
       pageTitle: pageTitle,
+      baseUrl: baseUrl,
       report: report,
       addReportPage: addReportPage,
-      report_id: report_id,
-      reportable_id: reportable_id,
-      reportable_type: reportable_type,
-      form: form,
+      reportId: reportId,
+      reportableId: reportableId,
       reportableType: reportableType,
+      form: form,
       url: url,
       submit: submit,
       reactive: vue__WEBPACK_IMPORTED_MODULE_0__.reactive,
@@ -1807,11 +1805,11 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       return $setup.form.queryResource = $event;
     }), $setup.handleQueryResourceChange],
     error: $setup.form.getError('queryResource'),
-    options: $setup.queryResources[$setup.reportableType],
+    options: $setup.queryResources,
     required: ""
   }, null, 8
   /* PROPS */
-  , ["modelValue", "error", "options"]), $setup.form.queryResource ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Event Type "), $setup.form.queryResource === 'show-events' ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_TwSelectField, {
+  , ["modelValue", "error"]), $setup.form.queryResource ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Event Type "), 'events' === $setup.form.queryResource ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_TwSelectField, {
     key: 0,
     "class": "tw-col-span-4",
     label: "Event type",
