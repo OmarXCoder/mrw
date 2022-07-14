@@ -9,6 +9,7 @@
             :width="chart.width"
             :data="chart.data"
             :options="defaultChartOptions"
+            :plugins="chartPlugins"
         />
 
         <div v-if="page.content" class="plain-html tw-mt-8" v-html="page.content"></div>
@@ -16,9 +17,13 @@
 </template>
 
 <script setup>
+import { Chart as ChartJs } from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import BarChart from '@/components/charts/BarChart.vue';
 import LineChart from '@/components/charts/LineChart.vue';
 import PieChart from '@/components/charts/PieChart.vue';
+
+ChartJs.register(ChartDataLabels);
 
 const props = defineProps({
     page: { type: Object, default: {} },
@@ -31,6 +36,7 @@ const chartTypes = {
 };
 
 const chart = props.page.meta?.chart;
+const chartPlugins = [ChartDataLabels];
 
 const defaultChartOptions = {
     responsive: true,
@@ -51,6 +57,12 @@ const defaultChartOptions = {
                 size: 16,
                 weight: 600,
             },
+        },
+        datalabels: {
+            font: {
+                size: 14,
+            },
+            formatter: Math.round,
         },
     },
 };

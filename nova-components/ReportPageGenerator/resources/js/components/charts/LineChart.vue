@@ -1,6 +1,6 @@
 <template>
     <Line
-        :chart-options="options"
+        :chart-options="chartOptions"
         :chart-data="data"
         :chart-id="chartId"
         :dataset-id-key="datasetIdKey"
@@ -13,6 +13,7 @@
 </template>
 
 <script setup>
+import { merge } from 'lodash';
 import { Line } from 'vue-chartjs';
 import chartProps from '@/mixins/chart-props';
 
@@ -31,5 +32,18 @@ ChartJS.register(Title, Tooltip, Legend, LineElement, LinearScale, PointElement,
 
 const props = defineProps({
     ...chartProps,
+});
+
+const chartOptions = merge(props.options, {
+    plugins: {
+        datalabels: {
+            backgroundColor: (context) => context.dataset.backgroundColor,
+            color: 'white',
+            borderRadius: 4,
+            padding: 6,
+            align: 'end',
+            anchor: 'end',
+        },
+    },
 });
 </script>
