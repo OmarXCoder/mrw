@@ -32,7 +32,7 @@
         </div>
 
         <DeleteResourceModal
-            v-if="showTools"
+            v-if="showActions"
             :show="showDeleteConfirmation"
             @confirm="deleteReportPage(page)"
             @close="showDeleteConfirmation = false"

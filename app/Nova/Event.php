@@ -6,13 +6,14 @@ use App\Nova\Filters\EventTypeFilter;
 use App\Nova\Metrics\TotalEvents;
 use App\Nova\Metrics\InteractionsByDays;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\KeyValue;
 use Laravel\Nova\Http\Requests\NovaRequest;
-use Mrw\Chart\Chart;
-use Illuminate\Support\Str;
 use Laravel\Nova\Actions\ExportAsCsv;
+use Laravel\Nova\Card;
+use Mrw\ReportPageGenerator\ChartCard;
 
 class Event extends Resource
 {
@@ -73,19 +74,40 @@ class Event extends Resource
     public function cards(NovaRequest $request)
     {
         return [
-            TotalEvents::make()->width('1/3'),
+            TotalEvents::make()->width(Card::ONE_THIRD_WIDTH),
 
-            InteractionsByDays::make()->width('2/3'),
+            InteractionsByDays::make()->width(Card::TWO_THIRDS_WIDTH),
 
-            Chart::make()
-                ->width('full')
-                ->height('dynamic')
-                ->url('/api/chart/events_per_event_type_chart')
-                ->title('Interactions Per Event Type')
-                ->options([
-                    'chartId' => Str::uuid(),
-                    'chartHeight' => '500px',
-                ]),
+            ChartCard::make()
+                ->width(Card::FULL_WIDTH)
+                ->chartConfig($this->createEventsPerEventTypeChart()),
+        ];
+    }
+
+    protected function createEventsPerEventTypeChart(): array
+    {
+        $result = Event::join('event_types', 'events.event_code', '=', 'event_types.code')
+            ->select('name', DB::raw('COUNT(event_code) as events_count'))
+            ->groupBy('event_code')
+            ->pluck('events_count', 'name');
+
+        return [
+            'id' => \Illuminate\Support\Str::uuid(),
+            'type' => 'bar',
+            'title' => 'Interactions Per Event Type',
+            'width' => 712,
+            'height' => 500,
+            'datasetIdKey' => 'label',
+            'data' => [
+                'labels' => $result->keys()->toArray(),
+                'datasets' => [
+                    [
+                        'label' => 'Events',
+                        'data' => $result->values()->toArray(),
+                        'backgroundColor' => ['#5E43CC'],
+                    ],
+                ],
+            ],
         ];
     }
 

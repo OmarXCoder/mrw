@@ -1,60 +1,71 @@
 <template>
-    <div class="relative">
-        <div :id="`chart-${options.chartId}`" :style="`height: ${options.chartHeight}`"></div>
-    </div>
+    <component
+        :is="chartTypes[chart.type]"
+        :chart-id="chart.id"
+        :height="chart.height"
+        :width="chart.width"
+        :data="chart.data"
+        :options="defaultChartOptions"
+        :plugins="chartPlugins"
+    />
 </template>
 
 <script setup>
-import { Chartisan, ChartisanHooks } from '@chartisan/chartjs';
-import { onMounted } from 'vue';
+import chartDataLabels from 'chartjs-plugin-datalabels';
+import BarChart from '@/components/charts/BarChart.vue';
+import LineChart from '@/components/charts/LineChart.vue';
+import PieChart from '@/components/charts/PieChart.vue';
 
 const props = defineProps({
-    config: { type: Object },
+    chart: { type: Object, default: {} },
 });
 
-const defaultOptions = {
-    chartId: 'chartisan-chart',
-    chartHeight: '400px',
-    heading: 'Chart Heading',
+const chartTypes = {
+    bar: BarChart,
+    line: LineChart,
+    pie: PieChart,
 };
 
-const defaultHooks = {
-    colors: null,
-    legend: true,
+const defaultChartOptions = {
     responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+        y: {
+            beginAtZero: true,
+        },
+    },
+    plugins: {
+        title: {
+            text: props.chart.title,
+            display: true,
+            font: {
+                weight: 'normal',
+            },
+        },
+        datalabels: {
+            font: {
+                size: 14,
+                weight: 'normal',
+            },
+            offset: 4,
+            formatter: Math.round,
+        },
+    },
 };
 
-const options = Object.assign({}, defaultOptions, props.config);
+/**
+ * A plugin to add a space between the legend and the chart itself
+ */
+const legendMarginPlugin = {
+    id: 'legendMarginPlugin',
+    beforeInit(chart, legend, options) {
+        const fitValue = chart.legend.fit;
+        chart.legend.fit = function () {
+            fitValue.bind(chart.legend)();
+            return (this.height += 20);
+        };
+    },
+};
 
-const hooks = Object.assign({}, defaultHooks, props.config.hooks);
-
-// Customizing the Chart
-const chartisanHooks = new ChartisanHooks();
-
-for (let hook in hooks) {
-    if (typeof chartisanHooks[hook] !== 'function') {
-        continue;
-    }
-
-    if (hooks[hook] !== null) {
-        chartisanHooks[hook](hooks[hook]);
-    } else {
-        chartisanHooks[hook]();
-    }
-}
-
-onMounted(() => {
-    const chartOptions = {
-        el: `#chart-${options.chartId}`,
-        hooks: chartisanHooks,
-    };
-
-    if (options.url) {
-        chartOptions['url'] = options.url;
-    } else if (options.data) {
-        chartOptions['data'] = options.data;
-    }
-
-    new Chartisan(chartOptions);
-});
+const chartPlugins = [chartDataLabels, legendMarginPlugin];
 </script>
