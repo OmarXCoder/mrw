@@ -1,14 +1,17 @@
 <?php
 namespace App\Nova;
 
+use App\Models\Event;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Laravel\Nova\Actions\ExportAsCsv;
+use Laravel\Nova\Card;
 use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Textarea;
 use Laravel\Nova\Http\Requests\NovaRequest;
-use Mrw\Chart\Chart;
+use Mrw\ReportPageGenerator\ChartCard;
 
 class EventType extends Resource
 {
@@ -67,11 +70,36 @@ class EventType extends Resource
     public function cards(NovaRequest $request)
     {
         return [
-            Chart::make()
-                ->width('full')
-                ->height('dynamic')
-                ->title('Interactions Per Event Type')
-                ->url('/api/chart/events_per_event_type_chart'),
+            ChartCard::make()
+                ->width(Card::FULL_WIDTH)
+                ->chartConfig($this->createEventsPerEventTypeChart()),
+        ];
+    }
+
+    protected function createEventsPerEventTypeChart(): array
+    {
+        $result = Event::join('event_types', 'events.event_code', '=', 'event_types.code')
+            ->select('name', DB::raw('COUNT(event_code) as events_count'))
+            ->groupBy('event_code')
+            ->pluck('events_count', 'name');
+
+        return [
+            'id' => \Illuminate\Support\Str::uuid(),
+            'type' => 'bar',
+            'title' => 'Interactions Per Event Type',
+            'width' => 712,
+            'height' => 500,
+            'datasetIdKey' => 'label',
+            'data' => [
+                'labels' => $result->keys()->toArray(),
+                'datasets' => [
+                    [
+                        'label' => 'Events',
+                        'data' => $result->values()->toArray(),
+                        'backgroundColor' => ['#5E43CC'],
+                    ],
+                ],
+            ],
         ];
     }
 

@@ -1,7 +1,6 @@
 <?php
 namespace App\Nova;
 
-use App\Models\Attendee;
 use App\Nova\Metrics\AppAttendeeInteractions;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -14,7 +13,7 @@ use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Mrw\ApiTokenGenerator\ApiTokenGenerator;
-use Mrw\Chart\Chart;
+use Mrw\ReportPageGenerator\ChartCard;
 
 class App extends Resource
 {
@@ -115,96 +114,52 @@ class App extends Resource
     {
         return [
             AppAttendeeInteractions::make()
-                ->width('full')
+                ->width(Card::FULL_WIDTH)
                 ->onlyOnDetail(),
 
-            $this->createParticipantsByCountryChart($request)
-                ->width('full')
-                ->height('dynamic')
+            ChartCard::make()
+                ->width(Card::ONE_HALF_WIDTH)
+                ->chartConfig($this->createParticipantsByColumnChart($request, 'company'))
                 ->onlyOnDetail(),
 
-            $this->createParticipantsByCompanyChart($request)
-                ->width('full')
-                ->height('dynamic')
-                ->onlyOnDetail(),
-
-            $this->createParticipantsByProfessionChart($request)
-                ->width('full')
-                ->height('dynamic')
+            ChartCard::make()
+                ->width(Card::ONE_HALF_WIDTH)
+                ->chartConfig($this->createParticipantsByColumnChart($request, 'profession'))
                 ->onlyOnDetail(),
         ];
     }
 
-    private function createParticipantsByCountryChart(NovaRequest $request): Card
+    private function createParticipantsByColumnChart(NovaRequest $request, string $column): array
     {
-        $participantsByCountry = Attendee::join('app_attendee', 'attendees.id', '=', 'app_attendee.attendee_id')
-            ->select('attendees.country', DB::raw('COUNT(attendees.country) as attendees_count'))
-            ->groupBy('attendees.country')
-            ->where('app_attendee.app_id', $request->resourceId)
-            ->get();
+        $app = App::find($request->resourceId);
 
-        return Chart::make()
-            ->title('Participants By Country')
-            ->data([
-                'chart' => ['labels' => $participantsByCountry->pluck('country')->toArray()],
+        if (!$app) {
+            return [];
+        }
+
+        $attendees = $app->attendees()
+            ->select($column, DB::raw("COUNT({$column}) as attendees_count"))
+            ->groupBy($column)
+            ->pluck('attendees_count', $column);
+
+        return [
+            'id' => \Illuminate\Support\Str::uuid(),
+            'type' => 'bar',
+            'title' => strtoupper("Participants By {$column}"),
+            'width' => 712,
+            'height' => 400,
+            'datasetIdKey' => 'label',
+            'data' => [
+                'labels' => $attendees->keys()->toArray(),
                 'datasets' => [
                     [
-                        'name' => 'Participants',
-                        'values' => $participantsByCountry->pluck('attendees_count')->toArray(),
+                        'label' => 'Participants',
+                        'data' => $attendees->values()->toArray(),
+                        'backgroundColor' => ['#5E43CC'],
                     ],
                 ],
-            ])
-            ->hooks([
-                'beginAtZero' => true,
-            ]);
-    }
-
-    private function createParticipantsByCompanyChart(NovaRequest $request): Card
-    {
-        $participantsByCompany = Attendee::join('app_attendee', 'attendees.id', '=', 'app_attendee.attendee_id')
-            ->select('attendees.company', DB::raw('COUNT(attendees.company) as attendees_count'))
-            ->groupBy('attendees.company')
-            ->where('app_attendee.app_id', $request->resourceId)
-            ->get();
-
-        return Chart::make()
-            ->title('Participants By Company')
-            ->data([
-                'chart' => ['labels' => $participantsByCompany->pluck('company')->toArray()],
-                'datasets' => [
-                    [
-                        'name' => 'Participants',
-                        'values' => $participantsByCompany->pluck('attendees_count')->toArray(),
-                    ],
-                ],
-            ])
-            ->hooks([
-                'beginAtZero' => true,
-            ]);
-    }
-
-    private function createParticipantsByProfessionChart(NovaRequest $request): Card
-    {
-        $participantsByProfession = Attendee::join('app_attendee', 'attendees.id', '=', 'app_attendee.attendee_id')
-            ->select('attendees.profession', DB::raw('COUNT(attendees.profession) as attendees_count'))
-            ->groupBy('attendees.profession')
-            ->where('app_attendee.app_id', $request->resourceId)
-            ->get();
-
-        return Chart::make()
-            ->title('Participants By Profession')
-            ->data([
-                'chart' => ['labels' => $participantsByProfession->pluck('profession')->toArray()],
-                'datasets' => [
-                    [
-                        'name' => 'Participants',
-                        'values' => $participantsByProfession->pluck('attendees_count')->toArray(),
-                    ],
-                ],
-            ])
-            ->hooks([
-                'beginAtZero' => true,
-            ]);
+            ],
+        ];
     }
 
     /**
