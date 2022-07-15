@@ -40,7 +40,7 @@ class PermissionPolicy
      */
     public function create(User $user)
     {
-        return $user->can('permissions.create');
+        return false;
     }
 
     /**
@@ -64,7 +64,7 @@ class PermissionPolicy
      */
     public function delete(User $user, Permission $permission)
     {
-        return $user->can('permissions.delete');
+        return false;
     }
 
     /**
@@ -76,7 +76,7 @@ class PermissionPolicy
      */
     public function restore(User $user, Permission $permission)
     {
-        return $user->can('permissions.delete');
+        return false;
     }
 
     /**
@@ -88,6 +88,6 @@ class PermissionPolicy
      */
     public function forceDelete(User $user, Permission $permission)
     {
-        return $user->can('permissions.delete');
+        return false;
     }
 }

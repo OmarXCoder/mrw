@@ -44,7 +44,7 @@ class Permission extends Resource
         return [
             ID::make()->sortable(),
 
-            Text::make('Name')->sortable(),
+            Text::make('Name')->sortable()->readonly(),
 
             Text::make('Label')->sortable(),
 
