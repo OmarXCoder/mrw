@@ -51,14 +51,22 @@ class Report extends Resource
 
             Textarea::make('Description'),
 
-            BelongsTo::make('Client')->hideWhenCreating()->hideWhenUpdating(),
+            BelongsTo::make('Client')
+                ->canSee(fn ($request) => !$request->user()->isClientTeamMember())
+                ->hideWhenCreating()
+                ->hideWhenUpdating(),
 
             MorphTo::make('Reportable')->types([Show::class, App::class]),
 
-            ReportPageGenerator::make()->withMeta((function (): array {
+            ReportPageGenerator::make()->withMeta((function () use ($request): array {
                 $uniqueKey = "{$this->resource->id}-{$this->resource->reportable_type}-{$this->resource->reportable_id}";
 
                 return [
+                    'can' => [
+                        'editReportPages' => $request->user()->can('reports.edit'),
+                        'createReportPages' => $request->user()->can('reports.create'),
+                        'deleteReportPages' => $request->user()->can('reports.delete'),
+                    ],
                     'report' => [
                         'id' => $this->resource->id,
                         'uuid' => Hash::make($uniqueKey),

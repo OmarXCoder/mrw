@@ -310,7 +310,8 @@ __webpack_require__.r(__webpack_exports__);
     var _inject = (0,vue__WEBPACK_IMPORTED_MODULE_0__.inject)('tool'),
         deleteReportPage = _inject.deleteReportPage,
         movePageUp = _inject.movePageUp,
-        movePageDown = _inject.movePageDown;
+        movePageDown = _inject.movePageDown,
+        can = _inject.can;
 
     var __returned__ = {
       props: props,
@@ -319,6 +320,7 @@ __webpack_require__.r(__webpack_exports__);
       deleteReportPage: deleteReportPage,
       movePageUp: movePageUp,
       movePageDown: movePageDown,
+      can: can,
       ref: vue__WEBPACK_IMPORTED_MODULE_0__.ref,
       inject: vue__WEBPACK_IMPORTED_MODULE_0__.inject,
       ChartPage: _components_page_types_ChartPage_vue__WEBPACK_IMPORTED_MODULE_1__["default"],
@@ -358,11 +360,13 @@ __webpack_require__.r(__webpack_exports__);
 
     var _inject = (0,vue__WEBPACK_IMPORTED_MODULE_1__.inject)('tool'),
         reportPages = _inject.reportPages,
-        showCreateReportPageModal = _inject.showCreateReportPageModal;
+        showCreateReportPageModal = _inject.showCreateReportPageModal,
+        can = _inject.can;
 
     var __returned__ = {
       reportPages: reportPages,
       showCreateReportPageModal: showCreateReportPageModal,
+      can: can,
       ReportPage: _ReportPage_vue__WEBPACK_IMPORTED_MODULE_0__["default"],
       inject: vue__WEBPACK_IMPORTED_MODULE_1__.inject
     };
@@ -507,8 +511,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     var expose = _ref.expose;
     expose();
     var props = __props;
+    console.log(props.panel);
     var baseUrl = "/nova-vendor/report-page-generator";
     var report = props.panel.fields[0].report;
+    var can = props.panel.fields[0].can;
     var reportPages = (0,vue__WEBPACK_IMPORTED_MODULE_2__.ref)([]);
 
     var _showCreateReportPageModal = (0,vue__WEBPACK_IMPORTED_MODULE_2__.ref)(false);
@@ -516,6 +522,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     (0,vue__WEBPACK_IMPORTED_MODULE_2__.provide)('tool', {
       baseUrl: baseUrl,
       report: report,
+      can: can,
       reportPages: reportPages,
       addReportPage: function addReportPage(page) {
         reportPages.value.push(page);
@@ -658,6 +665,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       props: props,
       baseUrl: baseUrl,
       report: report,
+      can: can,
       reportPages: reportPages,
       showCreateReportPageModal: _showCreateReportPageModal,
       deleteReportPage: deleteReportPage,
@@ -1580,14 +1588,14 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
 
   var _component_DeleteResourceModal = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("DeleteResourceModal");
 
-  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [$props.showActions ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [$props.showActions && $setup.can.deleteReportPages ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     onClick: _cache[0] || (_cache[0] = function ($event) {
       return $setup.showDeleteConfirmation = true;
     }),
     "class": "text-red-400"
   }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_Icon, {
     type: "trash"
-  })])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $props.showActions ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_3, [$props.showUpArrow ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("button", {
+  })])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $props.showActions && $setup.can.editReportPages ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_3, [$props.showUpArrow ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("button", {
     key: 0,
     onClick: _cache[1] || (_cache[1] = function ($event) {
       return $setup.movePageUp($props.page);
@@ -1612,7 +1620,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
   /* PROPS */
   , ["page"]))], 8
   /* PROPS */
-  , _hoisted_4), $props.showActions ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_DeleteResourceModal, {
+  , _hoisted_4), $props.showActions && $setup.can.deleteReportPages ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_DeleteResourceModal, {
     key: 2,
     show: $setup.showDeleteConfirmation,
     onConfirm: _cache[3] || (_cache[3] = function ($event) {
@@ -1674,6 +1682,7 @@ var _hoisted_5 = {
   "class": "text-base font-normal mt-3"
 };
 var _hoisted_6 = {
+  key: 0,
   "class": "flex-shrink-0 mt-6"
 };
 function render(_ctx, _cache, $props, $setup, $data, $options) {
@@ -1695,7 +1704,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
   /* KEYED_FRAGMENT */
   ))])) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_3, [_hoisted_4, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h3", _hoisted_5, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.__("This Report doesn't have any pages yet")), 1
   /* TEXT */
-  ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_OutlineButton, {
+  ), $setup.can.createReportPages ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_6, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_OutlineButton, {
     onClick: $setup.showCreateReportPageModal
   }, {
     "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
@@ -1708,7 +1717,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
 
   }, 8
   /* PROPS */
-  , ["onClick"])])]))]);
+  , ["onClick"])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]))]);
 }
 
 /***/ }),
@@ -1858,7 +1867,8 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     _: 1
     /* STABLE */
 
-  })), [[_directive_tooltip, _ctx.__('View Report')]]) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_DefaultButton, {
+  })), [[_directive_tooltip, _ctx.__('View Report')]]) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $setup.can.createReportPages ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_DefaultButton, {
+    key: 2,
     onClick: _cache[0] || (_cache[0] = function ($event) {
       return $setup.showCreateReportPageModal = true;
     }),
@@ -1872,11 +1882,12 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     _: 1
     /* STABLE */
 
-  })])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)($setup["ReportPages"], {
+  })) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)($setup["ReportPages"], {
     onPageDeleted: _ctx.handleTokenDeleted
   }, null, 8
   /* PROPS */
-  , ["onPageDeleted"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)($setup["CreateReportPageModal"], {
+  , ["onPageDeleted"]), $setup.can.createReportPages ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)($setup["CreateReportPageModal"], {
+    key: 0,
     show: $setup.showCreateReportPageModal,
     onCancel: _cache[1] || (_cache[1] = function ($event) {
       return $setup.showCreateReportPageModal = false;
@@ -1886,7 +1897,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     })
   }, null, 8
   /* PROPS */
-  , ["show"])]);
+  , ["show"])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]);
 }
 
 /***/ }),

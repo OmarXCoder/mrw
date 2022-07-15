@@ -13,39 +13,39 @@ use Mrw\ReportPageGenerator\Controllers\ReportPageController;
 /**
  * Get all reportPages of the current viewed report
  */
-Route::get('/', [ReportPageController::class, 'index']);
+Route::middleware(['can:reports.view'])->get('/', [ReportPageController::class, 'index']);
 
 /**
  * Delete a reportPage
  */
-Route::delete('/report-pages/{reportPage}', [ReportPageController::class, 'destroy']);
+Route::middleware(['can:reports.delete'])->delete('/report-pages/{reportPage}', [ReportPageController::class, 'destroy']);
 
 /**
  * Move a specific reportPage up withen the report document
  */
-Route::patch('/report-pages/{reportPage}/up', [ReportPageController::class, 'moveUp']);
+Route::middleware(['can:reports.edit'])->patch('/report-pages/{reportPage}/up', [ReportPageController::class, 'moveUp']);
 
 /**
  * Move a specific reportPage down withen the report document
  */
-Route::patch('/report-pages/{reportPage}/down', [ReportPageController::class, 'moveDown']);
+Route::middleware(['can:reports.edit'])->patch('/report-pages/{reportPage}/down', [ReportPageController::class, 'moveDown']);
 
 /**
  * Store a new ReportPage of content type: rich-text
  */
-Route::post('/reports/{report}/pages', [ReportPagesController::class, 'store']);
+Route::middleware(['can:reports.create'])->post('/reports/{report}/pages', [ReportPagesController::class, 'store']);
 
 /**
  * Store a new ReportPage of content type: chart
  */
-Route::post('/reports/{report}/charts', [ReportChartsController::class, 'store']);
+Route::middleware(['can:reports.create'])->post('/reports/{report}/charts', [ReportChartsController::class, 'store']);
 
 /**
  * Get a list of table columns
  *
  * @return array ['col1', 'col2', 'col3', ...]
  */
-Route::get('/query-fields', function (Request $request) {
+Route::middleware(['can:reports.create'])->get('/query-fields', function (Request $request) {
     $queryResource = $request->queryResource;
 
     $result = match ($queryResource) {
@@ -69,7 +69,7 @@ Route::get('/query-fields', function (Request $request) {
  *
  * @return array [['name' => 'video', 'value' => 7], [], ...]
  */
-Route::get('/event-types', function (Request $request) {
+Route::middleware(['can:reports.create'])->get('/event-types', function (Request $request) {
     return Event::join('event_types', 'events.event_code', '=', 'event_types.code')
             ->where("{$request->reportableType}_id", $request->reportableId)
             ->pluck('event_types.name', 'event_types.code')
@@ -83,7 +83,7 @@ Route::get('/event-types', function (Request $request) {
  *
  * @return array $values
  */
-Route::get('/field-values', function (Request $request) {
+Route::middleware(['can:reports.create'])->get('/field-values', function (Request $request) {
     $model = match ($request->reportableType) {
         'app' => App::find($request->reportableId),
         'show' => Show::find($request->reportableId),
@@ -113,7 +113,7 @@ Route::get('/field-values', function (Request $request) {
 /**
  * Store a trix-editor attachment and return the attachment's url
  */
-Route::post('/trix-attachment', function (Request $request) {
+Route::middleware(['can:reports.create'])->post('/trix-attachment', function (Request $request) {
     $path = $request->file('attachment')->store('public/attachments');
 
     return [
@@ -124,7 +124,7 @@ Route::post('/trix-attachment', function (Request $request) {
 /**
  * Delete a trix-editor attachment
  */
-Route::delete('/trix-attachment', function (Request $request) {
+Route::middleware(['can:reports.create'])->delete('/trix-attachment', function (Request $request) {
     $deleted = Storage::delete(str_replace('/storage', 'public', $request->attachmentUrl));
 
     return $deleted ? 'File has been deleted' : 'File has not been deleted';

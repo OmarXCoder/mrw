@@ -24,7 +24,11 @@
                     <Icon type="eye" />
                 </OutlineButton>
 
-                <DefaultButton @click="showCreateReportPageModal = true" class="flex-shrink-0">
+                <DefaultButton
+                    v-if="can.createReportPages"
+                    @click="showCreateReportPageModal = true"
+                    class="flex-shrink-0"
+                >
                     <span class="inline-block">{{ __('Create Report Page') }}</span>
                 </DefaultButton>
             </div>
@@ -33,6 +37,7 @@
         <ReportPages @page-deleted="handleTokenDeleted" />
 
         <CreateReportPageModal
+            v-if="can.createReportPages"
             :show="showCreateReportPageModal"
             @cancel="showCreateReportPageModal = false"
             @created="showCreateReportPageModal = false"
@@ -51,14 +56,18 @@ const props = defineProps({
     panel: Object,
 });
 
+console.log(props.panel);
+
 const baseUrl = `/nova-vendor/report-page-generator`;
 const report = props.panel.fields[0].report;
+const can = props.panel.fields[0].can;
 const reportPages = ref([]);
 const showCreateReportPageModal = ref(false);
 
 provide('tool', {
     baseUrl,
     report,
+    can,
     reportPages,
     addReportPage: (page) => {
         reportPages.value.push(page);

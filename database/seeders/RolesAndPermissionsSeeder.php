@@ -68,6 +68,11 @@ class RolesAndPermissionsSeeder extends Seeder
             ['action_types.view', 'View action types', false],
             ['action_types.edit', 'Edit action types', false],
             ['action_types.delete', 'Delete action types', false],
+            // Reports
+            ['reports.create', 'Create reports', false],
+            ['reports.view', 'View reports', true],
+            ['reports.edit', 'Edit reports', false],
+            ['reports.delete', 'Delete reports', false],
         ];
 
         $permissions = collect($listOfPermissions)->map(
@@ -94,6 +99,7 @@ class RolesAndPermissionsSeeder extends Seeder
                 'apps.view',
                 'attendees.view',
                 'events.view',
+                'reports.view',
             ]);
     }
 }

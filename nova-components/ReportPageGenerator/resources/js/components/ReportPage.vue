@@ -1,13 +1,16 @@
 <template>
     <div class="relative">
-        <div v-if="showActions" class="tw-absolute tw-top-5 tw-right-5 tw-flex">
+        <div
+            v-if="showActions && can.deleteReportPages"
+            class="tw-absolute tw-top-5 tw-right-5 tw-flex"
+        >
             <button @click="showDeleteConfirmation = true" class="text-red-400">
                 <Icon type="trash" />
             </button>
         </div>
 
         <div
-            v-if="showActions"
+            v-if="showActions && can.editReportPages"
             class="tw-w-12 tw-flex tw-flex-col tw-justify-center tw-absolute tw-top-5 -tw-right-12"
         >
             <button
@@ -32,7 +35,7 @@
         </div>
 
         <DeleteResourceModal
-            v-if="showActions"
+            v-if="showActions && can.deleteReportPages"
             :show="showDeleteConfirmation"
             @confirm="deleteReportPage(page)"
             @close="showDeleteConfirmation = false"
@@ -59,5 +62,5 @@ const pageTypes = {
 
 const showDeleteConfirmation = ref(false);
 
-const { deleteReportPage, movePageUp, movePageDown } = inject('tool');
+const { deleteReportPage, movePageUp, movePageDown, can } = inject('tool');
 </script>

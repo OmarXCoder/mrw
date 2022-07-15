@@ -27,7 +27,7 @@
                 {{ __("This Report doesn't have any pages yet") }}
             </h3>
 
-            <div class="flex-shrink-0 mt-6">
+            <div v-if="can.createReportPages" class="flex-shrink-0 mt-6">
                 <OutlineButton @click="showCreateReportPageModal">
                     {{ __('Create Report Page') }}
                 </OutlineButton>
@@ -40,5 +40,5 @@
 import ReportPage from './ReportPage.vue';
 import { inject } from 'vue';
 
-const { reportPages, showCreateReportPageModal } = inject('tool');
+const { reportPages, showCreateReportPageModal, can } = inject('tool');
 </script>
