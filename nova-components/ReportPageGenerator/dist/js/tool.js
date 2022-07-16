@@ -174,7 +174,7 @@ __webpack_require__.r(__webpack_exports__);
       'rich-text': _components_forms_RichTextForm_vue__WEBPACK_IMPORTED_MODULE_2__["default"]
     };
     var pageTitle = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)('');
-    var defaultContentType = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)('rich-text');
+    var defaultContentType = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)('chart');
     var contentTypes = [{
       name: 'Rich Text',
       value: 'rich-text'
@@ -512,7 +512,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     var expose = _ref.expose;
     expose();
     var props = __props;
-    console.log(props.panel);
     var baseUrl = "/nova-vendor/report-page-generator";
     var report = props.panel.fields[0].report;
     var can = props.panel.fields[0].can;
@@ -941,7 +940,8 @@ __webpack_require__.r(__webpack_exports__);
     var reportId = report.id,
         reportableId = report.reportableId,
         reportableType = report.reportableType;
-    var eventCodes = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)([]);
+    var eventTypes = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)([]);
+    var actionTypes = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)([]);
     var queryFields = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)([]);
     var whereValueOptions = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)([]);
     var queryResources = ['attendees', 'events'];
@@ -954,6 +954,7 @@ __webpack_require__.r(__webpack_exports__);
       title: '',
       queryResource: '',
       eventCode: null,
+      actionCode: null,
       queryField: null,
       whereKey: null,
       height: 400,
@@ -998,13 +999,33 @@ __webpack_require__.r(__webpack_exports__);
       if ('attendees' === queryResource) {
         fetchQueryFields();
       } else {
-        fetchEventCodes();
+        fetchEventTypes();
       }
     }
 
-    function handleEventCodeChange() {
+    function handleEventTypeChange(eventCode) {
+      queryFields.value = [];
+      actionTypes.value = [];
+      form.whereKey = null;
+      form.queryField = null;
+      form.actionCode = null;
+
+      if (!eventCode) {
+        return;
+      }
+
+      fetchActionTypes(eventCode);
+    }
+
+    function handleActionTypeChange(actionCode) {
       queryFields.value = [];
       form.whereKey = null;
+      form.queryField = null;
+
+      if (!actionCode) {
+        return;
+      }
+
       fetchQueryFields();
     }
 
@@ -1012,22 +1033,29 @@ __webpack_require__.r(__webpack_exports__);
       whereValueOptions.value = [];
 
       if (!field) {
+        form.datasets = [form.datasets[0]];
         return;
       }
 
-      Nova.request().get("".concat(baseUrl, "/field-values?queryResource=").concat(form.queryResource, "&eventCode=").concat(form.eventCode, "&field=").concat(field, "&reportableType=").concat(reportableType, "&reportableId=").concat(reportableId)).then(function (response) {
+      Nova.request().get("".concat(baseUrl, "/field-values?queryResource=").concat(form.queryResource, "&eventCode=").concat(form.eventCode, "&actionCode=").concat(form.actionCode, "&field=").concat(field, "&reportableType=").concat(reportableType, "&reportableId=").concat(reportableId)).then(function (response) {
         whereValueOptions.value = response.data;
       });
     }
 
-    function fetchEventCodes() {
+    function fetchEventTypes() {
       Nova.request().get("".concat(baseUrl, "/event-types?reportableType=").concat(reportableType, "&reportableId=").concat(reportableId)).then(function (response) {
-        eventCodes.value = response.data;
+        eventTypes.value = response.data;
+      });
+    }
+
+    function fetchActionTypes(eventCode) {
+      return Nova.request().get("".concat(baseUrl, "/action-types?eventCode=").concat(eventCode, "&reportableType=").concat(reportableType, "&reportableId=").concat(reportableId)).then(function (response) {
+        actionTypes.value = response.data;
       });
     }
 
     function fetchQueryFields() {
-      Nova.request().get("".concat(baseUrl, "/query-fields?queryResource=").concat(form.queryResource, "&eventCode=").concat(form.eventCode, "&reportableType=").concat(reportableType, "&reportableId=").concat(reportableId)).then(function (response) {
+      Nova.request().get("".concat(baseUrl, "/query-fields?queryResource=").concat(form.queryResource, "&eventCode=").concat(form.eventCode, "&actionCode=").concat(form.actionCode, "&reportableType=").concat(reportableType, "&reportableId=").concat(reportableId)).then(function (response) {
         queryFields.value = response.data;
       });
     }
@@ -1057,7 +1085,8 @@ __webpack_require__.r(__webpack_exports__);
       reportId: reportId,
       reportableId: reportableId,
       reportableType: reportableType,
-      eventCodes: eventCodes,
+      eventTypes: eventTypes,
+      actionTypes: actionTypes,
       queryFields: queryFields,
       whereValueOptions: whereValueOptions,
       queryResources: queryResources,
@@ -1068,9 +1097,11 @@ __webpack_require__.r(__webpack_exports__);
       addColorInput: addColorInput,
       deleteColorInput: deleteColorInput,
       handleQueryResourceChange: handleQueryResourceChange,
-      handleEventCodeChange: handleEventCodeChange,
+      handleEventTypeChange: handleEventTypeChange,
+      handleActionTypeChange: handleActionTypeChange,
       handleWhereKeyChange: handleWhereKeyChange,
-      fetchEventCodes: fetchEventCodes,
+      fetchEventTypes: fetchEventTypes,
+      fetchActionTypes: fetchActionTypes,
       fetchQueryFields: fetchQueryFields,
       genColor: genColor,
       submit: submit,
@@ -2068,7 +2099,8 @@ var _hoisted_13 = {
   "class": "tw-col-span-2"
 };
 var _hoisted_14 = {
-  "class": "tw-mt-6"
+  key: 0,
+  "class": "tw-pt-6 tw-mt-6 border-t border-gray-100 dark:border-gray-700"
 };
 
 var _hoisted_15 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", null, "Add Dataset", -1
@@ -2076,7 +2108,8 @@ var _hoisted_15 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElement
 );
 
 var _hoisted_16 = {
-  "class": "p-6 border-t border-gray-100 dark:border-gray-700"
+  "class": "p-6 border-t border-gray-100 dark:border-gray-700",
+  id: "chart-form-content"
 };
 
 var _hoisted_17 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
@@ -2123,22 +2156,36 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
   /* PROPS */
   , ["modelValue", "error"]), $setup.form.queryResource ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Event Type "), 'events' === $setup.form.queryResource ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_TwSelectField, {
     key: 0,
-    "class": "tw-col-span-4",
+    "class": "tw-col-span-3",
     label: "Event type",
     modelValue: $setup.form.eventCode,
     "onUpdate:modelValue": [_cache[2] || (_cache[2] = function ($event) {
       return $setup.form.eventCode = $event;
-    }), $setup.handleEventCodeChange],
+    }), $setup.handleEventTypeChange],
     error: $setup.form.getError('eventCode'),
-    options: $setup.eventCodes,
+    options: $setup.eventTypes,
     required: ""
   }, null, 8
   /* PROPS */
-  , ["modelValue", "error", "options"])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Query Field "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_TwSelectField, {
-    "class": "tw-col-span-4",
+  , ["modelValue", "error", "options"])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Action Type "), 'events' === $setup.form.queryResource ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_TwSelectField, {
+    key: 1,
+    "class": "tw-col-span-3",
+    label: "Action type",
+    modelValue: $setup.form.actionCode,
+    "onUpdate:modelValue": [_cache[3] || (_cache[3] = function ($event) {
+      return $setup.form.actionCode = $event;
+    }), $setup.handleActionTypeChange],
+    error: $setup.form.getError('actionCode'),
+    options: $setup.actionTypes,
+    disabled: $setup.actionTypes.length == 0,
+    required: ""
+  }, null, 8
+  /* PROPS */
+  , ["modelValue", "error", "options", "disabled"])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Query Field "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_TwSelectField, {
+    "class": "tw-col-span-3",
     label: "Query field",
     modelValue: $setup.form.queryField,
-    "onUpdate:modelValue": _cache[3] || (_cache[3] = function ($event) {
+    "onUpdate:modelValue": _cache[4] || (_cache[4] = function ($event) {
       return $setup.form.queryField = $event;
     }),
     error: $setup.form.getError('queryField'),
@@ -2148,10 +2195,10 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
   }, null, 8
   /* PROPS */
   , ["modelValue", "error", "options", "disabled"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Where Key "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_TwSelectField, {
-    "class": "tw-col-span-4",
+    "class": "tw-col-span-3",
     label: "Where field (optional)",
     modelValue: $setup.form.whereKey,
-    "onUpdate:modelValue": [_cache[4] || (_cache[4] = function ($event) {
+    "onUpdate:modelValue": [_cache[5] || (_cache[5] = function ($event) {
       return $setup.form.whereKey = $event;
     }), $setup.handleWhereKeyChange],
     error: $setup.form.getError('whereKey'),
@@ -2163,7 +2210,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "class": "tw-col-span-4",
     label: "Chart type",
     modelValue: $setup.form.type,
-    "onUpdate:modelValue": _cache[5] || (_cache[5] = function ($event) {
+    "onUpdate:modelValue": _cache[6] || (_cache[6] = function ($event) {
       return $setup.form.type = $event;
     }),
     error: $setup.form.getError('type'),
@@ -2176,7 +2223,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     label: "Chart height",
     type: "number",
     modelValue: $setup.form.height,
-    "onUpdate:modelValue": _cache[6] || (_cache[6] = function ($event) {
+    "onUpdate:modelValue": _cache[7] || (_cache[7] = function ($event) {
       return $setup.form.height = $event;
     }),
     error: $setup.form.getError('height')
@@ -2187,7 +2234,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     label: "Chart width",
     type: "number",
     modelValue: $setup.form.width,
-    "onUpdate:modelValue": _cache[7] || (_cache[7] = function ($event) {
+    "onUpdate:modelValue": _cache[8] || (_cache[8] = function ($event) {
       return $setup.form.width = $event;
     }),
     error: $setup.form.getError('width')
@@ -2195,7 +2242,9 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
   /* PROPS */
   , ["modelValue", "error"])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_5, [_hoisted_6, ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($setup.form.datasets, function (dataset, index) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
-      "class": "tw-grid tw-grid-cols-12 tw-gap-6 tw-py-6 border-b border-gray-100 dark:border-gray-700 tw-relative",
+      "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)(["tw-grid tw-grid-cols-12 tw-gap-6 tw-pt-6 tw-relative", {
+        'border-b border-gray-100 dark:border-gray-700 tw-pb-6': index != $setup.form.datasets.length - 1
+      }]),
       key: index
     }, [$setup.form.datasets.length > 1 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("button", {
       key: 0,
@@ -2203,7 +2252,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       onClick: function onClick($event) {
         return $setup.deleteDataset(index);
       },
-      "class": "absolute text-red-400 tw-top-4 tw-right-4"
+      "class": "absolute text-red-400 tw-top-2 tw-right-0"
     }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_Icon, {
       type: "trash"
     })], 8
@@ -2290,10 +2339,12 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
 
     }, 1032
     /* PROPS, DYNAMIC_SLOTS */
-    , ["onClick"])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])])]);
+    , ["onClick"])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])])], 2
+    /* CLASS */
+    );
   }), 128
   /* KEYED_FRAGMENT */
-  )), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_14, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_OutlineButton, {
+  )), $setup.form.whereKey ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_14, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_OutlineButton, {
     type: "button",
     onClick: $setup.addDataset,
     "class": "w-full"
@@ -2306,12 +2357,12 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     _: 1
     /* STABLE */
 
-  })])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_16, [_hoisted_17, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_Trix, {
-    id: "content",
-    name: "trix-page-content-filed",
+  })])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_16, [_hoisted_17, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_Trix, {
+    id: "chart-form-content-trix",
+    name: "chart-form-content-filed",
     value: $setup.form.pageContent,
     "with-files": false,
-    onChange: _cache[8] || (_cache[8] = function (value) {
+    onChange: _cache[9] || (_cache[9] = function (value) {
       return $setup.form.pageContent = value;
     }),
     "class": "min-h-40"

@@ -30,17 +30,29 @@
                 <!-- Event Type -->
                 <TwSelectField
                     v-if="'events' === form.queryResource"
-                    class="tw-col-span-4"
+                    class="tw-col-span-3"
                     label="Event type"
                     v-model="form.eventCode"
                     :error="form.getError('eventCode')"
-                    :options="eventCodes"
-                    @update:modelValue="handleEventCodeChange"
+                    :options="eventTypes"
+                    @update:modelValue="handleEventTypeChange"
+                    required
+                />
+                <!-- Action Type -->
+                <TwSelectField
+                    v-if="'events' === form.queryResource"
+                    class="tw-col-span-3"
+                    label="Action type"
+                    v-model="form.actionCode"
+                    :error="form.getError('actionCode')"
+                    :options="actionTypes"
+                    :disabled="actionTypes.length == 0"
+                    @update:modelValue="handleActionTypeChange"
                     required
                 />
                 <!-- Query Field -->
                 <TwSelectField
-                    class="tw-col-span-4"
+                    class="tw-col-span-3"
                     label="Query field"
                     v-model="form.queryField"
                     :error="form.getError('queryField')"
@@ -50,7 +62,7 @@
                 />
                 <!-- Where Key -->
                 <TwSelectField
-                    class="tw-col-span-4"
+                    class="tw-col-span-3"
                     label="Where field (optional)"
                     v-model="form.whereKey"
                     :error="form.getError('whereKey')"
@@ -92,15 +104,19 @@
         <div class="p-6 border-t border-gray-100 dark:border-gray-700">
             <h4 class="tw-text-lg tw-leading-none tw-font-semibold">Datasets Configuration</h4>
             <div
-                class="tw-grid tw-grid-cols-12 tw-gap-6 tw-py-6 border-b border-gray-100 dark:border-gray-700 tw-relative"
+                class="tw-grid tw-grid-cols-12 tw-gap-6 tw-pt-6 tw-relative"
                 v-for="(dataset, index) in form.datasets"
                 :key="index"
+                :class="{
+                    'border-b border-gray-100 dark:border-gray-700 tw-pb-6':
+                        index != form.datasets.length - 1,
+                }"
             >
                 <button
                     type="button"
                     v-if="form.datasets.length > 1"
                     @click="deleteDataset(index)"
-                    class="absolute text-red-400 tw-top-4 tw-right-4"
+                    class="absolute text-red-400 tw-top-2 tw-right-0"
                 >
                     <Icon type="trash" />
                 </button>
@@ -170,7 +186,10 @@
                 </div>
             </div>
 
-            <div class="tw-mt-6">
+            <div
+                v-if="form.whereKey"
+                class="tw-pt-6 tw-mt-6 border-t border-gray-100 dark:border-gray-700"
+            >
                 <OutlineButton type="button" @click="addDataset" class="w-full">
                     <Icon type="plus" />
                     <span>Add Dataset</span>
@@ -178,11 +197,11 @@
             </div>
         </div>
 
-        <div class="p-6 border-t border-gray-100 dark:border-gray-700">
+        <div class="p-6 border-t border-gray-100 dark:border-gray-700" id="chart-form-content">
             <label for="content" class="inline-block leading-tight mb-2">Notes</label>
             <Trix
-                id="content"
-                name="trix-page-content-filed"
+                id="chart-form-content-trix"
+                name="chart-form-content-filed"
                 :value="form.pageContent"
                 :with-files="false"
                 @change="(value) => (form.pageContent = value)"
@@ -204,7 +223,8 @@ const { pageTitle } = inject('newReportPage');
 const { baseUrl, report, addReportPage } = inject('tool');
 const { id: reportId, reportableId, reportableType } = report;
 
-const eventCodes = ref([]);
+const eventTypes = ref([]);
+const actionTypes = ref([]);
 const queryFields = ref([]);
 const whereValueOptions = ref([]);
 const queryResources = ['attendees', 'events'];
@@ -219,6 +239,7 @@ const form = reactive(
         title: '',
         queryResource: '',
         eventCode: null,
+        actionCode: null,
         queryField: null,
         whereKey: null,
         height: 400,
@@ -262,13 +283,32 @@ function handleQueryResourceChange(queryResource) {
     if ('attendees' === queryResource) {
         fetchQueryFields();
     } else {
-        fetchEventCodes();
+        fetchEventTypes();
     }
 }
 
-function handleEventCodeChange() {
+function handleEventTypeChange(eventCode) {
+    queryFields.value = [];
+    actionTypes.value = [];
+    form.whereKey = null;
+    form.queryField = null;
+    form.actionCode = null;
+
+    if (!eventCode) {
+        return;
+    }
+
+    fetchActionTypes(eventCode);
+}
+
+function handleActionTypeChange(actionCode) {
     queryFields.value = [];
     form.whereKey = null;
+    form.queryField = null;
+
+    if (!actionCode) {
+        return;
+    }
 
     fetchQueryFields();
 }
@@ -277,30 +317,41 @@ function handleWhereKeyChange(field) {
     whereValueOptions.value = [];
 
     if (!field) {
+        form.datasets = [form.datasets[0]];
         return;
     }
 
     Nova.request()
         .get(
-            `${baseUrl}/field-values?queryResource=${form.queryResource}&eventCode=${form.eventCode}&field=${field}&reportableType=${reportableType}&reportableId=${reportableId}`
+            `${baseUrl}/field-values?queryResource=${form.queryResource}&eventCode=${form.eventCode}&actionCode=${form.actionCode}&field=${field}&reportableType=${reportableType}&reportableId=${reportableId}`
         )
         .then((response) => {
             whereValueOptions.value = response.data;
         });
 }
 
-function fetchEventCodes() {
+function fetchEventTypes() {
     Nova.request()
         .get(`${baseUrl}/event-types?reportableType=${reportableType}&reportableId=${reportableId}`)
         .then((response) => {
-            eventCodes.value = response.data;
+            eventTypes.value = response.data;
+        });
+}
+
+function fetchActionTypes(eventCode) {
+    return Nova.request()
+        .get(
+            `${baseUrl}/action-types?eventCode=${eventCode}&reportableType=${reportableType}&reportableId=${reportableId}`
+        )
+        .then((response) => {
+            actionTypes.value = response.data;
         });
 }
 
 function fetchQueryFields() {
     Nova.request()
         .get(
-            `${baseUrl}/query-fields?queryResource=${form.queryResource}&eventCode=${form.eventCode}&reportableType=${reportableType}&reportableId=${reportableId}`
+            `${baseUrl}/query-fields?queryResource=${form.queryResource}&eventCode=${form.eventCode}&actionCode=${form.actionCode}&reportableType=${reportableType}&reportableId=${reportableId}`
         )
         .then((response) => {
             queryFields.value = response.data;

@@ -56,8 +56,6 @@ const props = defineProps({
     panel: Object,
 });
 
-console.log(props.panel);
-
 const baseUrl = `/nova-vendor/report-page-generator`;
 const report = props.panel.fields[0].report;
 const can = props.panel.fields[0].can;
