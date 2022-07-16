@@ -197,11 +197,11 @@
             </div>
         </div>
 
-        <div class="p-6 border-t border-gray-100 dark:border-gray-700">
+        <div class="p-6 border-t border-gray-100 dark:border-gray-700" id="chart-form-content">
             <label for="content" class="inline-block leading-tight mb-2">Notes</label>
             <Trix
-                id="content"
-                name="trix-page-content-filed"
+                id="chart-form-content-trix"
+                name="chart-form-content-filed"
                 :value="form.pageContent"
                 :with-files="false"
                 @change="(value) => (form.pageContent = value)"

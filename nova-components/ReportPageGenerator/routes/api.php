@@ -147,5 +147,5 @@ Route::middleware(['can:reports.create'])->post('/trix-attachment', function (Re
 Route::middleware(['can:reports.create'])->delete('/trix-attachment', function (Request $request) {
     $deleted = Storage::delete(str_replace('/storage', 'public', $request->attachmentUrl));
 
-    return $deleted ? 'File has been deleted' : 'File has not been deleted';
+    return $deleted ? 'Attachment has been deleted' : 'Attachment has not been deleted';
 });

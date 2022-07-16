@@ -2108,7 +2108,8 @@ var _hoisted_15 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElement
 );
 
 var _hoisted_16 = {
-  "class": "p-6 border-t border-gray-100 dark:border-gray-700"
+  "class": "p-6 border-t border-gray-100 dark:border-gray-700",
+  id: "chart-form-content"
 };
 
 var _hoisted_17 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
@@ -2357,8 +2358,8 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     /* STABLE */
 
   })])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_16, [_hoisted_17, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_Trix, {
-    id: "content",
-    name: "trix-page-content-filed",
+    id: "chart-form-content-trix",
+    name: "chart-form-content-filed",
     value: $setup.form.pageContent,
     "with-files": false,
     onChange: _cache[9] || (_cache[9] = function (value) {

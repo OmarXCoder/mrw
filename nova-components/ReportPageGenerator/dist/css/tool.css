@@ -175,6 +175,10 @@ html {
     scroll-behavior: smooth;
 }
 
+#chart-form-content .trix-button-group.trix-button-group--file-tools {
+    display: none;
+}
+
 .hover\:tw-text-blue-400:hover {
     --tw-text-opacity: 1;
     color: rgb(96 165 250 / var(--tw-text-opacity));
