@@ -50,6 +50,7 @@ __webpack_require__.r(__webpack_exports__);
           text: props.chart.title,
           display: true,
           font: {
+            size: 18,
             weight: 'normal'
           }
         },
@@ -726,6 +727,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     var props = __props;
     chart_js__WEBPACK_IMPORTED_MODULE_2__.Chart.register(chart_js__WEBPACK_IMPORTED_MODULE_2__.Title, chart_js__WEBPACK_IMPORTED_MODULE_2__.Tooltip, chart_js__WEBPACK_IMPORTED_MODULE_2__.Legend, chart_js__WEBPACK_IMPORTED_MODULE_2__.BarElement, chart_js__WEBPACK_IMPORTED_MODULE_2__.CategoryScale, chart_js__WEBPACK_IMPORTED_MODULE_2__.LinearScale);
     var chartOptions = (0,lodash__WEBPACK_IMPORTED_MODULE_0__.merge)(props.options, {
+      datasets: {
+        bar: {
+          maxBarThickness: 64
+        }
+      },
       plugins: {
         datalabels: {
           color: '#64748b',

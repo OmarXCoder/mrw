@@ -18,12 +18,12 @@
     right: -3rem;
 }
 
-.tw-top-4 {
-    top: 1rem;
+.tw-top-2 {
+    top: 0.5rem;
 }
 
-.tw-right-4 {
-    right: 1rem;
+.tw-right-0 {
+    right: 0px;
 }
 
 .tw-col-span-6 {
@@ -119,8 +119,11 @@
     padding-bottom: 0.25rem;
 }
 
-.tw-py-6 {
+.tw-pt-6 {
     padding-top: 1.5rem;
+}
+
+.tw-pb-6 {
     padding-bottom: 1.5rem;
 }
 
@@ -157,9 +160,11 @@
 }
 
 .tw-transition-colors {
-    transition-property: color, background-color, border-color, fill, stroke, -webkit-text-decoration-color;
+    transition-property: color, background-color, border-color, fill, stroke,
+        -webkit-text-decoration-color;
     transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
-    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, -webkit-text-decoration-color;
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke,
+        -webkit-text-decoration-color;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     transition-duration: 150ms;
 }
@@ -172,4 +177,3 @@ html {
     --tw-text-opacity: 1;
     color: rgb(96 165 250 / var(--tw-text-opacity));
 }
-

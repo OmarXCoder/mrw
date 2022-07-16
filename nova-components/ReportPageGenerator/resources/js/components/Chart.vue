@@ -39,6 +39,7 @@ const defaultChartOptions = {
             text: props.chart.title,
             display: true,
             font: {
+                size: 18,
                 weight: 'normal',
             },
         },

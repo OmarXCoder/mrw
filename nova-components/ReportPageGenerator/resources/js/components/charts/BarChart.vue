@@ -34,6 +34,11 @@ const props = defineProps({
 });
 
 const chartOptions = merge(props.options, {
+    datasets: {
+        bar: {
+            maxBarThickness: 64,
+        },
+    },
     plugins: {
         datalabels: {
             color: '#64748b',
