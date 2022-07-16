@@ -26,6 +26,14 @@
     right: 0px;
 }
 
+.tw-top-2 {
+    top: 0.5rem;
+}
+
+.tw-right-0 {
+    right: 0px;
+}
+
 .tw-col-span-6 {
     grid-column: span 6 / span 6;
 }
@@ -56,6 +64,10 @@
 
 .tw-mt-8 {
     margin-top: 2rem;
+}
+
+.tw-mt-4 {
+    margin-top: 1rem;
 }
 
 .tw-flex {
@@ -106,6 +118,10 @@
     gap: 1.5rem;
 }
 
+.tw-gap-4 {
+    gap: 1rem;
+}
+
 .tw-rounded {
     border-radius: 0.25rem;
 }
@@ -129,6 +145,22 @@
 
 .tw-pr-2 {
     padding-right: 0.5rem;
+}
+
+.tw-pt-6 {
+    padding-top: 1.5rem;
+}
+
+.tw-pb-6 {
+    padding-bottom: 1.5rem;
+}
+
+.tw-pt-4 {
+    padding-top: 1rem;
+}
+
+.tw-pb-4 {
+    padding-bottom: 1rem;
 }
 
 .tw-text-sm {

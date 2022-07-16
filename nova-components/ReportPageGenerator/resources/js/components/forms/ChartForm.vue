@@ -92,15 +92,19 @@
         <div class="p-6 border-t border-gray-100 dark:border-gray-700">
             <h4 class="tw-text-lg tw-leading-none tw-font-semibold">Datasets Configuration</h4>
             <div
-                class="tw-grid tw-grid-cols-12 tw-gap-6 tw-py-6 border-b border-gray-100 dark:border-gray-700 tw-relative"
+                class="tw-grid tw-grid-cols-12 tw-gap-6 tw-pt-6 tw-relative"
                 v-for="(dataset, index) in form.datasets"
                 :key="index"
+                :class="{
+                    'border-b border-gray-100 dark:border-gray-700 tw-pb-6':
+                        index != form.datasets.length - 1,
+                }"
             >
                 <button
                     type="button"
                     v-if="form.datasets.length > 1"
                     @click="deleteDataset(index)"
-                    class="absolute text-red-400 tw-top-4 tw-right-4"
+                    class="absolute text-red-400 tw-top-2 tw-right-0"
                 >
                     <Icon type="trash" />
                 </button>
@@ -170,7 +174,10 @@
                 </div>
             </div>
 
-            <div class="tw-mt-6">
+            <div
+                v-if="form.whereKey"
+                class="tw-pt-6 tw-mt-6 border-t border-gray-100 dark:border-gray-700"
+            >
                 <OutlineButton type="button" @click="addDataset" class="w-full">
                     <Icon type="plus" />
                     <span>Add Dataset</span>
@@ -277,6 +284,7 @@ function handleWhereKeyChange(field) {
     whereValueOptions.value = [];
 
     if (!field) {
+        form.datasets = [form.datasets[0]];
         return;
     }
 
