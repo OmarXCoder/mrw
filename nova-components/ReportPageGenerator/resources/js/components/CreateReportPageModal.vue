@@ -57,7 +57,7 @@ const contentForms = {
 };
 
 const pageTitle = ref('');
-const defaultContentType = ref('rich-text');
+const defaultContentType = ref('chart');
 
 const contentTypes = [
     { name: 'Rich Text', value: 'rich-text' },

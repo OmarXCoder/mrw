@@ -54,6 +54,7 @@ Route::middleware(['can:reports.create'])->get('/query-fields', function (Reques
             function ($request) {
                 $meta = Event::select('event_code', 'meta')
                     ->where(['event_code' => $request->eventCode, "{$request->reportableType}_id" => $request->reportableId])
+                    ->when($request->actionCode, fn ($query) => $query->where('action_code', $request->actionCode))
                     ->first()
                     ->meta;
 
@@ -73,6 +74,22 @@ Route::middleware(['can:reports.create'])->get('/event-types', function (Request
     return Event::join('event_types', 'events.event_code', '=', 'event_types.code')
             ->where("{$request->reportableType}_id", $request->reportableId)
             ->pluck('event_types.name', 'event_types.code')
+            ->unique()
+            ->map(fn ($item, $key) => ['name' => $item, 'value' => $key])
+            ->values();
+});
+
+/**
+ * Get a list of action_types of the events occured on a specific show/app
+ * limited by the event_code of the event
+ *
+ * @return array [['name' => 'viewed', 'value' => 0], [], ...]
+ */
+Route::middleware(['can:reports.create'])->get('/action-types', function (Request $request) {
+    return Event::join('action_types', 'events.action_code', '=', 'action_types.code')
+            ->where("{$request->reportableType}_id", $request->reportableId)
+            ->where('event_code', $request->eventCode)
+            ->pluck('action_types.name', 'action_types.code')
             ->unique()
             ->map(fn ($item, $key) => ['name' => $item, 'value' => $key])
             ->values();
@@ -101,7 +118,10 @@ Route::middleware(['can:reports.create'])->get('/field-values', function (Reques
         'events' => (
             fn () => $model
                 ->events()
-                ->where('event_code', $request->eventCode)
+                ->where([
+                    'event_code' => $request->eventCode,
+                    'action_code' => $request->actionCode,
+                ])
                 ->select("meta->{$request->field} as {$request->field}")
                 ->pluck($request->field)
                 ->unique()

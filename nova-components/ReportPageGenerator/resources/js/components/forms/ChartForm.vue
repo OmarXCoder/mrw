@@ -30,17 +30,29 @@
                 <!-- Event Type -->
                 <TwSelectField
                     v-if="'events' === form.queryResource"
-                    class="tw-col-span-4"
+                    class="tw-col-span-3"
                     label="Event type"
                     v-model="form.eventCode"
                     :error="form.getError('eventCode')"
-                    :options="eventCodes"
-                    @update:modelValue="handleEventCodeChange"
+                    :options="eventTypes"
+                    @update:modelValue="handleEventTypeChange"
+                    required
+                />
+                <!-- Action Type -->
+                <TwSelectField
+                    v-if="'events' === form.queryResource"
+                    class="tw-col-span-3"
+                    label="Action type"
+                    v-model="form.actionCode"
+                    :error="form.getError('actionCode')"
+                    :options="actionTypes"
+                    :disabled="actionTypes.length == 0"
+                    @update:modelValue="handleActionTypeChange"
                     required
                 />
                 <!-- Query Field -->
                 <TwSelectField
-                    class="tw-col-span-4"
+                    class="tw-col-span-3"
                     label="Query field"
                     v-model="form.queryField"
                     :error="form.getError('queryField')"
@@ -50,7 +62,7 @@
                 />
                 <!-- Where Key -->
                 <TwSelectField
-                    class="tw-col-span-4"
+                    class="tw-col-span-3"
                     label="Where field (optional)"
                     v-model="form.whereKey"
                     :error="form.getError('whereKey')"
@@ -211,7 +223,8 @@ const { pageTitle } = inject('newReportPage');
 const { baseUrl, report, addReportPage } = inject('tool');
 const { id: reportId, reportableId, reportableType } = report;
 
-const eventCodes = ref([]);
+const eventTypes = ref([]);
+const actionTypes = ref([]);
 const queryFields = ref([]);
 const whereValueOptions = ref([]);
 const queryResources = ['attendees', 'events'];
@@ -226,6 +239,7 @@ const form = reactive(
         title: '',
         queryResource: '',
         eventCode: null,
+        actionCode: null,
         queryField: null,
         whereKey: null,
         height: 400,
@@ -269,13 +283,32 @@ function handleQueryResourceChange(queryResource) {
     if ('attendees' === queryResource) {
         fetchQueryFields();
     } else {
-        fetchEventCodes();
+        fetchEventTypes();
     }
 }
 
-function handleEventCodeChange() {
+function handleEventTypeChange(eventCode) {
+    queryFields.value = [];
+    actionTypes.value = [];
+    form.whereKey = null;
+    form.queryField = null;
+    form.actionCode = null;
+
+    if (!eventCode) {
+        return;
+    }
+
+    fetchActionTypes(eventCode);
+}
+
+function handleActionTypeChange(actionCode) {
     queryFields.value = [];
     form.whereKey = null;
+    form.queryField = null;
+
+    if (!actionCode) {
+        return;
+    }
 
     fetchQueryFields();
 }
@@ -290,25 +323,35 @@ function handleWhereKeyChange(field) {
 
     Nova.request()
         .get(
-            `${baseUrl}/field-values?queryResource=${form.queryResource}&eventCode=${form.eventCode}&field=${field}&reportableType=${reportableType}&reportableId=${reportableId}`
+            `${baseUrl}/field-values?queryResource=${form.queryResource}&eventCode=${form.eventCode}&actionCode=${form.actionCode}&field=${field}&reportableType=${reportableType}&reportableId=${reportableId}`
         )
         .then((response) => {
             whereValueOptions.value = response.data;
         });
 }
 
-function fetchEventCodes() {
+function fetchEventTypes() {
     Nova.request()
         .get(`${baseUrl}/event-types?reportableType=${reportableType}&reportableId=${reportableId}`)
         .then((response) => {
-            eventCodes.value = response.data;
+            eventTypes.value = response.data;
+        });
+}
+
+function fetchActionTypes(eventCode) {
+    return Nova.request()
+        .get(
+            `${baseUrl}/action-types?eventCode=${eventCode}&reportableType=${reportableType}&reportableId=${reportableId}`
+        )
+        .then((response) => {
+            actionTypes.value = response.data;
         });
 }
 
 function fetchQueryFields() {
     Nova.request()
         .get(
-            `${baseUrl}/query-fields?queryResource=${form.queryResource}&eventCode=${form.eventCode}&reportableType=${reportableType}&reportableId=${reportableId}`
+            `${baseUrl}/query-fields?queryResource=${form.queryResource}&eventCode=${form.eventCode}&actionCode=${form.actionCode}&reportableType=${reportableType}&reportableId=${reportableId}`
         )
         .then((response) => {
             queryFields.value = response.data;
