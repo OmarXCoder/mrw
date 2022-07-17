@@ -118,9 +118,17 @@
     background-color: transparent;
 }
 
+.tw-p-6 {
+    padding: 1.5rem;
+}
+
 .tw-py-1 {
     padding-top: 0.25rem;
     padding-bottom: 0.25rem;
+}
+
+.tw-pr-12 {
+    padding-right: 3rem;
 }
 
 .tw-pt-6 {

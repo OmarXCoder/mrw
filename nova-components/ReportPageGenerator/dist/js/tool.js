@@ -920,6 +920,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "vue");
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(vue__WEBPACK_IMPORTED_MODULE_0__);
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   __name: 'ChartForm',
@@ -943,6 +955,7 @@ __webpack_require__.r(__webpack_exports__);
     var eventTypes = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)([]);
     var actionTypes = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)([]);
     var queryFields = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)([]);
+    var whereKeyOptions = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)([]);
     var whereValueOptions = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)([]);
     var queryResources = ['attendees', 'events'];
     var chartTypes = ['line', 'bar', 'pie'];
@@ -950,8 +963,8 @@ __webpack_require__.r(__webpack_exports__);
       contentType: 'chart',
       pageTitle: '',
       pageContent: '',
-      type: '',
       title: '',
+      type: 'bar',
       queryResource: '',
       eventCode: null,
       actionCode: null,
@@ -966,6 +979,9 @@ __webpack_require__.r(__webpack_exports__);
         colors: ['#5E43CC']
       }]
     }));
+    var whereOperatorOptions = (0,vue__WEBPACK_IMPORTED_MODULE_0__.computed)(function () {
+      return form.whereKey === 'app_id' ? ['=', '!='] : ['=', '!=', '>', '<', '>=', '<='];
+    });
 
     var addDataset = function addDataset() {
       form.datasets.push({
@@ -1056,6 +1072,10 @@ __webpack_require__.r(__webpack_exports__);
 
     function fetchQueryFields() {
       Nova.request().get("".concat(baseUrl, "/query-fields?queryResource=").concat(form.queryResource, "&eventCode=").concat(form.eventCode, "&actionCode=").concat(form.actionCode, "&reportableType=").concat(reportableType, "&reportableId=").concat(reportableId)).then(function (response) {
+        whereKeyOptions.value = reportableType === 'app' ? response.data : [{
+          name: 'App',
+          value: 'app_id'
+        }].concat(_toConsumableArray(response.data));
         queryFields.value = response.data;
       });
     }
@@ -1088,10 +1108,12 @@ __webpack_require__.r(__webpack_exports__);
       eventTypes: eventTypes,
       actionTypes: actionTypes,
       queryFields: queryFields,
+      whereKeyOptions: whereKeyOptions,
       whereValueOptions: whereValueOptions,
       queryResources: queryResources,
       chartTypes: chartTypes,
       form: form,
+      whereOperatorOptions: whereOperatorOptions,
       addDataset: addDataset,
       deleteDataset: deleteDataset,
       addColorInput: addColorInput,
@@ -1108,7 +1130,8 @@ __webpack_require__.r(__webpack_exports__);
       reactive: vue__WEBPACK_IMPORTED_MODULE_0__.reactive,
       inject: vue__WEBPACK_IMPORTED_MODULE_0__.inject,
       ref: vue__WEBPACK_IMPORTED_MODULE_0__.ref,
-      watch: vue__WEBPACK_IMPORTED_MODULE_0__.watch
+      watch: vue__WEBPACK_IMPORTED_MODULE_0__.watch,
+      computed: vue__WEBPACK_IMPORTED_MODULE_0__.computed
     };
     Object.defineProperty(__returned__, '__isScriptSetup', {
       enumerable: false,
@@ -1688,7 +1711,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(vue__WEBPACK_IMPORTED_MODULE_0__);
 
 var _hoisted_1 = {
-  "class": "bg-gray-50 dark:bg-gray-800 rounded-lg shadow p-6"
+  "class": "bg-gray-50 dark:bg-gray-800 rounded-lg shadow tw-p-6 tw-pr-12"
 };
 var _hoisted_2 = {
   key: 0,
@@ -2196,14 +2219,14 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
   /* PROPS */
   , ["modelValue", "error", "options", "disabled"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Where Key "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_TwSelectField, {
     "class": "tw-col-span-3",
-    label: "Where field (optional)",
+    label: "Where (optional)",
     modelValue: $setup.form.whereKey,
     "onUpdate:modelValue": [_cache[5] || (_cache[5] = function ($event) {
       return $setup.form.whereKey = $event;
     }), $setup.handleWhereKeyChange],
     error: $setup.form.getError('whereKey'),
-    options: $setup.queryFields,
-    disabled: $setup.queryFields.length == 0
+    options: $setup.whereKeyOptions,
+    disabled: $setup.whereKeyOptions.length == 0
   }, null, 8
   /* PROPS */
   , ["modelValue", "error", "options", "disabled"])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $setup.form.queryResource ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_4, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Chart Type "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_TwSelectField, {
@@ -2279,10 +2302,11 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         return dataset.whereOperator = $event;
       },
       error: $setup.form.getError("datasets.".concat(index, ".whereOperator")),
-      options: ['=', '!=', '>', '<', '>=', '<=']
+      options: $setup.whereOperatorOptions,
+      required: ""
     }, null, 8
     /* PROPS */
-    , ["id", "modelValue", "onUpdate:modelValue", "error"])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $setup.form.whereKey ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_TwSelectField, {
+    , ["id", "modelValue", "onUpdate:modelValue", "error", "options"])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $setup.form.whereKey ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_TwSelectField, {
       key: 2,
       "class": "tw-col-span-4",
       label: $setup.form.whereKey,
@@ -2293,7 +2317,8 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       },
       error: $setup.form.getError("datasets.".concat(index, ".whereValue")),
       options: $setup.whereValueOptions,
-      disabled: $setup.whereValueOptions.length == 0
+      disabled: $setup.whereValueOptions.length == 0,
+      required: ""
     }, null, 8
     /* PROPS */
     , ["label", "id", "modelValue", "onUpdate:modelValue", "error", "options", "disabled"])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_8, [_hoisted_9, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_10, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)(dataset.colors, function (color, index) {

@@ -121,6 +121,9 @@ class ReportChartsController extends Controller
     protected function getAttendeeFieldValuesAsLabels(Request $request, Model $model)
     {
         return $model->attendees()
+            ->when($request->whereKey === 'app_id', function ($query) {
+                $query->join('app_attendee', 'app_attendee.attendee_id', '=', 'attendees.id');
+            })
             ->select($request->queryField)
             ->when($request->whereKey, function ($query) use ($request) {
                 foreach ($request->datasets as $key => $dataset) {
@@ -156,9 +159,7 @@ class ReportChartsController extends Controller
 
                     $whereMethod = $key === 0 ? 'where' : 'orWhere';
 
-                    [$whereKey, $whereOperator, $whereValue] = $condition;
-
-                    $query->{$whereMethod}("meta->{$whereKey}", $whereOperator, $whereValue);
+                    $query->{$whereMethod}(...$condition);
                 }
             })
             ->pluck($metaField)
@@ -172,6 +173,9 @@ class ReportChartsController extends Controller
         $column = $request->queryField;
 
         return $model->attendees()
+            ->when($request->whereKey === 'app_id', function ($query) {
+                $query->join('app_attendee', 'app_attendee.attendee_id', '=', 'attendees.id');
+            })
             ->select($column, DB::raw("COUNT({$column}) as attendees_count"))
             ->when($condition, fn ($query) => $query->where(...$condition))
             ->groupBy($column)
@@ -188,10 +192,7 @@ class ReportChartsController extends Controller
         return Event::where(["{$modelName}_id" => $model->id, 'event_code' => $request->eventCode])
             ->whereNotNull("meta->{$metaField}")
             ->select("meta->{$metaField} as {$metaField}", DB::raw("COUNT(JSON_EXTRACT(meta, \"$.{$metaField}\")) as times_count"))
-            ->when($condition, function ($query) use ($condition) {
-                [$key, $operator, $value] = $condition;
-                $query->where("meta->{$key}", $operator, $value);
-            })
+            ->when($condition, fn ($query) => $query->where(...$condition))
             ->groupBy("meta->{$metaField}")
             ->pluck('times_count', $metaField)
             ->toArray();
@@ -208,10 +209,20 @@ class ReportChartsController extends Controller
             return null;
         }
 
+        $whereKey = $request->whereKey;
+
+        if ($request->queryResource === 'attendees' && $whereKey === 'app_id') {
+            $whereKey = 'app_attendee.app_id';
+        }
+
+        if ($request->queryResource === 'events' && $whereKey !== 'app_id') {
+            $whereKey = "meta->{$whereKey}";
+        }
+
         return [
-            $request->whereKey,
+            $whereKey,
             $dataset['whereOperator'],
-            $dataset['whereOperator'] === 'like' ? '%' . $dataset['whereValue'] . '%' : $dataset['whereValue'],
+            $dataset['whereValue'],
         ];
     }
 
