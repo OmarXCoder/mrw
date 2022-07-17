@@ -106,6 +106,14 @@ Route::middleware(['can:reports.create'])->get('/field-values', function (Reques
         'show' => Show::find($request->reportableId),
     };
 
+    if ($request->field === 'app_id' && $request->reportableType === 'show') {
+        return $model
+            ->apps()
+            ->pluck('name', 'id')
+            ->map(fn ($item, $key) => ['name' => $item, 'value' => $key])
+            ->values();
+    }
+
     return match ($request->queryResource) {
         'attendees' => (
             fn () => $model

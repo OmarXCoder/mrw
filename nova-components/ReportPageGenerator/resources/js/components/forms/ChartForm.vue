@@ -63,11 +63,11 @@
                 <!-- Where Key -->
                 <TwSelectField
                     class="tw-col-span-3"
-                    label="Where field (optional)"
+                    label="Where (optional)"
                     v-model="form.whereKey"
                     :error="form.getError('whereKey')"
-                    :options="queryFields"
-                    :disabled="queryFields.length == 0"
+                    :options="whereKeyOptions"
+                    :disabled="whereKeyOptions.length == 0"
                     @update:modelValue="handleWhereKeyChange"
                 />
             </div>
@@ -137,7 +137,8 @@
                     :id="`where-operator-${index}`"
                     v-model="dataset.whereOperator"
                     :error="form.getError(`datasets.${index}.whereOperator`)"
-                    :options="['=', '!=', '>', '<', '>=', '<=']"
+                    :options="whereOperatorOptions"
+                    required
                 />
 
                 <TwSelectField
@@ -149,6 +150,7 @@
                     :error="form.getError(`datasets.${index}.whereValue`)"
                     :options="whereValueOptions"
                     :disabled="whereValueOptions.length == 0"
+                    required
                 />
 
                 <div class="tw-col-span-12">
@@ -214,7 +216,7 @@
 </template>
 
 <script setup>
-import { reactive, inject, ref, watch } from 'vue';
+import { reactive, inject, ref, watch, computed } from 'vue';
 
 const emit = defineEmits(['submited']);
 
@@ -226,6 +228,7 @@ const { id: reportId, reportableId, reportableType } = report;
 const eventTypes = ref([]);
 const actionTypes = ref([]);
 const queryFields = ref([]);
+const whereKeyOptions = ref([]);
 const whereValueOptions = ref([]);
 const queryResources = ['attendees', 'events'];
 const chartTypes = ['line', 'bar', 'pie'];
@@ -235,8 +238,8 @@ const form = reactive(
         contentType: 'chart',
         pageTitle: '',
         pageContent: '',
-        type: '',
         title: '',
+        type: 'bar',
         queryResource: '',
         eventCode: null,
         actionCode: null,
@@ -253,6 +256,10 @@ const form = reactive(
             },
         ],
     })
+);
+
+const whereOperatorOptions = computed(() =>
+    form.whereKey === 'app_id' ? ['=', '!='] : ['=', '!=', '>', '<', '>=', '<=']
 );
 
 const addDataset = () => {
@@ -354,6 +361,10 @@ function fetchQueryFields() {
             `${baseUrl}/query-fields?queryResource=${form.queryResource}&eventCode=${form.eventCode}&actionCode=${form.actionCode}&reportableType=${reportableType}&reportableId=${reportableId}`
         )
         .then((response) => {
+            whereKeyOptions.value =
+                reportableType === 'app'
+                    ? response.data
+                    : [{ name: 'App', value: 'app_id' }, ...response.data];
             queryFields.value = response.data;
         });
 }

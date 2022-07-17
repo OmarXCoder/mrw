@@ -17,7 +17,7 @@ class ShowsTableSeeder extends Seeder
         $clients = Client::all();
 
         $clients->each(
-            fn ($client) => Show::factory(random_int(1, 11))->create(['client_id' => $client->id])
+            fn ($client) => Show::factory(random_int(1, 6))->create(['client_id' => $client->id])
         );
     }
 }
