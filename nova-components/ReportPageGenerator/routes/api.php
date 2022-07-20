@@ -54,7 +54,7 @@ Route::middleware(['can:reports.create'])->get('/query-fields', function (Reques
             function ($request) {
                 $meta = Event::select('event_code', 'meta')
                     ->where(['event_code' => $request->eventCode, "{$request->reportableType}_id" => $request->reportableId])
-                    ->when($request->actionCode, fn ($query) => $query->where('action_code', $request->actionCode))
+                    ->when(is_numeric($request->actionCode), fn ($query) => $query->where('action_code', $request->actionCode))
                     ->first()
                     ->meta;
 
@@ -119,6 +119,7 @@ Route::middleware(['can:reports.create'])->get('/field-values', function (Reques
             fn () => $model
                 ->attendees()
                 ->select($request->field)
+                ->orderBy($request->field)
                 ->pluck($request->field)
                 ->unique()
                 ->values()
@@ -126,11 +127,10 @@ Route::middleware(['can:reports.create'])->get('/field-values', function (Reques
         'events' => (
             fn () => $model
                 ->events()
-                ->where([
-                    'event_code' => $request->eventCode,
-                    'action_code' => $request->actionCode,
-                ])
+                ->where('event_code', $request->eventCode)
+                ->when(is_numeric($request->actionCode), fn ($query) => $query->where('action_code', $request->actionCode))
                 ->select("meta->{$request->field} as {$request->field}")
+                ->orderBy($request->field)
                 ->pluck($request->field)
                 ->unique()
                 ->values()

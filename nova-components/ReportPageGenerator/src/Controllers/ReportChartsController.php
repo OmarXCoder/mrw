@@ -151,6 +151,7 @@ class ReportChartsController extends Controller
         return Event::select("meta->{$metaField} as {$metaField}")
             ->whereNotNull("meta->{$metaField}")
             ->where(["{$modelName}_id" => $model->id, 'event_code' => $request->eventCode])
+            ->when(is_numeric($request->actionCode), fn ($query) => $query->where('action_code', $request->actionCode))
             ->when($request->whereKey, function ($query) use ($request) {
                 foreach ($request->datasets as $key => $dataset) {
                     if (!$condition = $this->getConditionParameters($request, $dataset)) {
@@ -189,9 +190,10 @@ class ReportChartsController extends Controller
 
         $metaField = $request->queryField;
 
-        return Event::where(["{$modelName}_id" => $model->id, 'event_code' => $request->eventCode])
+        return Event::select("meta->{$metaField} as {$metaField}", DB::raw("COUNT(JSON_EXTRACT(meta, \"$.{$metaField}\")) as times_count"))
             ->whereNotNull("meta->{$metaField}")
-            ->select("meta->{$metaField} as {$metaField}", DB::raw("COUNT(JSON_EXTRACT(meta, \"$.{$metaField}\")) as times_count"))
+            ->where(["{$modelName}_id" => $model->id, 'event_code' => $request->eventCode])
+            ->when(is_numeric($request->actionCode), fn ($query) => $query->where('action_code', $request->actionCode))
             ->when($condition, fn ($query) => $query->where(...$condition))
             ->groupBy("meta->{$metaField}")
             ->pluck('times_count', $metaField)

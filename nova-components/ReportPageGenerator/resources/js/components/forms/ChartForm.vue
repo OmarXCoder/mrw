@@ -285,6 +285,7 @@ const deleteColorInput = (dataset, colorIndex) => {
 
 function handleQueryResourceChange(queryResource) {
     queryFields.value = [];
+    whereKeyOptions.value = [];
     form.whereKey = null;
 
     if ('attendees' === queryResource) {
@@ -306,6 +307,8 @@ function handleEventTypeChange(eventCode) {
     }
 
     fetchActionTypes(eventCode);
+
+    fetchQueryFields();
 }
 
 function handleActionTypeChange(actionCode) {
@@ -356,15 +359,13 @@ function fetchActionTypes(eventCode) {
 }
 
 function fetchQueryFields() {
+    console.log('fetching query fields...');
     Nova.request()
         .get(
             `${baseUrl}/query-fields?queryResource=${form.queryResource}&eventCode=${form.eventCode}&actionCode=${form.actionCode}&reportableType=${reportableType}&reportableId=${reportableId}`
         )
         .then((response) => {
-            whereKeyOptions.value =
-                reportableType === 'app'
-                    ? response.data
-                    : [{ name: 'App', value: 'app_id' }, ...response.data];
+            whereKeyOptions.value = response.data;
             queryFields.value = response.data;
         });
 }

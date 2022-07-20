@@ -920,18 +920,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "vue");
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(vue__WEBPACK_IMPORTED_MODULE_0__);
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
-
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-
-function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
-
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
-
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
-
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   __name: 'ChartForm',
@@ -1010,6 +998,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
     function handleQueryResourceChange(queryResource) {
       queryFields.value = [];
+      whereKeyOptions.value = [];
       form.whereKey = null;
 
       if ('attendees' === queryResource) {
@@ -1031,6 +1020,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       }
 
       fetchActionTypes(eventCode);
+      fetchQueryFields();
     }
 
     function handleActionTypeChange(actionCode) {
@@ -1071,11 +1061,9 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
     }
 
     function fetchQueryFields() {
+      console.log('fetching query fields...');
       Nova.request().get("".concat(baseUrl, "/query-fields?queryResource=").concat(form.queryResource, "&eventCode=").concat(form.eventCode, "&actionCode=").concat(form.actionCode, "&reportableType=").concat(reportableType, "&reportableId=").concat(reportableId)).then(function (response) {
-        whereKeyOptions.value = reportableType === 'app' ? response.data : [{
-          name: 'App',
-          value: 'app_id'
-        }].concat(_toConsumableArray(response.data));
+        whereKeyOptions.value = response.data;
         queryFields.value = response.data;
       });
     }
