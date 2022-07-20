@@ -31,6 +31,16 @@ Route::middleware(['can:reports.edit'])->patch('/report-pages/{reportPage}/up', 
 Route::middleware(['can:reports.edit'])->patch('/report-pages/{reportPage}/down', [ReportPageController::class, 'moveDown']);
 
 /**
+ * Fetch a list of apps the belong to a specific show
+ */
+Route::middleware(['can:reports.create'])->get('/shows/{show}/apps', function (Show $show) {
+    return $show->apps()
+        ->pluck('name', 'id')
+        ->map(fn ($item, $key) => ['name' => $item, 'value' => $key])
+        ->values();
+});
+
+/**
  * Store a new ReportPage of content type: rich-text
  */
 Route::middleware(['can:reports.create'])->post('/reports/{report}/pages', [ReportPagesController::class, 'store']);
@@ -54,7 +64,7 @@ Route::middleware(['can:reports.create'])->get('/query-fields', function (Reques
             function ($request) {
                 $meta = Event::select('event_code', 'meta')
                     ->where(['event_code' => $request->eventCode, "{$request->reportableType}_id" => $request->reportableId])
-                    ->when($request->actionCode, fn ($query) => $query->where('action_code', $request->actionCode))
+                    ->when(is_numeric($request->actionCode), fn ($query) => $query->where('action_code', $request->actionCode))
                     ->first()
                     ->meta;
 
@@ -119,6 +129,7 @@ Route::middleware(['can:reports.create'])->get('/field-values', function (Reques
             fn () => $model
                 ->attendees()
                 ->select($request->field)
+                ->orderBy($request->field)
                 ->pluck($request->field)
                 ->unique()
                 ->values()
@@ -126,11 +137,10 @@ Route::middleware(['can:reports.create'])->get('/field-values', function (Reques
         'events' => (
             fn () => $model
                 ->events()
-                ->where([
-                    'event_code' => $request->eventCode,
-                    'action_code' => $request->actionCode,
-                ])
+                ->where('event_code', $request->eventCode)
+                ->when(is_numeric($request->actionCode), fn ($query) => $query->where('action_code', $request->actionCode))
                 ->select("meta->{$request->field} as {$request->field}")
+                ->orderBy($request->field)
                 ->pluck($request->field)
                 ->unique()
                 ->values()

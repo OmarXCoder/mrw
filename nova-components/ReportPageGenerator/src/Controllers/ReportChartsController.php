@@ -121,10 +121,11 @@ class ReportChartsController extends Controller
     protected function getAttendeeFieldValuesAsLabels(Request $request, Model $model)
     {
         return $model->attendees()
-            ->when($request->whereKey === 'app_id', function ($query) {
+            ->select($request->queryField)
+            ->when($request->reportableType === 'show', function ($query) {
                 $query->join('app_attendee', 'app_attendee.attendee_id', '=', 'attendees.id');
             })
-            ->select($request->queryField)
+            ->when(!empty($request->selectedApps), fn ($query) => $query->whereIn('app_attendee.app_id', $request->selectedApps))
             ->when($request->whereKey, function ($query) use ($request) {
                 foreach ($request->datasets as $key => $dataset) {
                     if (!$condition = $this->getConditionParameters($request, $dataset)) {
@@ -151,6 +152,8 @@ class ReportChartsController extends Controller
         return Event::select("meta->{$metaField} as {$metaField}")
             ->whereNotNull("meta->{$metaField}")
             ->where(["{$modelName}_id" => $model->id, 'event_code' => $request->eventCode])
+            ->when(!empty($request->selectedApps), fn ($query) => $query->whereIn('app_id', $request->selectedApps))
+            ->when(is_numeric($request->actionCode), fn ($query) => $query->where('action_code', $request->actionCode))
             ->when($request->whereKey, function ($query) use ($request) {
                 foreach ($request->datasets as $key => $dataset) {
                     if (!$condition = $this->getConditionParameters($request, $dataset)) {
@@ -173,10 +176,11 @@ class ReportChartsController extends Controller
         $column = $request->queryField;
 
         return $model->attendees()
-            ->when($request->whereKey === 'app_id', function ($query) {
+            ->select($column, DB::raw("COUNT({$column}) as attendees_count"))
+            ->when($request->reportableType === 'show', function ($query) {
                 $query->join('app_attendee', 'app_attendee.attendee_id', '=', 'attendees.id');
             })
-            ->select($column, DB::raw("COUNT({$column}) as attendees_count"))
+            ->when(!empty($request->selectedApps), fn ($query) => $query->whereIn('app_attendee.app_id', $request->selectedApps))
             ->when($condition, fn ($query) => $query->where(...$condition))
             ->groupBy($column)
             ->pluck('attendees_count', $column)
@@ -189,9 +193,11 @@ class ReportChartsController extends Controller
 
         $metaField = $request->queryField;
 
-        return Event::where(["{$modelName}_id" => $model->id, 'event_code' => $request->eventCode])
+        return Event::select("meta->{$metaField} as {$metaField}", DB::raw("COUNT(JSON_EXTRACT(meta, \"$.{$metaField}\")) as times_count"))
             ->whereNotNull("meta->{$metaField}")
-            ->select("meta->{$metaField} as {$metaField}", DB::raw("COUNT(JSON_EXTRACT(meta, \"$.{$metaField}\")) as times_count"))
+            ->where(["{$modelName}_id" => $model->id, 'event_code' => $request->eventCode])
+            ->when(!empty($request->selectedApps), fn ($query) => $query->whereIn('app_id', $request->selectedApps))
+            ->when(is_numeric($request->actionCode), fn ($query) => $query->where('action_code', $request->actionCode))
             ->when($condition, fn ($query) => $query->where(...$condition))
             ->groupBy("meta->{$metaField}")
             ->pluck('times_count', $metaField)
@@ -211,11 +217,11 @@ class ReportChartsController extends Controller
 
         $whereKey = $request->whereKey;
 
-        if ($request->queryResource === 'attendees' && $whereKey === 'app_id') {
-            $whereKey = 'app_attendee.app_id';
-        }
+        // if ($request->queryResource === 'attendees' && $whereKey === 'app_id') {
+        //     $whereKey = 'app_attendee.app_id';
+        // }
 
-        if ($request->queryResource === 'events' && $whereKey !== 'app_id') {
+        if ($request->queryResource === 'events') {
             $whereKey = "meta->{$whereKey}";
         }
 
