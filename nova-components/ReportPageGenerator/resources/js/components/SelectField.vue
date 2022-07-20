@@ -11,8 +11,10 @@
                 :value="modelValue"
                 @change="$emit('update:modelValue', $event.target.value)"
                 class="w-full block form-control form-select form-select-bordered"
+                :class="{ 'tw-py-3': multiple }"
+                :multiple="multiple"
             >
-                <option selected value>Select</option>
+                <option selected value>Select None</option>
                 <option
                     v-for="(option, index) in normalizedOptions"
                     :key="index"
@@ -21,7 +23,7 @@
                     {{ option.name }}
                 </option>
             </select>
-            <IconArrow class="pointer-events-none form-select-arrow" />
+            <IconArrow v-if="!multiple" class="pointer-events-none form-select-arrow" />
         </div>
         <div class="mt-2 tw-text-red-500" v-if="error">
             {{ error }}
@@ -40,6 +42,7 @@ export default {
         id: { type: String, default: null },
         label: { type: String, default: 'label' },
         required: { type: Boolean, default: false },
+        multiple: { type: Boolean, default: false },
         options: { type: [Array, Object], default: [] },
         modelValue: { type: String, default: '' },
     },

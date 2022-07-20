@@ -31,6 +31,16 @@ Route::middleware(['can:reports.edit'])->patch('/report-pages/{reportPage}/up', 
 Route::middleware(['can:reports.edit'])->patch('/report-pages/{reportPage}/down', [ReportPageController::class, 'moveDown']);
 
 /**
+ * Fetch a list of apps the belong to a specific show
+ */
+Route::middleware(['can:reports.create'])->get('/shows/{show}/apps', function (Show $show) {
+    return $show->apps()
+        ->pluck('name', 'id')
+        ->map(fn ($item, $key) => ['name' => $item, 'value' => $key])
+        ->values();
+});
+
+/**
  * Store a new ReportPage of content type: rich-text
  */
 Route::middleware(['can:reports.create'])->post('/reports/{report}/pages', [ReportPagesController::class, 'store']);

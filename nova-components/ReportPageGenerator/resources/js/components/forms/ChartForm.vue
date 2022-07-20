@@ -18,13 +18,30 @@
             <!-- Query Resource -->
             <TwSelectField
                 class="tw-col-span-6"
-                label="Data query resource"
+                label="Data resource"
                 v-model="form.queryResource"
                 :error="form.getError('queryResource')"
                 :options="queryResources"
                 @update:modelValue="handleQueryResourceChange"
                 required
             />
+
+            <!-- Apps -->
+            <div class="tw-col-span-12">
+                <VueMultiselect
+                    v-model="form.selectedApps"
+                    :options="showAppsList"
+                    :multiple="true"
+                    :close-on-select="true"
+                    :searchable="false"
+                    :taggable="true"
+                    :preselect-first="true"
+                    track-by="value"
+                    label="name"
+                    placeholder="Select apps"
+                >
+                </VueMultiselect>
+            </div>
 
             <div v-if="form.queryResource" class="tw-grid tw-grid-cols-12 tw-gap-6 tw-col-span-12">
                 <!-- Event Type -->
@@ -216,7 +233,8 @@
 </template>
 
 <script setup>
-import { reactive, inject, ref, watch, computed } from 'vue';
+import { reactive, inject, ref, watch, computed, onMounted } from 'vue';
+import VueMultiselect from 'vue-multiselect';
 
 const emit = defineEmits(['submited']);
 
@@ -230,6 +248,7 @@ const actionTypes = ref([]);
 const queryFields = ref([]);
 const whereKeyOptions = ref([]);
 const whereValueOptions = ref([]);
+const showAppsList = ref([]);
 const queryResources = ['attendees', 'events'];
 const chartTypes = ['line', 'bar', 'pie'];
 
@@ -245,6 +264,7 @@ const form = reactive(
         actionCode: null,
         queryField: null,
         whereKey: null,
+        selectedApps: [],
         height: 400,
         width: 600,
         datasets: [
@@ -359,7 +379,6 @@ function fetchActionTypes(eventCode) {
 }
 
 function fetchQueryFields() {
-    console.log('fetching query fields...');
     Nova.request()
         .get(
             `${baseUrl}/query-fields?queryResource=${form.queryResource}&eventCode=${form.eventCode}&actionCode=${form.actionCode}&reportableType=${reportableType}&reportableId=${reportableId}`
@@ -375,6 +394,10 @@ function genColor() {
 }
 
 function submit() {
+    if (form.selectedApps.length > 0) {
+        form.selectedApps = form.selectedApps.map((item) => item.value);
+    }
+
     form.post(
         `${baseUrl}/reports/${reportId}/charts?reportableType=${reportableType}&reportableId=${reportableId}`,
         { preserveSate: true }
@@ -388,4 +411,16 @@ function submit() {
 watch(pageTitle, (nVal, oVal) => {
     form.pageTitle = nVal;
 });
+
+onMounted(() => {
+    if (reportableType === 'show') {
+        Nova.request()
+            .get(`${baseUrl}/shows/${reportableId}/apps`)
+            .then((response) => {
+                showAppsList.value = response.data;
+            });
+    }
+});
 </script>
+
+<style src="vue-multiselect/dist/vue-multiselect.css"></style>
