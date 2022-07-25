@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Providers;
 
 use Illuminate\Support\Facades\Gate;
@@ -16,6 +15,14 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     public function boot()
     {
         parent::boot();
+
+        Nova::withoutThemeSwitcher();
+
+        Nova::footer(fn ($request) => null);
+
+        Nova::serving(function () {
+            Nova::script('nova-overwrite', public_path('js/nova-overwrite.js'));
+        });
     }
 
     /**
